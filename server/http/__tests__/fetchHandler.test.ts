@@ -8,7 +8,7 @@ import { readBodyLimited, toFetchHandler } from '../fetchHandler.js';
 const withUsage: HandleChatResult = {
   status: 200,
   body: { turn: { message: 'Hola', quickReplies: [], profile: {}, status: 'asking', recommendations: [], notes: [] } },
-  meta: { model: 'm', durationMs: 5, attempts: 2, usage: { inputTokens: 1234, outputTokens: 321, cacheReadTokens: 1000 } },
+  meta: { model: 'm', effort: 'medium', durationMs: 5, attempts: 2, usage: { inputTokens: 1234, outputTokens: 321, cacheReadTokens: 1000 } },
 };
 
 const post = (body: string) => new Request('http://localhost/api/chat', { method: 'POST', body, headers: { 'content-type': 'application/json' } });
@@ -55,7 +55,7 @@ describe('Vercel adapter', () => {
 
 describe('dev middleware usage header', () => {
   it('carries model, attempts and tokens only when the model was called', () => {
-    expect(JSON.parse(usageHeaderValue(withUsage)!)).toEqual({ model: 'm', attempts: 2, inputTokens: 1234, outputTokens: 321, cacheReadTokens: 1000 });
+    expect(JSON.parse(usageHeaderValue(withUsage)!)).toEqual({ model: 'm', effort: 'medium', attempts: 2, inputTokens: 1234, outputTokens: 321, cacheReadTokens: 1000 });
     expect(usageHeaderValue({ ...withUsage, meta: { ...withUsage.meta, attempts: 0, usage: null } })).toBeNull();
   });
 });

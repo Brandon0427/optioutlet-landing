@@ -45,6 +45,7 @@ export function usageHeaderValue(result: HandleChatResult): string | null {
   if (meta.attempts === 0) return null;
   return JSON.stringify({
     model: meta.model,
+    effort: meta.effort,
     attempts: meta.attempts,
     inputTokens: meta.usage?.inputTokens ?? 0,
     outputTokens: meta.usage?.outputTokens ?? 0,

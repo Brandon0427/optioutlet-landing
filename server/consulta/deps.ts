@@ -8,8 +8,8 @@ import { readConfig, type ServerEnv } from './config.js';
 import type { ChatDeps } from './handleChat.js';
 
 export function createChatDeps(env: ServerEnv): ChatDeps {
-  const { apiKey, model } = readConfig(env);
+  const { apiKey, model, effort } = readConfig(env);
   // Retries are handleChat's job (one, within the time budget); the SDK's own would blow it.
   const client = apiKey ? new Anthropic({ apiKey, maxRetries: 0 }) : null;
-  return { client, model };
+  return { client, model, effort };
 }

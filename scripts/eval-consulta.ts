@@ -9,6 +9,7 @@
  *   EVAL_BASE_URL  backend origin (default http://localhost:5173)
  *   EVAL_MODEL     expected model, used as the report label and checked against
  *                  the dev header when present
+ *   EVAL_EFFORT    expected effort, checked against the dev header when present
  *   EVAL_CASES     comma-separated case ids (default: all ten)
  *   EVAL_LABEL     report file name (default: EVAL_MODEL or "eval")
  *
@@ -26,6 +27,7 @@ import { consultaScript } from '../src/content/consulta.js';
 
 const BASE_URL = (process.env.EVAL_BASE_URL || 'http://localhost:5173').replace(/\/+$/, '');
 const EXPECTED_MODEL = process.env.EVAL_MODEL || null;
+const EXPECTED_EFFORT = process.env.EVAL_EFFORT || null;
 const LABEL = process.env.EVAL_LABEL || EXPECTED_MODEL || 'eval';
 const MAX_TURNS = 14;
 
@@ -150,7 +152,7 @@ interface TurnRecord {
   turnStatus: TurnStatus | null;
   sent: string | null;
   message: string | null;
-  usage: { inputTokens: number; outputTokens: number; cacheReadTokens: number; attempts: number; model: string } | null;
+  usage: { inputTokens: number; outputTokens: number; cacheReadTokens: number; attempts: number; model: string; effort: string } | null;
 }
 
 const VALUE_FIELD = new Map<string, ProfileField>();
@@ -260,8 +262,9 @@ async function runCase(c: EvalCase): Promise<CaseResult> {
     const problems = contentProblems(x.reason);
     if (problems.length) failures.push(`razón con ${problems.join(', ')}: "${x.reason.slice(0, 80)}"`);
   }
-  const served = records.find((x) => x.usage)?.usage?.model;
-  if (EXPECTED_MODEL && served && served !== EXPECTED_MODEL) failures.push(`el servidor usó ${served}, se esperaba ${EXPECTED_MODEL}`);
+  const served = records.find((x) => x.usage)?.usage;
+  if (EXPECTED_MODEL && served && served.model !== EXPECTED_MODEL) failures.push(`el servidor usó ${served.model}, se esperaba ${EXPECTED_MODEL}`);
+  if (EXPECTED_EFFORT && served && served.effort !== EXPECTED_EFFORT) failures.push(`el servidor usó effort ${served.effort}, se esperaba ${EXPECTED_EFFORT}`);
 
   const withUsage = records.filter((x) => x.usage);
   const haveUsage = withUsage.length === records.length && records.length > 0;

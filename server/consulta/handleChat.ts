@@ -15,7 +15,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { findProduct, type Product } from '../../src/consulta/catalog.js';
 import { parseAssistantTurn } from '../../src/consulta/schema.js';
 import type { AssistantTurn, CustomerProfile } from '../../src/consulta/types.js';
-import { EFFORT, MAX_TOKENS, MIN_RETRY_BUDGET_MS, TOTAL_BUDGET_MS } from './config.js';
+import { DEFAULT_EFFORT, MAX_TOKENS, MIN_RETRY_BUDGET_MS, TOTAL_BUDGET_MS, type Effort } from './config.js';
 import { mergeProfile } from './mergeProfile.js';
 import { TURN_OUTPUT_SCHEMA } from './outputSchema.js';
 import { SYSTEM_PROMPT } from './prompt.js';
@@ -28,6 +28,7 @@ export type ChatResponseBody = { turn: AssistantTurn } | { error: ChatErrorCode 
 
 export interface ChatMeta {
   model: string;
+  effort: Effort;
   durationMs: number;
   /** Model calls made (0, 1 or 2). */
   attempts: number;
@@ -56,6 +57,7 @@ export interface ChatDeps {
   /** null when ANTHROPIC_API_KEY is missing. */
   client: MessagesClient | null;
   model: string;
+  effort?: Effort;
   catalog?: readonly Product[];
   systemPrompt?: string;
   totalBudgetMs?: number;
@@ -108,6 +110,7 @@ export async function handleChat(method: string, rawBody: RawBody, deps: ChatDep
   const now = deps.now ?? Date.now;
   const log = deps.log ?? defaultLog;
   const started = now();
+  const effort = deps.effort ?? DEFAULT_EFFORT;
   let attempts = 0;
   let usage: ChatMeta['usage'] = null;
   let inputTokens = 0;
@@ -115,10 +118,11 @@ export async function handleChat(method: string, rawBody: RawBody, deps: ChatDep
   let cacheReadTokens = 0;
 
   const finish = (status: number, body: ChatResponseBody, reason?: string): HandleChatResult => {
-    const meta: ChatMeta = { model: deps.model, durationMs: now() - started, attempts, usage };
+    const meta: ChatMeta = { model: deps.model, effort, durationMs: now() - started, attempts, usage };
     log({
       status,
       model: deps.model,
+      effort,
       durationMs: meta.durationMs,
       attempts,
       retries: Math.max(0, attempts - 1),
@@ -169,7 +173,7 @@ export async function handleChat(method: string, rawBody: RawBody, deps: ChatDep
           max_tokens: MAX_TOKENS,
           system: [{ type: 'text', text: deps.systemPrompt ?? SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
           messages,
-          output_config: { effort: EFFORT, format: { type: 'json_schema', schema: TURN_OUTPUT_SCHEMA } },
+          output_config: { effort, format: { type: 'json_schema', schema: TURN_OUTPUT_SCHEMA } },
         },
         { timeout: Math.max(1, remaining), maxRetries: 0 },
       );

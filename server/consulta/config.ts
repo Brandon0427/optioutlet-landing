@@ -14,15 +14,24 @@
  */
 export const DEFAULT_MODEL = 'claude-sonnet-5-5';
 
-/** Thinking depth per turn. A turn is a short, rule-bound reply: low is enough and keeps latency down. */
-export const EFFORT = 'low' as const;
+/** Reasoning depth per turn, set with `ANTHROPIC_EFFORT`. */
+export const EFFORTS = ['low', 'medium', 'high'] as const;
+export type Effort = (typeof EFFORTS)[number];
+
+/**
+ * Effort when `ANTHROPIC_EFFORT` is not set (or is not one of `EFFORTS`).
+ * Medium since Session 3: with Sonnet 5.5 its p95 per turn was 2.9 s, under
+ * the 6 s bar set for adopting it (docs/verificacion-sesion-3.md).
+ */
+export const DEFAULT_EFFORT: Effort = 'medium';
 
 /**
  * Output cap per model call. A turn is about 300–600 tokens of JSON; adaptive
- * thinking also counts against this cap, so it leaves room for it without
- * letting a runaway answer through. A cut-off turn (`max_tokens`) is invalid.
+ * thinking also counts against this cap, and at medium or high effort it can
+ * take a few thousand. The cap leaves that room without letting a runaway
+ * answer through. A cut-off turn (`max_tokens`) is invalid.
  */
-export const MAX_TOKENS = 2048;
+export const MAX_TOKENS = 4096;
 
 /**
  * Wall-clock budget for one request, both attempts included. The client gives
@@ -37,15 +46,21 @@ export const MIN_RETRY_BUDGET_MS = 2_500;
 export interface ServerEnv {
   ANTHROPIC_API_KEY?: string | undefined;
   ANTHROPIC_MODEL?: string | undefined;
+  ANTHROPIC_EFFORT?: string | undefined;
 }
 
 export interface ChatConfig {
   apiKey: string | null;
   model: string;
+  effort: Effort;
 }
+
+const isEffort = (value: string): value is Effort => (EFFORTS as readonly string[]).includes(value);
 
 export function readConfig(env: ServerEnv): ChatConfig {
   const apiKey = env.ANTHROPIC_API_KEY?.trim() || null;
   const model = env.ANTHROPIC_MODEL?.trim() || DEFAULT_MODEL;
-  return { apiKey, model };
+  const requested = env.ANTHROPIC_EFFORT?.trim().toLowerCase() ?? '';
+  const effort = isEffort(requested) ? requested : DEFAULT_EFFORT;
+  return { apiKey, model, effort };
 }

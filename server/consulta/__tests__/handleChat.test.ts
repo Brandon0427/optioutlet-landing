@@ -88,6 +88,14 @@ describe('handleChat', () => {
     expect(params.messages[0]!.role).toBe('user');
     expect(params.output_config?.format?.type).toBe('json_schema');
     expect(params).not.toHaveProperty('tool_choice');
+    expect(params.output_config?.effort).toBe('medium');
+  });
+
+  it('sends the configured effort', async () => {
+    const { client, create } = fakeClient(message(JSON.stringify(asking())));
+    const res = await handleChat('POST', body([], null), deps(client, { effort: 'high' }));
+    expect((create.mock.calls[0]![0] as Anthropic.MessageCreateParamsNonStreaming).output_config?.effort).toBe('high');
+    expect(res.meta.effort).toBe('high');
   });
 
   it('invalid then valid → 200 after one retry that explains the problem', async () => {
@@ -265,7 +273,7 @@ describe('handleChat', () => {
       await handleChat('POST', body(midHistory({}), { kind: 'text', text: userText }), deps(client, { log: (e) => lines.push(JSON.stringify(e)) }));
       expect(lines).toHaveLength(1);
       const entry = JSON.parse(lines[0]!);
-      expect(Object.keys(entry).sort()).toEqual(['attempts', 'cacheReadTokens', 'durationMs', 'inputTokens', 'model', 'outputTokens', 'reason', 'retries', 'status']);
+      expect(Object.keys(entry).sort()).toEqual(['attempts', 'cacheReadTokens', 'durationMs', 'effort', 'inputTokens', 'model', 'outputTokens', 'reason', 'retries', 'status']);
       expect(lines[0]).not.toContain(userText);
       expect(lines[0]).not.toContain('día normal');
     });
