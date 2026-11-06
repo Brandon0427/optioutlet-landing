@@ -35,6 +35,7 @@ Aplica a **toda** dependencia que se agregue o actualice, directa o de desarroll
 
 - `src/content/landing.ts` — todo texto visible (es-MX). Los componentes no llevan texto suelto. El nombre de la mascota vive en `MASCOT_NAME`.
 - `src/styles/index.css` — tokens de marca y tipografías en `@theme`. La fuente de texto se cambia solo en `--font-sans`.
+- `src/styles/fonts.css` — `@font-face` autoalojados, solo subconjunto latín (español completo).
 - `src/lib/gsap.ts` — registro único de ScrollTrigger y `useGSAP`; `HEADER_OFFSET = 72`.
 - `src/components/brand/` — isotipo, trazos del patrón, patrones, sello, listón, mascota e imagotipo. `geometry.ts` guarda la geometría compartida.
   - `Mascot.tsx` e `Imagotipo.tsx` son aproximaciones marcadas con `TODO(brand-svg)`; al llegar los vectores oficiales se reemplaza el contenido de ese archivo y nada más.
@@ -42,3 +43,4 @@ Aplica a **toda** dependencia que se agregue o actualice, directa o de desarroll
 - `src/components/layout/` — encabezado, footer y franja de patrón. `src/components/ui/ActionLink.tsx` — enlaces y CTAs.
 - `src/sections/` — una sección de la página por archivo, en el orden de `App.tsx`.
 - `docs/mockup/optioutlet-mockup.dc.html` — mockup aprobado (referencia, no ejecutable).
+- `docs/verificacion-sesion-1.md` — cómo verificar la landing; `docs/backlog.md` — residuales abiertos.

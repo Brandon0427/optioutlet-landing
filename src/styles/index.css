@@ -59,19 +59,29 @@
 
 /*
  * Brand gradients (layers of radial-gradient, copied from the mockup).
- * The hero's blob positions are CSS variables so Phase 5 can animate them
- * with scroll and cursor; the defaults are the static (top-of-page) values.
+ *
+ * Hero blobs: each position = base (per layout, below) + scroll shift
+ * (--hero-*-shift, animated in Phase 5) + cursor offset (--hero-ptr-*).
+ * Bases and sizes are variables so the stacked layout (< 1024px) can move
+ * the light blobs off the text and keep white copy at AA contrast.
+ * Side by side, blob 1 sits at 72% (mockup: 64%) and the cursor only pushes
+ * it to the right: at 64%, or pulled left by the cursor, the light blob sat
+ * behind the end of the headline (down to 1.9:1). Measured in Phase 6.
  */
 @utility bg-hero {
-  /* Blob 1 = scroll position (--hero-g1x/y) + cursor offset (--hero-ptr-x/y), animated independently. */
   background:
     radial-gradient(
-        55% 65% at calc(var(--hero-g1x, 64%) + var(--hero-ptr-x, 0%)) calc(var(--hero-g1y, 16%) + var(--hero-ptr-y, 0%)),
+        var(--hero-g1-size, 55% 65%) at calc(var(--hero-g1x, 72%) + var(--hero-ptr-x, 0%))
+          calc(var(--hero-g1y, 16%) + var(--hero-g1y-shift, 0%) + var(--hero-ptr-y, 0%)),
         var(--color-glow) 0%,
         transparent 72%
       ),
-    radial-gradient(45% 55% at 98% var(--hero-g2y, 86%), var(--color-glow-2) 0%, transparent 70%),
-    radial-gradient(62% 80% at var(--hero-g3x, 6%) 62%, var(--color-deep) 0%, transparent 76%),
+    radial-gradient(
+        var(--hero-g2-size, 45% 55%) at 98% calc(var(--hero-g2y, 86%) + var(--hero-g2y-shift, 0%)),
+        var(--color-glow-2) 0%,
+        transparent 70%
+      ),
+    radial-gradient(62% 80% at calc(6% + var(--hero-g3x-shift, 0%)) 62%, var(--color-deep) 0%, transparent 76%),
     radial-gradient(40% 45% at 92% 2%, var(--color-deep-2) 0%, transparent 70%),
     var(--color-hero);
 }
@@ -110,7 +120,7 @@
 
 @utility bg-store-cta {
   background:
-    radial-gradient(55% 80% at 100% 30%, var(--color-glow-3) 0%, transparent 70%),
+    radial-gradient(var(--store-g1-size, 55% 80%) at 100% var(--store-g1y, 30%), var(--color-glow-3) 0%, transparent 70%),
     radial-gradient(45% 70% at 80% 110%, var(--color-glow-2) 0%, transparent 70%),
     radial-gradient(60% 90% at 0% 50%, var(--color-deep) 0%, transparent 75%),
     var(--color-cta);
@@ -144,8 +154,33 @@
     color: var(--color-navy-hover);
   }
 
+  /*
+   * Two-tone focus ring: a navy ring hugging the element (fills the 3px offset)
+   * and a teal outline outside it. Navy reads on light backgrounds, teal on navy
+   * and gradients, so the indicator keeps ≥ 3:1 (WCAG 1.4.11) everywhere.
+   */
   :focus-visible {
     outline: 3px solid var(--color-teal);
     outline-offset: 3px;
+    box-shadow: 0 0 0 3px var(--color-navy);
+  }
+}
+
+/*
+ * Stacked layout (< 1024px): text sits above the eye disc (hero) and above
+ * the ribbon (closing CTA). Move the light blobs down behind those so white
+ * text keeps AA contrast. Values checked with the contrast script in Phase 6.
+ */
+@media (max-width: 1023px) {
+  .bg-hero {
+    --hero-g1x: 64%;
+    --hero-g1y: 80%;
+    --hero-g1-size: 80% 26%;
+    --hero-g2y: 98%;
+    --hero-g2-size: 55% 22%;
+  }
+  .bg-store-cta {
+    --store-g1y: 92%;
+    --store-g1-size: 70% 38%;
   }
 }

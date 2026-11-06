@@ -65,10 +65,11 @@ export function Hero() {
             refreshPriority: ORDER.hero,
           },
         });
+        // Blob shifts relative to each layout's base position (mockup: 16→4%, 86→76%, 6→12%).
         tl.fromTo(
           section,
-          { '--hero-g1y': '16%', '--hero-g2y': '86%', '--hero-g3x': '6%' },
-          { '--hero-g1y': '4%', '--hero-g2y': '76%', '--hero-g3x': '12%' },
+          { '--hero-g1y-shift': '0%', '--hero-g2y-shift': '0%', '--hero-g3x-shift': '0%' },
+          { '--hero-g1y-shift': '-12%', '--hero-g2y-shift': '-10%', '--hero-g3x-shift': '6%' },
           0,
         );
         gsap.utils.toArray<SVGSVGElement>('.js-float', section).forEach((el, i) => {
@@ -93,7 +94,9 @@ export function Hero() {
         const ptr = { x: 0, y: 0 };
         const apply = () => {
           gsap.set(pupil.current, { x: ptr.x, y: ptr.y });
-          section.style.setProperty('--hero-ptr-x', `${(ptr.x * PTR_TO_GRADIENT).toFixed(2)}%`);
+          // The gradient only follows the cursor to the right: moving the light
+          // blob left would put it behind the headline (contrast below AA).
+          section.style.setProperty('--hero-ptr-x', `${Math.max(0, ptr.x * PTR_TO_GRADIENT).toFixed(2)}%`);
           section.style.setProperty('--hero-ptr-y', `${(ptr.y * PTR_TO_GRADIENT).toFixed(2)}%`);
         };
         const maxOffset = () => (eyeBox.current?.getBoundingClientRect().width ?? 0) * EYE_MAX;
