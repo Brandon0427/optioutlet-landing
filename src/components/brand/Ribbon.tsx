@@ -1,4 +1,5 @@
 import { useId, type Ref } from 'react';
+import { BRAND_COLORS as C } from '../../styles/brandColors';
 import { svgId } from './geometry';
 
 /** The U ribbon's centerline (viewBox 0 0 340 420). Length ≈ 240 + π·110 + 240 ≈ 826. */
@@ -22,9 +23,9 @@ export function Ribbon({ text, startOffset = 40, className, textPathRef }: Ribbo
       <defs>
         <path id={pathId} d={RIBBON_PATH} />
       </defs>
-      <path d={RIBBON_PATH} fill="none" stroke="var(--color-teal)" strokeWidth="60" />
+      <path d={RIBBON_PATH} fill="none" stroke={C.teal} strokeWidth="60" />
       <text
-        fill="var(--color-navy)"
+        fill={C.navy}
         dominantBaseline="central"
         className="font-display"
         style={{ fontSize: 22, fontWeight: 700, letterSpacing: 2 }}

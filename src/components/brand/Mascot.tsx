@@ -3,6 +3,7 @@
 // se reemplaza el contenido de este archivo y nada más (misma firma de props).
 
 import { landing } from '../../content/landing';
+import { BRAND_COLORS as C } from '../../styles/brandColors';
 
 type MascotProps = {
   /** onNavy: teal strokes, navy pupils. onLight: navy strokes, teal pupils. */
@@ -16,8 +17,8 @@ type MascotProps = {
 };
 
 const PALETTE = {
-  onNavy: { stroke: '#67bbb5', pupil: '#214367' },
-  onLight: { stroke: '#214367', pupil: '#67bbb5' },
+  onNavy: { stroke: C.teal, pupil: C.navy },
+  onLight: { stroke: C.navy, pupil: C.teal },
 } as const;
 
 /** Opti, the mascot. Exposed to assistive tech as an image with a label. */
@@ -40,12 +41,12 @@ export function Mascot({ variant, size, crop = 'full', className }: MascotProps)
       {/* body */}
       {full && <path d="M84 60 C92 72 86 86 72 86 L62 86 C52 86 48 80 46 74" fill="none" stroke={stroke} strokeWidth="10" strokeLinecap="round" />}
       {/* eyes */}
-      <circle cx="48" cy="58" r="15" fill="#ffffff" stroke={stroke} strokeWidth="4" />
-      <circle cx="76" cy="58" r="15" fill="#ffffff" stroke={stroke} strokeWidth="4" />
+      <circle cx="48" cy="58" r="15" fill={C.white} stroke={stroke} strokeWidth="4" />
+      <circle cx="76" cy="58" r="15" fill={C.white} stroke={stroke} strokeWidth="4" />
       <circle cx="50" cy="59" r="7" fill={pupil} />
       <circle cx="78" cy="59" r="7" fill={pupil} />
-      <circle cx="53" cy="56" r="2.6" fill="#ffffff" />
-      <circle cx="81" cy="56" r="2.6" fill="#ffffff" />
+      <circle cx="53" cy="56" r="2.6" fill={C.white} />
+      <circle cx="81" cy="56" r="2.6" fill={C.white} />
       {/* legs + feet */}
       {full && (
         <>

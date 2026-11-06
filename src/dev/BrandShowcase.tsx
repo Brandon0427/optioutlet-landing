@@ -133,7 +133,7 @@ export function BrandShowcase() {
         <div className="flex flex-wrap items-center gap-10">
           <Tile label="hero · texto blanco sobre gradiente" className="bg-[#2a5876]">
             <div className="relative size-[420px]">
-              <Seal text={landing.hero.seal} color="#ffffff" className="absolute inset-0 size-full" />
+              <Seal text={landing.hero.seal} color="white" className="absolute inset-0 size-full" />
               <div className="absolute inset-[11%] flex items-center justify-center rounded-full border-2 border-mint bg-mist">
                 <Isotipo className="size-[58%] text-teal" />
               </div>
@@ -141,7 +141,7 @@ export function BrandShowcase() {
           </Tile>
           <Tile label="receta · fondo marino" className="bg-white ring-1 ring-line">
             <div className="relative size-[380px]">
-              <Seal text={landing.receta.seal} color="#ffffff" background="#214367" className="absolute inset-0 size-full" />
+              <Seal text={landing.receta.seal} color="white" background="navy" className="absolute inset-0 size-full" />
               <div className="absolute inset-[15%] flex items-center justify-center rounded-full bg-mint">
                 <Mascot variant="onLight" size={220} />
               </div>
