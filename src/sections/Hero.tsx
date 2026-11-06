@@ -5,7 +5,7 @@ import { Isotipo } from '../components/brand/Isotipo';
 import { Seal } from '../components/brand/Seal';
 import type { ShapeName } from '../components/brand/geometry';
 import { ActionLink, pill } from '../components/ui/ActionLink';
-import { HEADER_OFFSET, MEDIA, SCRUB, ScrollTrigger, gsap, useGSAP } from '../lib/gsap';
+import { HEADER_OFFSET, MEDIA, ORDER, SCRUB, ScrollTrigger, gsap, useGSAP } from '../lib/gsap';
 
 const { hero } = landing;
 
@@ -62,6 +62,7 @@ export function Hero() {
             start: `top ${HEADER_OFFSET}px`,
             end: `+=${HERO_TRAVEL}`,
             scrub: SCRUB,
+            refreshPriority: ORDER.hero,
           },
         });
         tl.fromTo(
@@ -84,7 +85,7 @@ export function Hero() {
             rotation: () => ScrollTrigger.maxScroll(window) * 0.12,
             ease: 'none',
             transformOrigin: '50% 50%',
-            scrollTrigger: { start: 0, end: 'max', scrub: SCRUB, invalidateOnRefresh: true },
+            scrollTrigger: { start: 0, end: 'max', scrub: SCRUB, invalidateOnRefresh: true, refreshPriority: ORDER.page },
           },
         );
 
@@ -140,6 +141,7 @@ export function Hero() {
           trigger: section,
           start: 'top bottom',
           end: 'bottom top',
+          refreshPriority: ORDER.hero,
           onToggle: (self) => {
             active = self.isActive;
             if (active && !next?.isActive()) wander();

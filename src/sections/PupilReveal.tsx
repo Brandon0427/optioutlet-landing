@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { landing } from '../content/landing';
 import { Mascot } from '../components/brand/Mascot';
 import { PatternFill } from '../components/brand/PatternFill';
-import { HEADER_OFFSET, MEDIA, SCRUB, STAGE_HEIGHT, ScrollTrigger, gsap, useGSAP } from '../lib/gsap';
+import { HEADER_OFFSET, MEDIA, ORDER, SCRUB, STAGE_HEIGHT, STAGE_PAD, ScrollTrigger, gsap, useGSAP } from '../lib/gsap';
 
 const { reveal } = landing;
 
@@ -10,8 +10,6 @@ const { reveal } = landing;
 const REVEAL_TRAVEL = 1200;
 /** Size (px) of the navy pupil at the start of the reveal. */
 const PUPIL_START = 160;
-/** Vertical padding of the pinned stage, px. */
-const STAGE_PAD = 32;
 /** Content never shrinks below this to fit a very short stage; never grows. */
 const MIN_FIT = 0.6;
 
@@ -59,7 +57,7 @@ export function PupilReveal() {
           const s = gsap.utils.clamp(MIN_FIT, 1, avail / el.offsetHeight);
           gsap.set(el, { scale: s });
         };
-        ScrollTrigger.addEventListener('refreshInit', fit);
+        ScrollTrigger.addEventListener('revert', fit);
         fit();
 
         const tl = gsap.timeline({
@@ -71,6 +69,7 @@ export function PupilReveal() {
             pin: true,
             scrub: SCRUB,
             invalidateOnRefresh: true,
+            refreshPriority: ORDER.reveal,
           },
         });
 
@@ -87,7 +86,7 @@ export function PupilReveal() {
           .fromTo(pattern.current, { opacity: 0 }, { opacity: 0.18, duration: 0.25 }, 0.62)
           .set(section, { backgroundColor: 'var(--color-navy)' }, 0.985);
 
-        return () => ScrollTrigger.removeEventListener('refreshInit', fit);
+        return () => ScrollTrigger.removeEventListener('revert', fit);
       });
     },
     { scope: root },

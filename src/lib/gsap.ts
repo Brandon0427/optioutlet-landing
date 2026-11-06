@@ -25,6 +25,28 @@ export const MEDIA = {
 /** Default scrub smoothing for scroll-linked animation. */
 export const SCRUB = 0.4;
 
+/** Vertical padding of every pinned stage, px. */
+export const STAGE_PAD = 32;
+
+/**
+ * refreshPriority per section, in page order (higher refreshes first).
+ * Pins push everything below them down, so triggers must be calculated top to
+ * bottom even when one is re-created later (e.g. Profiles crossing 768px).
+ * Page-wide triggers (end: 'max') depend on the final page height: last.
+ * After creating triggers, call ScrollTrigger.sort() so the order applies.
+ */
+export const ORDER = {
+  hero: 100,
+  reveal: 90,
+  como: 80,
+  profiles: 70,
+  consulta: 60,
+  receta: 50,
+  store: 40,
+  strip: 30,
+  page: -100,
+} as const;
+
 // Dev-only handle for QA scripts (counting triggers, pin spacers).
 if (import.meta.env.DEV) {
   (window as unknown as { __ST?: typeof ScrollTrigger }).__ST = ScrollTrigger;
