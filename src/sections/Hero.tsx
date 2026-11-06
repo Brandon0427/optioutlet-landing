@@ -1,16 +1,18 @@
+import { useRef } from 'react';
 import { landing } from '../content/landing';
 import { BrandShape } from '../components/brand/BrandShape';
 import { Isotipo } from '../components/brand/Isotipo';
 import { Seal } from '../components/brand/Seal';
 import type { ShapeName } from '../components/brand/geometry';
 import { ActionLink, pill } from '../components/ui/ActionLink';
+import { HEADER_OFFSET, MEDIA, SCRUB, ScrollTrigger, gsap, useGSAP } from '../lib/gsap';
 
 const { hero } = landing;
 
 /**
  * Floating pattern strokes (mockup `floatDefs`). `k` is each one's parallax
- * travel in px, used in Phase 5; static rotation is `rot`. `wideOnly` strokes
- * are hidden below 1024px, where they would land on the headline or the seal.
+ * travel in px; static rotation is `rot`. `wideOnly` strokes are hidden below
+ * 1024px, where they would land on the headline or the seal.
  */
 export const HERO_FLOATS: ReadonlyArray<{
   shape: ShapeName;
@@ -31,14 +33,144 @@ export const HERO_FLOATS: ReadonlyArray<{
   { shape: 'dot', left: '1%', top: '86%', size: 40, color: 'text-mint', opacity: 0.9, rot: 0, k: 200 },
 ];
 
+/** Scroll distance (px) over which the hero's parallax runs (mockup: heroP = sy / 560). */
+const HERO_TRAVEL = 560;
+/** Max pupil offset as a fraction of the eye box width (mockup: 0.08). */
+const EYE_MAX = 0.08;
+/** Gradient blob 1 follows the pupil at this ratio, as % (mockup: eyeX · 0.25). */
+const PTR_TO_GRADIENT = 0.25;
+
 export function Hero() {
+  const root = useRef<HTMLElement>(null);
+  const eyeBox = useRef<HTMLDivElement>(null);
+  const pupil = useRef<HTMLDivElement>(null);
+  const seal = useRef<SVGSVGElement>(null);
+
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add({ motion: MEDIA.motion, finePointer: MEDIA.finePointer }, (ctx) => {
+        const { motion, finePointer } = ctx.conditions as { motion: boolean; finePointer: boolean };
+        if (!motion) return; // reduced motion: static Phase 4 version
+        const section = root.current!;
+
+        // ── Scroll: gradient blobs, floating strokes, pupil scale ──
+        const tl = gsap.timeline({
+          defaults: { ease: 'none' },
+          scrollTrigger: {
+            trigger: section,
+            start: `top ${HEADER_OFFSET}px`,
+            end: `+=${HERO_TRAVEL}`,
+            scrub: SCRUB,
+          },
+        });
+        tl.fromTo(
+          section,
+          { '--hero-g1y': '16%', '--hero-g2y': '86%', '--hero-g3x': '6%' },
+          { '--hero-g1y': '4%', '--hero-g2y': '76%', '--hero-g3x': '12%' },
+          0,
+        );
+        gsap.utils.toArray<SVGSVGElement>('.js-float', section).forEach((el, i) => {
+          const f = HERO_FLOATS[i];
+          if (f) tl.fromTo(el, { y: 0, rotation: f.rot }, { y: -f.k, rotation: f.rot + 40 }, 0);
+        });
+        tl.fromTo(pupil.current, { scale: 1 }, { scale: 1.16 }, 0);
+
+        // ── Seal: rotation = scroll · 0.12° across the whole page ──
+        gsap.fromTo(
+          seal.current,
+          { rotation: 0 },
+          {
+            rotation: () => ScrollTrigger.maxScroll(window) * 0.12,
+            ease: 'none',
+            transformOrigin: '50% 50%',
+            scrollTrigger: { start: 0, end: 'max', scrub: SCRUB, invalidateOnRefresh: true },
+          },
+        );
+
+        // ── Pupil offset (cursor or idle gaze) → pupil x/y + gradient blob 1 ──
+        const ptr = { x: 0, y: 0 };
+        const apply = () => {
+          gsap.set(pupil.current, { x: ptr.x, y: ptr.y });
+          section.style.setProperty('--hero-ptr-x', `${(ptr.x * PTR_TO_GRADIENT).toFixed(2)}%`);
+          section.style.setProperty('--hero-ptr-y', `${(ptr.y * PTR_TO_GRADIENT).toFixed(2)}%`);
+        };
+        const maxOffset = () => (eyeBox.current?.getBoundingClientRect().width ?? 0) * EYE_MAX;
+
+        if (finePointer) {
+          const toX = gsap.quickTo(ptr, 'x', { duration: 0.3, ease: 'power1.out', onUpdate: apply });
+          const toY = gsap.quickTo(ptr, 'y', { duration: 0.3, ease: 'power1.out', onUpdate: apply });
+          const onMove = (e: MouseEvent) => {
+            const r = eyeBox.current!.getBoundingClientRect();
+            const dx = e.clientX - (r.left + r.width / 2);
+            const dy = e.clientY - (r.top + r.height / 2);
+            const d = Math.hypot(dx, dy) || 1;
+            const k = Math.min(1, d / (r.width * 0.8));
+            toX((dx / d) * r.width * EYE_MAX * k);
+            toY((dy / d) * r.width * EYE_MAX * k);
+          };
+          const onLeave = () => {
+            toX(0);
+            toY(0);
+          };
+          section.addEventListener('mousemove', onMove);
+          section.addEventListener('mouseleave', onLeave);
+          return () => {
+            section.removeEventListener('mousemove', onMove);
+            section.removeEventListener('mouseleave', onLeave);
+            section.style.removeProperty('--hero-ptr-x');
+            section.style.removeProperty('--hero-ptr-y');
+            gsap.set(pupil.current, { clearProps: 'transform' });
+          };
+        }
+
+        // Touch: slow idle gaze, paused while the hero is off-screen.
+        let gaze: gsap.core.Tween | null = null;
+        let next: gsap.core.Tween | null = null;
+        let active = true;
+        const wander = () => {
+          if (!active) return;
+          const m = maxOffset() * 0.5;
+          const a = Math.random() * Math.PI * 2;
+          const r = Math.random() * m;
+          gaze = gsap.to(ptr, { x: Math.cos(a) * r, y: Math.sin(a) * r, duration: 1.4, ease: 'power2.inOut', onUpdate: apply });
+          next = gsap.delayedCall(gsap.utils.random(2.5, 3.5), wander);
+        };
+        const visibility = ScrollTrigger.create({
+          trigger: section,
+          start: 'top bottom',
+          end: 'bottom top',
+          onToggle: (self) => {
+            active = self.isActive;
+            if (active && !next?.isActive()) wander();
+            if (!active) {
+              next?.kill();
+              gaze?.pause();
+            }
+          },
+        });
+        wander();
+        return () => {
+          active = false;
+          next?.kill();
+          gaze?.kill();
+          visibility.kill();
+          section.style.removeProperty('--hero-ptr-x');
+          section.style.removeProperty('--hero-ptr-y');
+          gsap.set(pupil.current, { clearProps: 'transform' });
+        };
+      });
+    },
+    { scope: root },
+  );
+
   return (
-    <section id="inicio" className="bg-hero relative overflow-hidden px-gutter pt-24 pb-32">
+    <section ref={root} id="inicio" className="bg-hero relative overflow-hidden px-gutter pt-24 pb-32">
       {HERO_FLOATS.map((f, i) => (
         <BrandShape
           key={i}
           shape={f.shape}
-          className={`pointer-events-none absolute ${f.color} ${f.wideOnly ? 'max-lg:hidden' : ''}`}
+          className={`js-float pointer-events-none absolute ${f.color} ${f.wideOnly ? 'max-lg:hidden' : ''}`}
           style={{
             left: f.left,
             top: f.top,
@@ -66,10 +198,12 @@ export function Hero() {
         </div>
 
         <div className="flex flex-[1_1_380px] justify-center">
-          <div className="relative aspect-square w-full max-w-[540px]">
-            <Seal text={hero.seal} color="white" className="absolute inset-0 size-full" />
+          <div ref={eyeBox} className="relative aspect-square w-full max-w-[540px]">
+            <Seal ref={seal} text={hero.seal} color="white" className="absolute inset-0 size-full" />
             <div className="absolute inset-[11%] box-border flex items-center justify-center rounded-full border-2 border-mint bg-mist">
-              <Isotipo className="size-[58%] text-teal" />
+              <div ref={pupil} className="flex size-[58%] items-center justify-center will-change-transform">
+                <Isotipo className="size-full text-teal" />
+              </div>
             </div>
           </div>
         </div>

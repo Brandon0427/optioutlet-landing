@@ -63,12 +63,34 @@
  * with scroll and cursor; the defaults are the static (top-of-page) values.
  */
 @utility bg-hero {
+  /* Blob 1 = scroll position (--hero-g1x/y) + cursor offset (--hero-ptr-x/y), animated independently. */
   background:
-    radial-gradient(55% 65% at var(--hero-g1x, 64%) var(--hero-g1y, 16%), var(--color-glow) 0%, transparent 72%),
+    radial-gradient(
+        55% 65% at calc(var(--hero-g1x, 64%) + var(--hero-ptr-x, 0%)) calc(var(--hero-g1y, 16%) + var(--hero-ptr-y, 0%)),
+        var(--color-glow) 0%,
+        transparent 72%
+      ),
     radial-gradient(45% 55% at 98% var(--hero-g2y, 86%), var(--color-glow-2) 0%, transparent 70%),
     radial-gradient(62% 80% at var(--hero-g3x, 6%) 62%, var(--color-deep) 0%, transparent 76%),
     radial-gradient(40% 45% at 92% 2%, var(--color-deep-2) 0%, transparent 70%),
     var(--color-hero);
+}
+
+/*
+ * iOS: pinned stages are 100svh tall. When Safari's URL bar hides, the
+ * viewport grows to 100lvh and a strip opens below the fixed stage. This
+ * child of the pinned section fills that strip with the section's current
+ * background (it inherits it, so it follows background animations too).
+ * On desktop 100lvh = 100svh and it has no height.
+ */
+@utility stage-underlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: calc(100lvh - 100svh);
+  background-color: inherit;
+  pointer-events: none;
 }
 
 @utility bg-phone-disc {
