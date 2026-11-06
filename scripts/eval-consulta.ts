@@ -24,6 +24,7 @@ import { nextField, QUESTION_ORDER, type ProfileField } from '../src/consulta/pr
 import { parseAssistantTurn } from '../src/consulta/schema.js';
 import type { AssistantTurn, ConversationMessage, CustomerProfile, TurnStatus, UserInput } from '../src/consulta/types.js';
 import { consultaScript } from '../src/content/consulta.js';
+import { genderedForms } from './genderedForms.js';
 
 const BASE_URL = (process.env.EVAL_BASE_URL || 'http://localhost:5173').replace(/\/+$/, '');
 const EXPECTED_MODEL = process.env.EVAL_MODEL || null;
@@ -140,6 +141,7 @@ function contentProblems(text: string): string[] {
   if (PRESCRIPTION_VALUES.some((r) => r.test(text))) problems.push('valor de graduación');
   if (PRICES.some((r) => r.test(text))) problems.push('precio');
   if (NAMES.some((n) => text.toLowerCase().includes(n.toLowerCase()))) problems.push('nombre o enlace');
+  for (const form of genderedForms(text)) problems.push(`género: ${form}`);
   return problems;
 }
 
@@ -152,6 +154,8 @@ interface TurnRecord {
   turnStatus: TurnStatus | null;
   sent: string | null;
   message: string | null;
+  /** Quick-reply labels and notes of the turn: also Opti's words. */
+  extraTexts: string[];
   usage: { inputTokens: number; outputTokens: number; cacheReadTokens: number; attempts: number; model: string; effort: string } | null;
 }
 
@@ -179,7 +183,7 @@ async function post(history: ConversationMessage[], input: UserInput | null, sen
   }
   const ms = performance.now() - t0;
   const turn = status === 200 ? parseAssistantTurn((json as { turn?: unknown } | null)?.turn) : null;
-  return { ms, status, valid: !!turn, turnStatus: turn?.status ?? null, sent, message: turn?.message ?? null, usage, turn };
+  return { ms, status, valid: !!turn, turnStatus: turn?.status ?? null, sent, message: turn?.message ?? null, extraTexts: turn ? [...turn.quickReplies.map((r) => r.label), ...turn.notes] : [], usage, turn };
 }
 
 /** What the customer answers to the current turn. */
@@ -257,6 +261,10 @@ async function runCase(c: EvalCase): Promise<CaseResult> {
   for (const x of records) {
     const problems = x.message ? contentProblems(x.message) : [];
     if (problems.length) failures.push(`mensaje con ${problems.join(', ')}: "${x.message!.slice(0, 80)}"`);
+    for (const extra of x.extraTexts) {
+      const gendered = genderedForms(extra);
+      if (gendered.length) failures.push(`opción o nota con género (${gendered.join(', ')}): "${extra.slice(0, 80)}"`);
+    }
   }
   for (const x of recs) {
     const problems = contentProblems(x.reason);

@@ -119,7 +119,7 @@ export const consultaScript: ConsultaScript = {
     },
     astigmatism: {
       text: '¿Tu receta indica astigmatismo? Suele aparecer como cilindro (CYL) y eje.',
-      clarify: 'Revisa tu receta: me basta con saber si dice astigmatismo (cilindro o CYL), si no lo dice o si no estás seguro.',
+      clarify: 'Revisa tu receta: me basta con saber si dice astigmatismo (cilindro o CYL), si no lo dice o si tienes dudas.',
       options: [
         {
           value: 'yes',
@@ -133,7 +133,7 @@ export const consultaScript: ConsultaScript = {
         },
         {
           value: 'unsure',
-          label: 'No estoy seguro',
+          label: 'No lo sé',
           keywords: ['no se', 'no lo se', 'no estoy seguro', 'no estoy segura', 'no recuerdo', 'no me acuerdo', 'ni idea', 'creo que si', 'creo que no', 'tal vez', 'quiza', 'quizas', 'puede ser', 'no entiendo mi receta'],
         },
       ],

@@ -140,6 +140,42 @@ En estos turnos, cortos y con reglas claras, medium casi no agrega
 razonamiento: la salida crece cerca de 1 %. El costo de subirlo es mínimo y
 deja margen para conversaciones menos lineales.
 
+### Lenguaje neutro en género
+
+Opti no sabe si habla con un hombre o con una mujer, así que nunca usa formas
+con género dirigidas al cliente.
+
+- **En el system prompt:** hay una regla con ejemplos. "Te doy la bienvenida"
+  en lugar de "bienvenido"; "¿todo listo?" en lugar de "¿estás listo?"; "si
+  tienes dudas" en lugar de "si no estás seguro"; "si es tu primera vez" en
+  lugar de "si eres primerizo". Aplica también a las etiquetas de las opciones
+  rápidas.
+- **En el guion** (`src/content/consulta.ts`) se corrigieron dos textos:
+  - la opción "No estoy seguro" ahora es **"No lo sé"**;
+  - la aclaración sobre astigmatismo decía "…o si no estás seguro" y ahora dice
+    **"…o si tienes dudas"**.
+
+  Las palabras clave del texto libre conservan "no estoy seguro/segura",
+  porque son lo que el cliente puede escribir.
+- **En `landing.ts`** no hubo nada que corregir.
+- **Se quedan como están** "Listo." como interjección ("Listo. Con lo que me
+  contaste…") y la etiqueta de progreso "Listo". Describen la consulta, no a
+  la persona.
+- **El detector** está en `scripts/genderedForms.ts` y detecta:
+  - bienvenido/a, salvo el sustantivo "la bienvenida";
+  - primerizo/a;
+  - adjetivos con género (listo, seguro, interesado, cansado, preparado,
+    cómodo, nuevo…) después de "estás", "eres", "te sientes", "quedas"…;
+  - esos mismos adjetivos cuando el cliente habla de sí ("no estoy seguro");
+  - preguntas como "¿lista?".
+- **Lo usan dos lugares:**
+  - `scripts/genderedForms.test.ts`, que forma parte de `npm run check`.
+    Prueba los casos positivos y negativos, y revisa que el guion completo, los
+    textos de `landing.ts` y el system prompt (salvo la línea de la regla, que
+    nombra las formas a evitar) no tengan formas con género.
+  - La evaluación en vivo, que lo aplica a cada mensaje, razón, opción rápida y
+    nota de Opti.
+
 ### Parámetros de la llamada
 
 - **`max_tokens: 4096`.** Un turno ocupa entre 300 y 600 tokens de JSON. El
@@ -213,6 +249,8 @@ sea 200 o no pase el contrato cuenta como respaldo.
 - Ningún mensaje ni razón contiene valores de graduación (números con signo o
   decimales, dioptrías, grados), precios (`$`, MXN, pesos) ni nombres de
   productos o enlaces.
+- Ningún mensaje, razón, opción rápida ni nota usa formas con género dirigidas
+  al cliente (ver "Lenguaje neutro en género").
 
 **Resultados.** No hubo que ajustar el system prompt: 0 iteraciones, porque
 nada falló desde la primera corrida.
@@ -221,7 +259,8 @@ nada falló desde la primera corrida.
 |---|---|---|---|---|---|---|---|
 | Haiku 5.5 · low | 10/10 | 1,235 ms | 2,914 ms | 267,794 | 13,560 | 0 | 0 |
 | Sonnet 5.5 · low | 10/10 | 1,682 ms | 2,868 ms | 266,212 | 11,336 | 0 | 0 |
-| **Sonnet 5.5 · medium (actual)** | **10/10** | **1,705 ms** | **2,869 ms** | 266,317 | 11,446 | 0 | 0 |
+| Sonnet 5.5 · medium | 10/10 | 1,705 ms | 2,869 ms | 266,317 | 11,446 | 0 | 0 |
+| **Sonnet 5.5 · medium + lenguaje neutro (actual)** | **10/10** | **1,589 ms** | **2,711 ms** | 283,331 | 11,416 | 0 | 0 |
 | Producción en Vercel · Sonnet medium (3 casos) | 3/3 | 1,693 ms | 3,267 ms | no disponibles | no disponibles | 0 | no disponibles |
 
 - **Tokens por consulta completa:** unos 26,000 de entrada, de los que unos
@@ -229,8 +268,11 @@ nada falló desde la primera corrida.
   Sonnet 5.5, del orden de US$0.02 por consulta.
 - **Comparación Haiku y Sonnet:** los dos pasan todo. Haiku es más rápido y
   mucho más barato; Sonnet se eligió por calidad de razonamiento.
-- **Observación sin falla:** Haiku le dijo "bienvenido", en masculino, a un
-  cliente; en las corridas de Sonnet no se vio.
+- **Antes de la regla de lenguaje neutro**, Haiku le dijo "bienvenido" a un
+  cliente. Eso motivó la regla y la verificación automática.
+- **Con la regla**, la corrida completa con Sonnet en medium no tuvo ninguna
+  forma con género. La entrada creció unos 160 tokens por turno, por la regla
+  en el prompt.
 - **La corrida en producción** usó astigmatismo-si, sintomas e ignorar-reglas.
   Ahí la cabecera de uso no existe, así que tokens y reintentos aparecen como
   "no disponibles", y eso es lo correcto.

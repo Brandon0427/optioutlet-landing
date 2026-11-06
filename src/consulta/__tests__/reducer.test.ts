@@ -162,7 +162,7 @@ describe('consultaReducer', () => {
       ['experienced', 'Sí, ya los uso'],
       ['office-screens', 'Oficina y computadora'],
       ['daily', 'Todos los días'],
-      ['unsure', 'No estoy seguro'],
+      ['unsure', 'No lo sé'],
       ['expired-or-none', 'No, o no tengo receta'],
     ] as const) {
       s = respond(consultaReducer(s, quick(id, label)));
