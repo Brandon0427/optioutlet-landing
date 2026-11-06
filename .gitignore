@@ -34,3 +34,11 @@ Thumbs.db
 
 # Local scratch (screenshots, logs)
 .cache/
+
+# graphify: only the shared semantic cache is versioned; the graph is local
+graphify-out/*
+!graphify-out/cache/
+graphify-out/cache/*
+!graphify-out/cache/semantic/
+graphify-out/cache/semantic/*
+!graphify-out/cache/semantic/*.json

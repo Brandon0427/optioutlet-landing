@@ -1,0 +1,30 @@
+# Qué NO entra al grafo de graphify.
+#
+# ⚠️ Si este archivo existe, graphify deja de leer el .gitignore: las exclusiones de allá que importan
+# aquí van repetidas abajo.
+
+# Del .gitignore
+node_modules/
+package-lock.json
+dist/
+dist-ssr/
+.vite/
+*.tsbuildinfo
+.env*
+*.local
+logs/
+*.log
+coverage/
+lighthouse/
+.cache/
+graphify-out/
+
+# Solo para graphify: configuración que no ayuda a navegar el código
+package.json
+tsconfig.json
+tsconfig.app.json
+tsconfig.node.json
+vite.config.ts
+index.html
+.claude/
+.vscode/
