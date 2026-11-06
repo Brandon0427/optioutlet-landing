@@ -8,9 +8,14 @@
   },
   "scripts": {
     "dev": "vite",
+    "start:dev": "vite",
+    "start:dev:lan": "vite --host 0.0.0.0",
     "typecheck": "tsc -b",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "start:build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "start:prod": "vite preview",
+    "graphify:graph": "open graphify-out/graph.html"
   },
   "dependencies": {
     "@fontsource-variable/albert-sans": "5.3.0",
