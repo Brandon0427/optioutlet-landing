@@ -10,7 +10,8 @@
  * - Every request gets a new `requestId`. A response is accepted only if its
  *   id is the current one AND the phase is still 'waiting'. Late responses
  *   after a restart and duplicates are ignored.
- * - An invalid turn or a provider error → 'error', keeping the conversation.
+ * - An invalid turn, a provider error, or a 'done' turn none of whose products
+ *   exist in the catalog → 'error', keeping the conversation.
  * - `retry` re-sends the last request (same history, same input) with a NEW id.
  *
  * Nothing here is persisted: no localStorage, sessionStorage or cookies.
@@ -110,13 +111,18 @@ export function createConsultaReducer(catalog: readonly Product[]) {
         if (!isCurrent(state, action.requestId)) return state;
         const turn = parseAssistantTurn(action.raw);
         if (!turn) return { ...state, phase: 'error', error: 'invalid-turn' };
+        const recommendations = turn.status === 'done' ? resolveRecommendations(turn.recommendations, catalog) : [];
+        // A finished consultation is never shown without products.
+        if (turn.status === 'done' && recommendations.length === 0) {
+          return { ...state, phase: 'error', error: 'invalid-turn' };
+        }
         return {
           ...state,
           messages: [...state.messages, { role: 'assistant', turn }],
           profile: turn.profile,
           status: turn.status,
           quickReplies: turn.status === 'asking' ? turn.quickReplies : [],
-          recommendations: turn.status === 'done' ? resolveRecommendations(turn.recommendations, catalog) : [],
+          recommendations,
           notes: turn.notes,
           phase: turn.status,
           pending: null,

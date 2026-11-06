@@ -49,11 +49,6 @@ al terminar; "Consulta en pausa" al derivar.
   no frases arbitrarias. La API de Claude entra en la Sesión 3.
 - **El texto libre ambiguo pide aclaración.** "Todos los días o a veces" no
   avanza: si el texto encaja en dos opciones, Opti pregunta de nuevo.
-- **Llegar con `/#consulta` no desplaza la página.** La consulta sí arranca,
-  pero el navegador no salta a la sección: React la monta después de que el
-  navegador buscó el ancla. No depende de esta sesión (la sección también la
-  montaba React en la Sesión 1). Los enlaces internos "Empezar mi consulta" sí
-  desplazan.
 
 ## Lo que no se ve a simple vista
 
@@ -76,6 +71,13 @@ Claude con este mismo esquema.
 - Un tipo de verificación en `schema.ts` hace que `tsc` falle si el esquema y
   los tipos dejan de coincidir. Se comprobó cambiando un campo a propósito:
   `TS2344: Type 'false' does not satisfy the constraint 'true'`.
+- **Una consulta terminada nunca se muestra sin productos.** El esquema
+  rechaza un turno `done` sin recomendaciones. Y si llega un `done` válido cuyos
+  `productId` no existen en el catálogo (nada queda tras
+  `resolveRecommendations`), el reducer lo trata como turno inválido: pasa a
+  `error` con "Reintentar" y conserva la conversación. Pruebas:
+  `schema.test.ts` ("done turn without recommendations") y `reducer.test.ts`
+  ("done turn has no product left after resolving").
 - El progreso no viaja en el contrato: se deriva del perfil (`progress.ts`).
 - El proveedor guionado (`providers/scripted.ts`) no tiene estado: recibe el
   historial completo y reconstruye dónde va desde el perfil del último turno,
@@ -84,7 +86,7 @@ Claude con este mismo esquema.
 **Cómo se comprobó:** `schema.test.ts` (válido, campos faltantes, `status`
 desconocido, 5 opciones, rangos 0/3/1.5/"1", entradas hostiles) y
 `scripted.test.ts` (todos los turnos de varias conversaciones pasan el
-contrato), dentro de las 119 pruebas.
+contrato), dentro de las 121 pruebas.
 
 ### Respuestas viejas y duplicadas
 
@@ -177,6 +179,19 @@ semana", "Solo en ocasiones especiales"), **420.5 px**, lejos del piso de
 paso, a 1440 y 375: INPUT (solo lectura) tras la opción, "Volver a empezar" al
 terminar y al derivar, "Sí, ya los uso" tras reiniciar, "Reintentar" en error,
 INPUT tras reintentar. Nunca `BODY`.
+
+### Llegar con un ancla (`/#consulta`, `/#como`…)
+
+React monta las secciones después de que el navegador buscó el ancla, así que
+el navegador no desplazaba. `App.tsx` lo hace al final: tras el
+`ScrollTrigger.refresh()` inicial y el de `document.fonts.ready` (los
+pin-spacers cambian la posición real), si hay `location.hash` y el elemento
+existe, desplaza a él dejando 72 px para el encabezado.
+
+**Cómo se comprobó** (CDP, abriendo la URL con el ancla): la sección queda a
+72 px del borde superior (72.38 / 72.02 px por redondeo de subpíxeles):
+`#consulta` a 1440 × 800 en scrollY 6632 y a 375 × 812 en 8178, y la consulta
+arranca; `#como` en 2740 y 3139, justo el inicio de su pin.
 
 ### Nada se guarda
 

@@ -200,6 +200,35 @@ describe('consultaReducer', () => {
     }
   });
 
+  it('moves to error when a done turn has no product left after resolving', () => {
+    const waiting = reduce(asking(), quick('experienced', 'Sí, ya los uso'));
+    const turn: AssistantTurn = {
+      message: 'Listo.',
+      quickReplies: [],
+      profile: { experience: 'experienced' },
+      status: 'done',
+      recommendations: [
+        { productId: 'ghost-1', rank: 1, reason: 'x' },
+        { productId: 'ghost-2', rank: 2, reason: 'y' },
+      ],
+      notes: [],
+    };
+    const original = console.warn;
+    console.warn = () => {};
+    try {
+      const s = consultaReducer(waiting, { type: 'received', requestId: waiting.requestId, raw: turn });
+      expect(s.phase).toBe('error');
+      expect(s.error).toBe('invalid-turn');
+      expect(s.messages).toEqual(waiting.messages);
+      expect(s.recommendations).toEqual([]);
+      const retried = consultaReducer(s, { type: 'retry' });
+      expect(retried.phase).toBe('waiting');
+      expect(retried.pending).toBe(waiting.pending);
+    } finally {
+      console.warn = original;
+    }
+  });
+
   it('enters refer without quick replies', () => {
     const s = respond(consultaReducer(asking(), text('me arde el ojo')));
     expect(s.phase).toBe('refer');

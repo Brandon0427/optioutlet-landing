@@ -51,6 +51,9 @@ export const assistantTurnSchema = z
     if (new Set(ids).size !== ids.length) {
       ctx.addIssue({ code: 'custom', path: ['quickReplies'], message: 'quick reply ids must be unique' });
     }
+    if (turn.status === 'done' && turn.recommendations.length === 0) {
+      ctx.addIssue({ code: 'custom', path: ['recommendations'], message: "'done' needs at least one recommendation" });
+    }
     if (turn.status !== 'done' && turn.recommendations.length > 0) {
       ctx.addIssue({ code: 'custom', path: ['recommendations'], message: "recommendations only in 'done'" });
     }

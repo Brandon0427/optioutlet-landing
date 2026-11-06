@@ -11,6 +11,8 @@ Stack: Vite + React + TypeScript (estricto), Tailwind CSS v4 (CSS-first, `@theme
 | `npm run typecheck` | Revisión de tipos (`tsc -b`) |
 | `npm run build` | Typecheck + build de producción en `dist/` |
 | `npm run preview` | Sirve el build de `dist/` |
+| `npm test` | Pruebas unitarias (vitest) |
+| `npm run check` | Typecheck, pruebas y build, encadenados: se detiene en el primer fallo |
 
 Requiere Node `>=22.12`.
 
@@ -31,6 +33,19 @@ Aplica a **toda** dependencia que se agregue o actualice, directa o de desarroll
    ```
 4. TypeScript se mantiene en la línea **5.9** (no 7.x) mientras parte del ecosistema dependa de la API anterior.
 
+## Regla de cierre de fase (commits)
+
+El commit de cierre de fase va **encadenado** a las comprobaciones, para que
+cualquier fallo lo detenga:
+
+```sh
+npm run check && git commit …
+# equivale a: npm run typecheck && npm test && npm run build && git commit …
+```
+
+Nunca se corren las comprobaciones y el commit como pasos independientes (`;` o
+en líneas separadas): un build roto llegó así a un commit en la Sesión 2.
+
 ## Estructura
 
 - `src/content/landing.ts` — todo texto visible (es-MX). Los componentes no llevan texto suelto. El nombre de la mascota vive en `MASCOT_NAME`.
@@ -43,4 +58,5 @@ Aplica a **toda** dependencia que se agregue o actualice, directa o de desarroll
 - `src/components/layout/` — encabezado, footer y franja de patrón. `src/components/ui/ActionLink.tsx` — enlaces y CTAs.
 - `src/sections/` — una sección de la página por archivo, en el orden de `App.tsx`.
 - `docs/mockup/optioutlet-mockup.dc.html` — mockup aprobado (referencia, no ejecutable).
-- `docs/verificacion-sesion-1.md` — cómo verificar la landing; `docs/backlog.md` — residuales abiertos.
+- `src/consulta/` — dominio de la consulta: contrato (`types.ts`, `schema.ts`), catálogo, reglas, proveedor guionado y estado (`useConsulta.ts`). `src/content/consulta.ts` — guion de Opti.
+- `docs/verificacion-sesion-1.md` y `docs/verificacion-sesion-2.md` — cómo verificar la landing y la consulta; `docs/backlog.md` — residuales abiertos.

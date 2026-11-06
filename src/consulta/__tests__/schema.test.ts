@@ -66,6 +66,10 @@ describe('parseAssistantTurn', () => {
     expect(parseAssistantTurn({ ...valid, profile: { routine: 'space' } })).toBeNull();
   });
 
+  it('returns null with a done turn without recommendations', () => {
+    expect(parseAssistantTurn({ ...done, recommendations: [] })).toBeNull();
+  });
+
   it('returns null with recommendations outside done', () => {
     expect(parseAssistantTurn({ ...done, status: 'asking' })).toBeNull();
   });

@@ -17,7 +17,8 @@
     "start:prod": "vite preview",
     "graphify:graph": "open graphify-out/graph.html",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "check": "npm run typecheck && npm test && npm run build"
   },
   "dependencies": {
     "@fontsource-variable/albert-sans": "5.3.0",
