@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+/*
+ * Brand tokens. Source: brand manual + docs/mockup/optioutlet-mockup.dc.html.
+ * Each --color-* token becomes a Tailwind utility (bg-navy, text-ink-2, border-line…).
+ */
+@theme {
+  /* Typography — swap --font-sans here to change the body face (e.g. Mundo Sans). */
+  --font-display: "Unbounded Variable", "Unbounded", system-ui, sans-serif;
+  --font-sans: "Albert Sans Variable", "Albert Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Brand */
+  --color-navy: #214367;        /* primary, main text */
+  --color-navy-hover: #163049;
+  --color-teal: #67bbb5;        /* accent — never as text on white */
+  --color-teal-ink: #2f7f79;    /* teal as small text on white */
+  --color-mint: #b2ddd5;
+  --color-mist: #eef7f6;
+  --color-mist-2: #e6f4f2;
+  --color-charcoal: #434342;
+
+  /* Text greys (on light) */
+  --color-ink: #2b3a4a;
+  --color-ink-2: #3a4a5a;
+  --color-ink-3: #4f6273;
+  --color-ink-4: #5a6b7c;
+
+  /* Text on navy */
+  --color-foam: #d6ecea;
+  --color-foam-2: #e4f3f1;
+
+  /* Lines & borders */
+  --color-line: #e1eeec;
+  --color-line-2: #d5e9e6;
+  --color-line-3: #b2c9c6;
+
+  /* Layout */
+  --header-h: 72px;
+}
+
+@layer base {
+  html {
+    scroll-padding-top: var(--header-h);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    margin: 0;
+    background: #ffffff;
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  a {
+    color: var(--color-navy);
+  }
+
+  a:hover {
+    color: var(--color-navy-hover);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-teal);
+    outline-offset: 3px;
+  }
+}
