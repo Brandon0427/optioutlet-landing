@@ -164,7 +164,16 @@ distintos, preferir varios commits atómicos que en su descripción nombren la m
 
 ## Gestión de ramas después del commit
 
-El repo trabaja hoy solo en `main` y **no tiene remoto**. Nunca hacer `push`.
+El repo trabaja hoy solo en `main`, con remoto `origin` en GitHub
+(`Brandon0427/optioutlet-landing`). Vercel despliega por la integración de GitHub y
+**cada push a `main` publica directo a producción** (https://optioutlet-landing.vercel.app).
+
+- Se puede hacer `git push origin main`, siempre **después** de `npm run check` y del
+  commit, encadenados: `npm run check && git commit … && git push origin main`.
+- Prohibidos el push forzado (`--force`, `--force-with-lease`) y reescribir historial
+  ya publicado (`rebase`, `commit --amend` o `reset` sobre commits que ya están en `origin`).
+- Los commits van con la identidad local del repo (`Brandon <brandon@grupoldm.com.mx>`);
+  no tocar la identidad global ni la configuración de SSH de la máquina.
 
 Después de hacer commit, verificar en qué rama se está trabajando:
 
@@ -185,4 +194,5 @@ git checkout <rama-original>
 ```
 
 Si el usuario dice que no, quedarse en la rama actual sin hacer nada más.
-Cuando el repo tenga remoto y ramas `develop`/`testeo`, actualizar esta sección.
+Cuando el repo tenga ramas `develop`/`testeo` o ramas por sesión con vistas previas,
+actualizar esta sección.
