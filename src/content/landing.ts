@@ -4,6 +4,8 @@
  * Components never hard-code copy; they read from `landing`.
  */
 
+import type { LensDesign, Material, Replacement } from '../consulta/catalog';
+
 /** Mascot name. Change it here and nowhere else. */
 export const MASCOT_NAME = 'Opti';
 
@@ -32,8 +34,6 @@ export type Profile = {
   answer: string;
   product: string;
 };
-
-export type ChatMessage = { from: 'opti' | 'user'; text: string };
 
 export type LandingContent = {
   meta: { brandName: string; wordmark: string; mascotLabel: string; newTabHint: string };
@@ -85,21 +85,25 @@ export type LandingContent = {
       inputPlaceholder: string;
       send: string;
       restart: string;
-    };
-    /** Static sample shown by the visual shell (Session 1). Logic arrives in Session 2. */
-    sample: {
-      current: number;
-      total: number;
-      messages: ChatMessage[];
-      chips: string[];
+      retry: string;
+      logLabel: string;
+      quickRepliesLabel: string;
+      /** Keyed by `ConsultaError` (useConsulta.ts). */
+      errors: { provider: string; 'invalid-turn': string };
     };
     result: {
-      intro: string;
+      listLabel: string;
+      notesLabel: string;
       firstLabel: string;
       secondLabel: string;
       photo: string;
       price: string;
       storeCta: string;
+      tags: {
+        replacement: Record<Replacement, string>;
+        material: Record<Material, string>;
+        design: Record<LensDesign, string>;
+      };
     };
   };
   receta: {
@@ -256,28 +260,27 @@ export const landing: LandingContent = {
       inputPlaceholder: `O escríbele a ${MASCOT_NAME} con tus palabras`,
       send: 'Enviar',
       restart: 'Volver a empezar',
-    },
-    sample: {
-      current: 2,
-      total: 5,
-      messages: [
-        {
-          from: 'opti',
-          text: `Hola, soy ${MASCOT_NAME}. Te haré cinco preguntas para conocer tu rutina y recomendarte lentes de contacto. Tú pones la receta; yo te ayudo a elegir.`,
-        },
-        { from: 'opti', text: 'Para empezar, ¿ya usas lentes de contacto?' },
-        { from: 'user', text: 'Sí, ya los uso' },
-        { from: 'opti', text: '¿Cómo es un día normal para ti?' },
-      ],
-      chips: ['Oficina y computadora', 'Afuera y en movimiento', 'Un poco de todo'],
+      retry: 'Reintentar',
+      logLabel: `Conversación con ${MASCOT_NAME}`,
+      quickRepliesLabel: 'Opciones de respuesta',
+      errors: {
+        provider: `No pude recibir la respuesta de ${MASCOT_NAME}. Revisa tu conexión e inténtalo de nuevo; no perderás lo que ya contestaste.`,
+        'invalid-turn': `La respuesta de ${MASCOT_NAME} llegó incompleta. Inténtalo de nuevo; no perderás lo que ya contestaste.`,
+      },
     },
     result: {
-      intro: 'Listo. Con lo que me contaste, estos son los lentes que te recomiendo.',
+      listLabel: 'Lentes recomendados',
+      notesLabel: 'Avisos',
       firstLabel: 'Mi primera opción para ti',
       secondLabel: 'También te puede funcionar',
       photo: 'Foto del producto',
       price: '[PRECIO]',
       storeCta: 'Ver en la tienda',
+      tags: {
+        replacement: { daily: 'Reemplazo diario', biweekly: 'Reemplazo cada 2 semanas', monthly: 'Reemplazo mensual' },
+        material: { 'silicone-hydrogel': 'Silicona hidrogel', hydrogel: 'Hidrogel' },
+        design: { spherical: 'Esférico', toric: 'Para astigmatismo', multifocal: 'Multifocal' },
+      },
     },
   },
 

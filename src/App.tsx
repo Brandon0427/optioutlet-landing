@@ -3,7 +3,7 @@ import { Footer } from './components/layout/Footer';
 import { Header } from './components/layout/Header';
 import { PatternStrip } from './components/layout/PatternStrip';
 import { ScrollTrigger, useGSAP } from './lib/gsap';
-import { ConsultaShell } from './sections/ConsultaShell';
+import { Consulta } from './sections/Consulta';
 import { Hero } from './sections/Hero';
 import { HowItWorks } from './sections/HowItWorks';
 import { Profiles } from './sections/Profiles';
@@ -38,7 +38,7 @@ export default function App() {
         <PupilReveal />
         <HowItWorks />
         <Profiles />
-        <ConsultaShell />
+        <Consulta />
         <Receta />
         <StoreCta />
         <PatternStrip />
