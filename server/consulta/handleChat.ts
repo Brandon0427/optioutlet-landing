@@ -31,8 +31,12 @@ export interface ChatMeta {
   durationMs: number;
   /** Model calls made (0, 1 or 2). */
   attempts: number;
-  /** Summed over attempts; null when the model was not called. */
-  usage: { inputTokens: number; outputTokens: number } | null;
+  /**
+   * Summed over attempts; null when the model was not called. `inputTokens`
+   * is the whole prompt (uncached + cache writes + cache reads);
+   * `cacheReadTokens` is the part served from the prompt cache.
+   */
+  usage: { inputTokens: number; outputTokens: number; cacheReadTokens: number } | null;
 }
 
 export interface HandleChatResult {
@@ -108,6 +112,7 @@ export async function handleChat(method: string, rawBody: RawBody, deps: ChatDep
   let usage: ChatMeta['usage'] = null;
   let inputTokens = 0;
   let outputTokens = 0;
+  let cacheReadTokens = 0;
 
   const finish = (status: number, body: ChatResponseBody, reason?: string): HandleChatResult => {
     const meta: ChatMeta = { model: deps.model, durationMs: now() - started, attempts, usage };
@@ -119,6 +124,7 @@ export async function handleChat(method: string, rawBody: RawBody, deps: ChatDep
       retries: Math.max(0, attempts - 1),
       inputTokens: usage?.inputTokens ?? null,
       outputTokens: usage?.outputTokens ?? null,
+      cacheReadTokens: usage?.cacheReadTokens ?? null,
       reason: reason ?? null,
     });
     return { status, body, meta };
@@ -172,9 +178,11 @@ export async function handleChat(method: string, rawBody: RawBody, deps: ChatDep
       return finish(503, { error: 'upstream_unavailable' }, kind);
     }
 
-    inputTokens += response.usage?.input_tokens ?? 0;
-    outputTokens += response.usage?.output_tokens ?? 0;
-    usage = { inputTokens, outputTokens };
+    const u = response.usage;
+    inputTokens += (u?.input_tokens ?? 0) + (u?.cache_creation_input_tokens ?? 0) + (u?.cache_read_input_tokens ?? 0);
+    outputTokens += u?.output_tokens ?? 0;
+    cacheReadTokens += u?.cache_read_input_tokens ?? 0;
+    usage = { inputTokens, outputTokens, cacheReadTokens };
 
     const text = textOf(response);
     const result: Validation =

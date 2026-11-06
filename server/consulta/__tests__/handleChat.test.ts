@@ -42,7 +42,7 @@ function message(text: string, stop_reason: Anthropic.StopReason = 'end_turn'): 
     content: [{ type: 'text', text, citations: null }],
     stop_reason,
     stop_sequence: null,
-    usage: { input_tokens: 100, output_tokens: 50 },
+    usage: { input_tokens: 60, cache_creation_input_tokens: 40, cache_read_input_tokens: 0, output_tokens: 50 },
   } as unknown as Anthropic.Message;
 }
 
@@ -75,7 +75,7 @@ describe('handleChat', () => {
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ turn });
     expect(create).toHaveBeenCalledTimes(1);
-    expect(res.meta).toMatchObject({ model: MODEL, attempts: 1, usage: { inputTokens: 100, outputTokens: 50 } });
+    expect(res.meta).toMatchObject({ model: MODEL, attempts: 1, usage: { inputTokens: 100, outputTokens: 50, cacheReadTokens: 0 } });
   });
 
   it('starts the consultation with input null', async () => {
@@ -101,7 +101,7 @@ describe('handleChat', () => {
     const last = retry.messages[retry.messages.length - 1]!;
     expect(last.role).toBe('user');
     expect(String(last.content)).toContain(RETRY_INSTRUCTION);
-    expect(res.meta).toMatchObject({ attempts: 2, usage: { inputTokens: 200, outputTokens: 100 } });
+    expect(res.meta).toMatchObject({ attempts: 2, usage: { inputTokens: 200, outputTokens: 100, cacheReadTokens: 0 } });
   });
 
   it('two invalid answers → 502', async () => {
@@ -265,7 +265,7 @@ describe('handleChat', () => {
       await handleChat('POST', body(midHistory({}), { kind: 'text', text: userText }), deps(client, { log: (e) => lines.push(JSON.stringify(e)) }));
       expect(lines).toHaveLength(1);
       const entry = JSON.parse(lines[0]!);
-      expect(Object.keys(entry).sort()).toEqual(['attempts', 'durationMs', 'inputTokens', 'model', 'outputTokens', 'reason', 'retries', 'status']);
+      expect(Object.keys(entry).sort()).toEqual(['attempts', 'cacheReadTokens', 'durationMs', 'inputTokens', 'model', 'outputTokens', 'reason', 'retries', 'status']);
       expect(lines[0]).not.toContain(userText);
       expect(lines[0]).not.toContain('día normal');
     });

@@ -3,7 +3,7 @@
  * (defined fields out of 5). No React or DOM.
  */
 import { landing } from '../content/landing.js';
-import type { CustomerProfile, TurnStatus } from './types';
+import type { CustomerProfile, TurnStatus } from './types.js';
 
 /** Profile fields in the order Opti asks them (the mockup's order). */
 export const QUESTION_ORDER = ['experience', 'routine', 'frequency', 'astigmatism', 'prescription'] as const;
