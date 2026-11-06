@@ -13,8 +13,24 @@ Stack: Vite + React + TypeScript (estricto), Tailwind CSS v4 (CSS-first, `@theme
 | `npm run preview` | Sirve el build de `dist/` |
 | `npm test` | Pruebas unitarias (vitest) |
 | `npm run check` | Typecheck, pruebas y build, encadenados: se detiene en el primer fallo |
+| `npm run eval:consulta` | Evaluación en vivo de la consulta contra `/api/chat` (gasta tokens; no forma parte de `check`) |
 
 Requiere Node `>=22.12`.
+
+## Consulta con Claude (servidor)
+
+- `/api/chat` vive en `server/consulta/handleChat.ts`, independiente del hosting. Encima van dos adaptadores: `api/chat.ts` (función de Vercel) y `server/dev/viteChatPlugin.ts` (lo monta en `npm run dev`).
+- Variables en `.env.local` (copia `.env.example`) y en Vercel:
+  - `ANTHROPIC_API_KEY`: solo servidor y nunca con prefijo `VITE_`.
+  - `ANTHROPIC_MODEL`: por defecto `claude-sonnet-5-5`.
+  - `ANTHROPIC_EFFORT`: `low` | `medium` | `high`; por defecto `medium`.
+  - En el cliente, `VITE_CONSULTA_PROVIDER` (`api` | `scripted`) y `VITE_API_BASE_URL`.
+- **Regla de imports `.js`:** todo archivo que el servidor importe en tiempo de ejecución (`api/`, `server/`, `scripts/` y lo que cargan del dominio: `schema.ts`, `catalog.ts`, `progress.ts`, `content/consulta.ts`, `content/landing.ts`) usa especificadores relativos con `.js` (`'./types.js'`). Vercel corre la función como ESM nativo y Node no resuelve imports sin extensión; Vite y tsc resuelven `.js` a `.ts`. Si un archivo nuevo entra a esa cadena, sigue la misma regla.
+- `npm run check` también revisa los tipos de `api/`, `server/` y `scripts/` (`tsconfig.server.json`).
+
+## Despliegue
+
+Vercel, con la integración de GitHub (`Brandon0427/optioutlet-landing`) y el preset de Vite. **`main` publica directo a producción** (https://optioutlet-landing.vercel.app) por decisión del proyecto en esta etapa. Cada cierre de fase va como `npm run check && git commit … && git push origin main`. Nunca hay push forzado ni se reescribe historial publicado.
 
 ## Regla de versiones de dependencias
 
@@ -59,4 +75,7 @@ en líneas separadas): un build roto llegó así a un commit en la Sesión 2.
 - `src/sections/` — una sección de la página por archivo, en el orden de `App.tsx`.
 - `docs/mockup/optioutlet-mockup.dc.html` — mockup aprobado (referencia, no ejecutable).
 - `src/consulta/` — dominio de la consulta: contrato (`types.ts`, `schema.ts`), catálogo, reglas, proveedor guionado y estado (`useConsulta.ts`). `src/content/consulta.ts` — guion de Opti.
-- `docs/verificacion-sesion-1.md` y `docs/verificacion-sesion-2.md` — cómo verificar la landing y la consulta; `docs/backlog.md` — residuales abiertos.
+- `src/consulta/providers/` — `scripted.ts` (guion), `api.ts` (llama a `/api/chat` y cae al guionado por turno) e `index.ts` (elige el proveedor).
+- `server/consulta/` — servidor de la consulta: configuración (modelo y effort), validación de la solicitud, esquema de salida, system prompt, conversión de mensajes, combinación del perfil y `handleChat`. `server/http/` y `server/dev/` — adaptadores. `api/chat.ts` — función de Vercel.
+- `scripts/eval-consulta.ts` — evaluación en vivo (`vitest.eval.config.ts`).
+- `docs/verificacion-sesion-1.md` a `docs/verificacion-sesion-3.md` — cómo verificar la landing, la consulta y su conexión con Claude; `docs/backlog.md` — residuales abiertos.
