@@ -79,6 +79,7 @@ export type LandingContent = {
       role: string;
       progressLabel: (current: number, total: number) => string;
       doneLabel: string;
+      pausedLabel: string;
       typingLabel: string;
       inputLabel: string;
       inputPlaceholder: string;
@@ -249,6 +250,7 @@ export const landing: LandingContent = {
       role: `Asistente de ${BRAND_NAME}`,
       progressLabel: (current, total) => `Pregunta ${current} de ${total}`,
       doneLabel: 'Listo',
+      pausedLabel: 'Consulta en pausa',
       typingLabel: `${MASCOT_NAME} está escribiendo`,
       inputLabel: 'Escribe tu respuesta',
       inputPlaceholder: `O escríbele a ${MASCOT_NAME} con tus palabras`,
