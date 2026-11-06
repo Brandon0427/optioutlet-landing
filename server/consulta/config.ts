@@ -6,7 +6,13 @@
  * extensionless relative imports.
  */
 
-export const DEFAULT_MODEL = 'claude-haiku-5-5';
+/**
+ * Model when `ANTHROPIC_MODEL` is not set. Sonnet 5.5 by the owner's decision
+ * (Session 3): in the live evaluation both Haiku 5.5 and Sonnet 5.5 passed
+ * 10/10, but Haiku reasons less. Any other model is chosen with the
+ * environment variable, locally (`.env.local`) or in Vercel, without code changes.
+ */
+export const DEFAULT_MODEL = 'claude-sonnet-5-5';
 
 /** Thinking depth per turn. A turn is a short, rule-bound reply: low is enough and keeps latency down. */
 export const EFFORT = 'low' as const;
