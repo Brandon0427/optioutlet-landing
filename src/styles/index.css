@@ -34,8 +34,64 @@
   --color-line-2: #d5e9e6;
   --color-line-3: #b2c9c6;
 
+  /* Gradient stops (hero, phone disc, consulta, closing CTA) — from the mockup */
+  --color-glow: #78d0c9;
+  --color-glow-2: #9ad4c7;
+  --color-glow-3: #6fc8c1;
+  --color-deep: #1b3756;
+  --color-deep-2: #1f3d5f;
+  --color-hero: #2a5876;
+  --color-disc: #3f8590;
+  --color-cta: #26506f;
+  --color-navy-2: #2f5b84;
+
+  /* Shadows */
+  --shadow-chat: 0 30px 60px -30px rgb(33 67 103 / 0.45);
+
   /* Layout */
   --header-h: 72px;
+}
+
+/* Horizontal page gutter used by every section: clamp(20px, 4vw, 48px). */
+@utility px-gutter {
+  padding-inline: clamp(20px, 4vw, 48px);
+}
+
+/*
+ * Brand gradients (layers of radial-gradient, copied from the mockup).
+ * The hero's blob positions are CSS variables so Phase 5 can animate them
+ * with scroll and cursor; the defaults are the static (top-of-page) values.
+ */
+@utility bg-hero {
+  background:
+    radial-gradient(55% 65% at var(--hero-g1x, 64%) var(--hero-g1y, 16%), var(--color-glow) 0%, transparent 72%),
+    radial-gradient(45% 55% at 98% var(--hero-g2y, 86%), var(--color-glow-2) 0%, transparent 70%),
+    radial-gradient(62% 80% at var(--hero-g3x, 6%) 62%, var(--color-deep) 0%, transparent 76%),
+    radial-gradient(40% 45% at 92% 2%, var(--color-deep-2) 0%, transparent 70%),
+    var(--color-hero);
+}
+
+@utility bg-phone-disc {
+  background:
+    radial-gradient(60% 60% at 30% 30%, var(--color-glow) 0%, transparent 70%),
+    radial-gradient(60% 60% at 75% 80%, var(--color-deep-2) 0%, transparent 72%),
+    radial-gradient(50% 50% at 85% 25%, var(--color-glow-2) 0%, transparent 70%),
+    var(--color-disc);
+}
+
+@utility bg-consulta {
+  background:
+    radial-gradient(55% 60% at 0% 0%, rgb(103 187 181 / 0.55) 0%, transparent 70%),
+    radial-gradient(50% 60% at 100% 100%, rgb(178 221 213 / 0.9) 0%, transparent 70%),
+    var(--color-mist);
+}
+
+@utility bg-store-cta {
+  background:
+    radial-gradient(55% 80% at 100% 30%, var(--color-glow-3) 0%, transparent 70%),
+    radial-gradient(45% 70% at 80% 110%, var(--color-glow-2) 0%, transparent 70%),
+    radial-gradient(60% 90% at 0% 50%, var(--color-deep) 0%, transparent 75%),
+    var(--color-cta);
 }
 
 @layer base {

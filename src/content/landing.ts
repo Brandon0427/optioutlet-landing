@@ -36,7 +36,7 @@ export type Profile = {
 export type ChatMessage = { from: 'opti' | 'user'; text: string };
 
 export type LandingContent = {
-  meta: { brandName: string; wordmark: string; mascotLabel: string };
+  meta: { brandName: string; wordmark: string; mascotLabel: string; newTabHint: string };
   header: {
     homeLabel: string;
     navLabel: string;
@@ -129,6 +129,7 @@ export const landing: LandingContent = {
     brandName: BRAND_NAME,
     wordmark: 'optioutlet',
     mascotLabel: `${MASCOT_NAME}, la mascota de ${BRAND_NAME}`,
+    newTabHint: '(se abre en una pestaña nueva)',
   },
 
   header: {

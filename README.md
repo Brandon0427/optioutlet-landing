@@ -38,4 +38,7 @@ Aplica a **toda** dependencia que se agregue o actualice, directa o de desarroll
 - `src/lib/gsap.ts` — registro único de ScrollTrigger y `useGSAP`; `HEADER_OFFSET = 72`.
 - `src/components/brand/` — isotipo, trazos del patrón, patrones, sello, listón, mascota e imagotipo. `geometry.ts` guarda la geometría compartida.
   - `Mascot.tsx` e `Imagotipo.tsx` son aproximaciones marcadas con `TODO(brand-svg)`; al llegar los vectores oficiales se reemplaza el contenido de ese archivo y nada más.
+- `src/styles/brandColors.ts` — hexadecimales de marca para atributos SVG; debe coincidir con `@theme`.
+- `src/components/layout/` — encabezado, footer y franja de patrón. `src/components/ui/ActionLink.tsx` — enlaces y CTAs.
+- `src/sections/` — una sección de la página por archivo, en el orden de `App.tsx`.
 - `docs/mockup/optioutlet-mockup.dc.html` — mockup aprobado (referencia, no ejecutable).
