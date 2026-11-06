@@ -22,14 +22,14 @@ const CARD_SHAPES: ReadonlyArray<{ shape: ShapeName; rot: number; color: string 
 export function Profiles() {
   return (
     <section aria-labelledby="profiles-title" className="relative overflow-hidden bg-navy">
-      <div className="relative box-border flex flex-col justify-center gap-11 py-30">
+      <div className="relative box-border flex flex-col justify-center gap-11 px-gutter py-30">
         <PatternFill
           variant="dark"
           className="pointer-events-none absolute -top-[200px] left-0 h-[calc(100%+400px)] w-full"
           style={{ opacity: 0.28 }}
         />
 
-        <div className="relative mx-auto box-border flex w-full max-w-[1200px] flex-wrap items-end justify-between gap-6 px-gutter">
+        <div className="relative mx-auto box-border flex w-full max-w-[1200px] flex-wrap items-end justify-between gap-6">
           <h2
             id="profiles-title"
             className="m-0 max-w-[13em] font-display text-[clamp(30px,3.6vw,50px)] leading-[1.1] font-semibold tracking-[-0.025em] text-white"
@@ -39,7 +39,7 @@ export function Profiles() {
           <p className="m-0 max-w-[26em] text-lg leading-[1.6] text-foam">{profiles.body}</p>
         </div>
 
-        <div className="relative mx-auto box-border w-full max-w-[1200px] px-gutter">
+        <div className="relative mx-auto box-border w-full max-w-[1200px]">
           <ul className="m-0 flex list-none flex-wrap gap-6 p-0">
             {profiles.items.map((p, i) => {
               const deco = CARD_SHAPES[i % CARD_SHAPES.length]!;
