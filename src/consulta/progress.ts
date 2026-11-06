@@ -2,7 +2,7 @@
  * Progress is not part of the contract: the UI derives it from the profile
  * (defined fields out of 5). No React or DOM.
  */
-import { landing } from '../content/landing';
+import { landing } from '../content/landing.js';
 import type { CustomerProfile, TurnStatus } from './types';
 
 /** Profile fields in the order Opti asks them (the mockup's order). */

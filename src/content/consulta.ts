@@ -10,8 +10,8 @@
  * match whole words. When two matched keywords overlap ("no" inside "no se"),
  * the longer one wins.
  */
-import type { Astigmatism, Experience, Frequency, Prescription, Routine } from '../consulta/types';
-import { MASCOT_NAME } from './landing';
+import type { Astigmatism, Experience, Frequency, Prescription, Routine } from '../consulta/types.js';
+import { MASCOT_NAME } from './landing.js';
 
 export type ScriptOption<V extends string> = {
   /** Stable quick-reply id; also the profile value. */

@@ -6,7 +6,7 @@
  * schemas, so this file must stay free of React and DOM imports.
  */
 import { z } from 'zod';
-import type { AssistantTurn } from './types';
+import type { AssistantTurn } from './types.js';
 
 export const MAX_QUICK_REPLIES = 4;
 

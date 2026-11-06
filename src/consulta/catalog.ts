@@ -5,7 +5,7 @@
  * Session 2: placeholder products. Session 4 replaces the DATA with real
  * Johnson & Johnson products; the `Product` shape is final.
  */
-import { STORE_URL } from '../content/landing';
+import { STORE_URL } from '../content/landing.js';
 
 export type Replacement = 'daily' | 'biweekly' | 'monthly';
 export type LensDesign = 'spherical' | 'toric' | 'multifocal';

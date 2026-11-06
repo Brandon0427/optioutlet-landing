@@ -4,7 +4,7 @@
  * Components never hard-code copy; they read from `landing`.
  */
 
-import type { LensDesign, Material, Replacement } from '../consulta/catalog';
+import type { LensDesign, Material, Replacement } from '../consulta/catalog.js';
 
 /** Mascot name. Change it here and nowhere else. */
 export const MASCOT_NAME = 'Opti';
