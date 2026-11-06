@@ -19,23 +19,36 @@ type RibbonProps = {
   textPathRef?: Ref<SVGTextPathElement>;
 };
 
+/** Length of the ribbon's stroke (L) and of its text (T), in SVG user units. */
+export function measureRibbon(tp: SVGTextPathElement): { pathLength: number; textLength: number } {
+  const svg = tp.ownerSVGElement;
+  const path = svg?.querySelector<SVGPathElement>('path[stroke]');
+  const label = tp.parentElement as unknown as SVGTextElement | null;
+  if (!path || !label) return { pathLength: 0, textLength: 0 };
+  return { pathLength: path.getTotalLength(), textLength: label.getComputedTextLength() };
+}
+
+/**
+ * Places the whole text centered on the stroke: (L − T) / 2.
+ * Skipped while a section animates the offset (data-animated on the textPath).
+ */
+export function centerRibbonText(tp: SVGTextPathElement) {
+  if (tp.dataset.animated === 'true') return;
+  const { pathLength, textLength } = measureRibbon(tp);
+  tp.setAttribute('startOffset', Math.max(0, (pathLength - textLength) / 2).toFixed(1));
+}
+
 /** Teal U-shaped ribbon with navy text riding on the stroke. Always decorative. */
 export function Ribbon({ text, startOffset = 'center', className, textPathRef }: RibbonProps) {
   const pathId = svgId(useId(), 'ribbon-path');
-  const strokeRef = useRef<SVGPathElement>(null);
-  const textRef = useRef<SVGTextElement>(null);
   const textPathEl = useRef<SVGTextPathElement>(null);
 
   useEffect(() => {
     if (startOffset !== 'center') return;
     let cancelled = false;
     const center = () => {
-      const path = strokeRef.current;
-      const label = textRef.current;
       const tp = textPathEl.current;
-      if (cancelled || !path || !label || !tp) return;
-      const offset = Math.max(0, (path.getTotalLength() - label.getComputedTextLength()) / 2);
-      tp.setAttribute('startOffset', offset.toFixed(1));
+      if (!cancelled && tp) centerRibbonText(tp);
     };
     center();
     document.fonts?.ready.then(center).catch(() => {});
@@ -55,9 +68,8 @@ export function Ribbon({ text, startOffset = 'center', className, textPathRef }:
       <defs>
         <path id={pathId} d={RIBBON_PATH} />
       </defs>
-      <path ref={strokeRef} d={RIBBON_PATH} fill="none" stroke={C.teal} strokeWidth="60" />
+      <path d={RIBBON_PATH} fill="none" stroke={C.teal} strokeWidth="60" />
       <text
-        ref={textRef}
         fill={C.navy}
         dominantBaseline="central"
         className="font-display"
