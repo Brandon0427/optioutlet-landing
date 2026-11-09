@@ -8,6 +8,12 @@
  * conversation from the last turn's accumulated profile. The UI never sees an
  * error caused by the model.
  *
+ * A 429 (the per-visitor rate limit of the Vercel firewall) is different: that
+ * turn AND the rest of the consultation go to the fallback, without calling
+ * the API again, so the two voices don't mix and the limit isn't hit again.
+ * `start()` (a restart, or a page reload) tries the API again. Every other
+ * failure falls back for that turn only.
+ *
  * Identical concurrent requests share one promise (StrictMode mounts the
  * request effect twice in development), so a turn is never paid for twice.
  *
@@ -31,6 +37,9 @@ export interface ApiProviderOptions {
 
 class FallbackCause extends Error {}
 
+/** HTTP status that pins the rest of the consultation to the fallback. */
+export const RATE_LIMITED_STATUS = 429;
+
 const devWarn = (cause: string) => {
   if (import.meta.env.DEV) console.warn(`[consulta] /api/chat → respaldo guionado (${cause})`);
 };
@@ -39,6 +48,8 @@ export function createApiConsultaProvider(options: ApiProviderOptions): Consulta
   const { fallback, timeoutMs = DEFAULT_TIMEOUT_MS, baseUrl = '', fetchImpl = fetch, onFallback = devWarn } = options;
   const url = `${baseUrl.replace(/\/+$/, '')}/api/chat`;
   const inFlight = new Map<string, Promise<AssistantTurn>>();
+  /** Set by a 429; cleared by `start()`. */
+  let rateLimited = false;
 
   async function requestTurn(history: ConversationMessage[], input: UserInput | null): Promise<AssistantTurn> {
     const controller = new AbortController();
@@ -55,6 +66,7 @@ export function createApiConsultaProvider(options: ApiProviderOptions): Consulta
       } catch {
         throw new FallbackCause(controller.signal.aborted ? 'timeout' : 'network');
       }
+      if (response.status === RATE_LIMITED_STATUS) rateLimited = true;
       if (response.status !== 200) throw new FallbackCause(`http ${response.status}`);
       let json: unknown;
       try {
@@ -71,6 +83,7 @@ export function createApiConsultaProvider(options: ApiProviderOptions): Consulta
   }
 
   function turnFor(history: ConversationMessage[], input: UserInput | null, useFallback: () => Promise<AssistantTurn>) {
+    if (rateLimited) return useFallback();
     const key = JSON.stringify({ history, input });
     const pending = inFlight.get(key);
     if (pending) return pending;
@@ -89,7 +102,11 @@ export function createApiConsultaProvider(options: ApiProviderOptions): Consulta
   }
 
   return {
-    start: () => turnFor([], null, () => fallback.start()),
+    start: () => {
+      // A new consultation: try the API again after a 429.
+      rateLimited = false;
+      return turnFor([], null, () => fallback.start());
+    },
     reply: (history, input) => turnFor(history, input, () => fallback.reply(history, input)),
   };
 }

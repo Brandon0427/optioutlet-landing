@@ -14,6 +14,7 @@
     "build": "tsc -b && vite build",
     "start:build": "tsc -b && vite build",
     "preview": "vite preview",
+    "demo:local": "npm run build && vite preview --open '/?demo=1'",
     "start:prod": "vite preview",
     "graphify:graph": "open graphify-out/graph.html",
     "test": "vitest run",
