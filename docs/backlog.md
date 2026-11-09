@@ -191,7 +191,7 @@ Lo que no se arregló aquí, por estar fuera de lo permitido en la sesión:
 
 ## Sesión 6 · Fases 3 y 4 — Redirecciones y corte (2026-11-09)
 
-### Verificación posterior al corte
+### Verificación posterior al corte — CERRADA (2026-11-09)
 
 - **Razón:** el corte de DNS (GoDaddy) y los paneles de Vercel y Shopify los
   hace Brandon, después de esta sesión. Las reglas ya se verificaron en
@@ -205,3 +205,16 @@ Lo que no se arregló aquí, por estar fuera de lo permitido en la sesión:
   - Contra `www`, cada caso muestra primero el salto de dominio a
     `https://optioutlet.com.mx/…`.
   - Anotar aquí el resultado y la fecha.
+- **Resultado (2026-11-09, 18:16 UTC):**
+  - DNS correcto en `ns63` y en `1.1.1.1`: A `@` → `216.198.79.1` y CNAME
+    `www` → `6e7eba3c4d24d816.vercel-dns-017.com`. El resto, sin cambio y sin
+    MX.
+  - Certificados válidos (Let's Encrypt) en los dos dominios.
+  - `/` sirve la landing de `a56d670`.
+  - `verify:redirects --follow`: **49/49** contra el raíz y **49/49** contra
+    `www`, con el salto 308 → raíz en los 49 casos.
+  - Lighthouse en `https://optioutlet.com.mx/?demo=1`: SEO **100** en móvil y
+    escritorio.
+  - Detalle en `docs/verificacion-sesion-6.md`, sección 11.
+- **Queda (Brandon):** quitar `optioutlet.com.mx` y `www` de Shopify y repetir
+  las dos corridas (sección 5, paso 5).

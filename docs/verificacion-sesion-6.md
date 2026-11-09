@@ -427,10 +427,88 @@ diferencias de más de 1 px**.
 - [x] No se tocó ningún panel, el servidor, la consulta ni el motor de scroll.
 - [x] Ninguna fase cerró con «esto necesita su propia sesión».
 
-## 11. Futuro (documentado, no implementado)
+## 11. Verificación posterior al corte (2026-11-09, 18:16 UTC)
 
-- **Verificación después del corte** contra `https://optioutlet.com.mx` y
-  `https://www.optioutlet.com.mx`, con `--follow` (sección 5, paso 4).
+Brandon hizo el corte: el A de `@` y el CNAME de `www` en GoDaddy, sin
+cambiar los servidores de nombres, y `www` → raíz en el panel de Vercel.
+`optioutlet.com.mx` y `www` siguen conectados en Shopify; se quitan después
+de esta verificación (paso 5 de la sección 5). No se tocó ningún panel ni
+registro DNS desde aquí.
+
+### DNS
+
+Consultado con `dig` a `ns63.domaincontrol.com` y a `1.1.1.1`. Los dos
+responden igual.
+
+| Registro | Antes | Ahora | TTL |
+|---|---|---|---|
+| A `@` | `23.227.38.32` | **`216.198.79.1`** (Vercel) | 600 |
+| CNAME `www` | `shops.myshopify.com.` | **`6e7eba3c4d24d816.vercel-dns-017.com.`**, que resuelve a `216.198.79.1` y `64.29.17.1` | 600 |
+| AAAA `@` | (ninguno) | (ninguno) | — |
+| CNAME `shop` | `shops.myshopify.com.` | sin cambio | 3600 |
+| CNAME `26c306fb-e2f7-444e-8527-4ac3b0ef03b6` | `dns-verification.shopify.com.` | sin cambio | 3600 |
+| CNAME `_domainconnect` | `_domainconnect.gd.domaincontrol.com.` | sin cambio | 3600 |
+| TXT `_dmarc` | `v=DMARC1; p=quarantine; …` | sin cambio | 3600 |
+| NS | `ns63` y `ns64.domaincontrol.com` | sin cambio | 3600 |
+| MX | (ninguno) | (ninguno) | — |
+
+### Certificados y HTML (`curl -vI`)
+
+- **`https://optioutlet.com.mx`:** TLS 1.3, `CN=optioutlet.com.mx`, Let's Encrypt
+  YR1, válido del 2026-11-09 al 2027-02-07, `SSL certificate verify ok`.
+  Responde `HTTP/2 200` con `server: Vercel` y
+  `cache-control: public, max-age=0, must-revalidate`.
+- **`https://www.optioutlet.com.mx`:** TLS 1.3, `CN=www.optioutlet.com.mx`, Let's
+  Encrypt YR2, válido del 2026-11-09 al 2027-02-07, `SSL certificate verify ok`.
+  Responde `HTTP/2 308` con `location: https://optioutlet.com.mx/`.
+- **El HTML de `/`** es la landing de `main` (`a56d670`): `index--Vr_0EpG.js` e
+  `index-CdNXuJZq.css`, los mismos hashes que el build local. Lleva el título
+  y el canonical.
+
+### `verify:redirects`
+
+Sin `--skip-post`, un POST inválido por corrida y unos segundos entre
+corridas.
+
+| Corrida | Resultado | Saltos de dominio | POST `/api/chat` | 404 de la tienda (rutas de ejemplo) | 5xx / errores |
+|---|---|---|---|---|---|
+| `https://optioutlet.com.mx --follow` | **49/49** | 0 | 400 | 12 | 0 |
+| `https://www.optioutlet.com.mx --follow` | **49/49** | **49** (todos `308 → https://optioutlet.com.mx/…`, con la misma ruta y query) | 400, tras el 308 | 12 | 0 |
+
+- En los dos dominios, las 42 rutas de la tienda responden 301 con su ruta y
+  query (pares decodificados).
+- `/` y el asset conservan las cabeceras de caché de la Sesión 5.
+- El descuento (`redirect=%2Fcollections%2Fanime`) termina en
+  `/collections/anime`.
+- Contra `www` se vio el salto de dominio esperado antes de cada resultado.
+- Las respuestas de la tienda con `--follow` son las mismas que en la sección 4.
+
+### Lighthouse en el dominio final (medición SEO definitiva)
+
+`https://optioutlet.com.mx/?demo=1`, Lighthouse 13.5.0 con Chrome 157, perfil
+temporal en `.cache/tmp`. Tres corridas por formato, mediana.
+
+| Formato | Rendimiento | Accesibilidad | Buenas prácticas | SEO |
+|---|---|---|---|---|
+| Móvil | 99 (98/99/99) | 100 | 96 | **100** |
+| Escritorio | 100 | 100 | 96 | **100** |
+
+- **Medianas:** FCP móvil 1,684 ms, LCP 1,783 ms, TBT 56 ms y CLS 0.026;
+  escritorio 394 ms, 422 ms, 0 ms y 0.023.
+- **Canonical:** 1. Ahora apunta a la misma URL que se mide.
+  `meta-description` = 1 e `is-crawlable` = 1.
+- **Buenas prácticas:** 96 por los 21 errores del listón (B1), los únicos de la
+  consola.
+
+**Resultado: la verificación posterior al corte pasa.** Siguiente paso de
+Brandon: quitar `optioutlet.com.mx` y `www` de Shopify (sección 5, paso 5) y
+repetir las dos corridas de `verify:redirects`.
+
+## 12. Futuro (documentado, no implementado)
+
+- **Repetir `verify:redirects`** contra los dos dominios después de quitarlos de
+  Shopify (sección 5, paso 5). La verificación posterior al corte ya pasó
+  (sección 11).
 - **`og:image`** (pieza de la diseñadora), el **sitemap** y el **`robots.txt`**
   propios de la landing, y **Search Console**.
 - **B1** (errores de consola del listón), **B4** (cadena de carga de fuentes) y
