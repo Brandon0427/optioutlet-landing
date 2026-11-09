@@ -122,3 +122,28 @@ Lo que no se arregló aquí, por estar fuera de lo permitido en la sesión:
 - **Ítems:** `render-blocking-insight` 0.5 y `network-dependency-tree-insight` 0;
   FCP móvil de 1.73 s (mediana), CLS 0.026.
 - **Medición pendiente:** FCP y CLS móviles antes y después de un `preload`.
+
+## Sesión 5 · Fase 7 — Hallazgos de la demo (2026-11-09)
+
+### B5. La consulta arranca sola al entrar en pantalla
+
+- **Razón:** `Consulta.tsx` llama `start()` con un IntersectionObserver en cuanto
+  la sección entra en pantalla (o al abrir `#consulta`). Cada visita que llega
+  hasta ahí hace una solicitud a `/api/chat` aunque no toque nada. No se cambia
+  en esta sesión: el saludo inmediato es parte de la experiencia aprobada.
+- **Medición** (evaluación de la Sesión 3, Sonnet 5.5 · medium, 10
+  conversaciones y 61 turnos):
+  - **Tokens por turno:** unos 4,645 de entrada (unos 4,281 leídos de caché y
+    unos 364 sin caché) y unos 187 de salida. El turno de inicio es de los más
+    chicos, porque no lleva historial.
+  - **Costo por turno:** del orden de US$0.003 (US$0.02 por consulta completa
+    de unos 6 turnos, según `docs/verificacion-sesion-3.md`). Con la caché
+    fría, el primer turno cuesta más, porque escribe los ~4,000 tokens del
+    system prompt en caché.
+  - **Cada visita que llega a la consulta sin interactuar:** 1 solicitud y del
+    orden de US$0.003. 1,000 visitas así serían unos US$3.
+- **Ítems:** decidir si el saludo inicial sale del guion (sin API) y Claude
+  entra desde la primera respuesta, o si `start()` espera la primera
+  interacción.
+- **Medición pendiente:** solicitudes a `/api/chat` por visita sin interacción
+  (hoy 1) y tokens del turno de inicio medidos por separado.

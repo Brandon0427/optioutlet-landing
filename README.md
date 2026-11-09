@@ -46,6 +46,9 @@ Requiere Node `>=22.12`.
 
 Vercel, con la integración de GitHub (`Brandon0427/optioutlet-landing`) y el preset de Vite. **`main` publica directo a producción** (https://optioutlet-landing.vercel.app) por decisión del proyecto en esta etapa. Cada cierre de fase va como `npm run check && git commit … && git push origin main`. Nunca hay push forzado ni se reescribe historial publicado.
 
+- `vercel.json` solo lleva `headers`: `/assets/*` (archivos con hash) con `public, max-age=31536000, immutable`. El HTML conserva `max-age=0, must-revalidate`. Las redirecciones de dominio son de la Sesión 6.
+- `POST /api/chat` tiene un límite por IP en el firewall de Vercel (20 solicitudes cada 10 minutos, 429 al excederse). Se configura en el panel, no en código: ver `docs/verificacion-sesion-5.md`.
+
 ## Regla de versiones de dependencias
 
 Aplica a **toda** dependencia que se agregue o actualice, directa o de desarrollo:
@@ -93,4 +96,4 @@ en líneas separadas): un build roto llegó así a un commit en la Sesión 2.
 - `src/consulta/providers/` — `scripted.ts` (guion), `api.ts` (llama a `/api/chat` y cae al guionado por turno) e `index.ts` (elige el proveedor).
 - `server/consulta/` — servidor de la consulta: configuración (modelo y effort), validación de la solicitud, esquema de salida, system prompt, conversión de mensajes, combinación del perfil y `handleChat`. `server/http/` y `server/dev/` — adaptadores. `api/chat.ts` — función de Vercel.
 - `scripts/eval-consulta.ts` — evaluación en vivo (`vitest.eval.config.ts`).
-- `docs/verificacion-sesion-1.md` a `docs/verificacion-sesion-3.md` — cómo verificar la landing, la consulta y su conexión con Claude; `docs/backlog.md` — residuales abiertos.
+- `docs/verificacion-sesion-1.md` a `docs/verificacion-sesion-3.md` y `docs/verificacion-sesion-5.md` — cómo verificar la landing, la consulta, su conexión con Claude y el blindaje de la demo (planes A/B/C, límite del firewall, UTM); `docs/guion-demo.md` — guion de la presentación; `docs/backlog.md` — residuales abiertos.
