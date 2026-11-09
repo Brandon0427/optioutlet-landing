@@ -16,7 +16,12 @@
  * and importing must never send requests.
  *
  * Every request uses `redirect: 'manual'`.
- * - Store paths: 301 with the exact Location (path and query).
+ * - Store paths: 301 with the exact Location. The origin and path are compared
+ *   byte for byte; the query as the ordered list of decoded key/value pairs
+ *   (URLSearchParams). Vercel keeps every key, value and their order, but
+ *   re-encodes the values (`+` → `%20`, `/` → `%2F`, `:` → `%3A`…), and no
+ *   vercel.json option keeps the original bytes. A missing key, a changed
+ *   value or a different order is still a failure.
  * - Landing paths: no redirect (200, or 400 for one POST /api/chat with an
  *   invalid body; the firewall allows 20 per IP every 10 minutes).
  * - Domain hop: on www, the first response is the domain redirect set in the
@@ -28,6 +33,8 @@
  * - --follow: GET each store destination on the store (following Shopify's own
  *   redirects). A 404 means the sample path no longer exists in the store; it
  *   is reported apart and is not a redirect failure.
+ * - --skip-post: skips the POST /api/chat case (reported as skipped), for a
+ *   re-run after it was already checked once in the firewall window.
  */
 
 import { readFileSync } from 'node:fs';
@@ -42,9 +49,29 @@ export type ChainResult =
 
 const DOMAIN_HOP_STATUSES = new Set([301, 308]);
 
+/** Ordered, decoded key/value pairs of a query string. */
+function queryPairs(search: string): string[][] {
+  return [...new URLSearchParams(search)];
+}
+
+function sameQuery(a: string, b: string): boolean {
+  return JSON.stringify(queryPairs(a)) === JSON.stringify(queryPairs(b));
+}
+
+/** Origin and path byte for byte; query by its decoded pairs, in order. */
+export function sameLocation(actual: string, expected: string): boolean {
+  const split = (url: string) => {
+    const at = url.indexOf('?');
+    return at === -1 ? [url, ''] : [url.slice(0, at), url.slice(at)];
+  };
+  const [actualBase, actualQuery] = split(actual);
+  const [expectedBase, expectedQuery] = split(expected);
+  return actualBase === expectedBase && sameQuery(actualQuery ?? '', expectedQuery ?? '');
+}
+
 function meets(expectation: Expectation, hop: Hop): boolean {
   if (expectation.kind === 'status') return hop.status === expectation.status;
-  return hop.status === 301 && hop.location === expectation.location;
+  return hop.status === 301 && hop.location !== null && sameLocation(hop.location, expectation.location);
 }
 
 function describeHop(hop: Hop): string {
@@ -60,7 +87,7 @@ function absolute(location: string, base: string): URL | null {
   }
 }
 
-/** Same path and query on another host that is not the store: a www ↔ apex domain redirect. */
+/** Same path and query (decoded pairs) on another host that is not the store: a www ↔ apex domain redirect. */
 function isDomainHop(hop: Hop, from: URL, target: URL | null, storeHost: string): target is URL {
   return (
     DOMAIN_HOP_STATUSES.has(hop.status) &&
@@ -68,7 +95,7 @@ function isDomainHop(hop: Hop, from: URL, target: URL | null, storeHost: string)
     target.host !== from.host &&
     target.host !== storeHost &&
     target.pathname === from.pathname &&
-    target.search === from.search
+    sameQuery(target.search, from.search)
   );
 }
 
@@ -124,16 +151,18 @@ async function request(url: string, method: string): Promise<{ hop: Hop; headers
 }
 
 /** Runs one request through evaluateChain, following at most one domain hop. */
-async function check(url: string, method: string, expectation: Expectation, storeHost: string): Promise<{ result: ChainResult; headers: Headers }> {
+async function check(
+  url: string,
+  method: string,
+  expectation: Expectation,
+  storeHost: string,
+): Promise<{ result: ChainResult; headers: Headers; last: Hop }> {
   const first = await request(url, method);
   let result = evaluateChain(url, expectation, [first.hop], storeHost);
-  let headers = first.headers;
-  if (result.verdict === 'follow') {
-    const second = await request(result.followUrl, method);
-    headers = second.headers;
-    result = evaluateChain(url, expectation, [first.hop, second.hop], storeHost);
-  }
-  return { result, headers };
+  if (result.verdict !== 'follow') return { result, headers: first.headers, last: first.hop };
+  const second = await request(result.followUrl, method);
+  result = evaluateChain(url, expectation, [first.hop, second.hop], storeHost);
+  return { result, headers: second.headers, last: second.hop };
 }
 
 async function findAsset(base: string): Promise<string | null> {
@@ -144,6 +173,7 @@ async function findAsset(base: string): Promise<string | null> {
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
   const follow = args.includes('--follow');
+  const skipPost = args.includes('--skip-post');
   const baseArg = args.find((arg) => !arg.startsWith('--'));
   if (!baseArg) {
     console.error('usage: npm run verify:redirects -- <base url> [--follow]');
@@ -155,13 +185,16 @@ async function main(): Promise<void> {
   const outcomes: Outcome[] = [];
   const hops: string[] = [];
   const missing: string[] = [];
+  /** Location actually returned by each passing store case: what --follow requests. */
+  const destinations: string[] = [];
 
-  console.log(`verify:redirects ${base}${follow ? ' --follow' : ''}\n`);
+  console.log(`verify:redirects ${base}${follow ? ' --follow' : ''}${skipPost ? ' --skip-post' : ''}\n`);
 
-  console.log('Store paths (301, same path and query):');
+  console.log('Store paths (301, same path and query; query compared by decoded pairs):');
   for (const c of cases.store) {
-    const { result } = await check(`${base}${c.path}`, 'GET', { kind: 'redirect', location: c.location }, storeHost);
+    const { result, last } = await check(`${base}${c.path}`, 'GET', { kind: 'redirect', location: c.location }, storeHost);
     const ok = result.verdict === 'pass';
+    if (ok && last.location) destinations.push(last.location);
     if (result.domainHop) hops.push(`${c.path}: ${result.domainHop}`);
     const line = `${ok ? 'PASS' : 'FAIL'}  ${c.path}  ${result.detail}${result.domainHop ? `  (domain hop ${result.domainHop})` : ''}`;
     outcomes.push({ label: c.path, ok, line });
@@ -171,6 +204,10 @@ async function main(): Promise<void> {
   console.log('\nLanding paths (never redirected):');
   const asset = await findAsset(base);
   for (const c of cases.landing) {
+    if (skipPost && c.method === 'POST') {
+      console.log(`  SKIP  POST ${c.path}  --skip-post (expected ${c.status}; checked in an earlier run)`);
+      continue;
+    }
     const path = c.path === '@asset' ? asset : c.path;
     if (!path) {
       outcomes.push({ label: '@asset', ok: false, line: 'FAIL  @asset  no /assets/*.js found in the HTML' });
@@ -197,25 +234,25 @@ async function main(): Promise<void> {
   }
 
   if (follow) {
-    console.log('\n--follow: each destination on the store:');
-    for (const c of cases.store) {
+    console.log('\n--follow: each Location returned above, requested on the store:');
+    for (const location of destinations) {
       try {
-        const response = await fetch(c.location, { redirect: 'follow', headers: { 'user-agent': USER_AGENT } });
+        const response = await fetch(location, { redirect: 'follow', headers: { 'user-agent': USER_AGENT } });
         await response.arrayBuffer();
         const status = response.status;
-        const where = response.url !== c.location ? `  (ended at ${response.url})` : '';
+        const where = response.url !== location ? `  (ended at ${response.url})` : '';
         if (status === 404) {
-          missing.push(c.location);
-          console.log(`  404   ${c.location}  not in the store (not a redirect failure)`);
+          missing.push(location);
+          console.log(`  404   ${location}  not in the store (not a redirect failure)`);
         } else if (status >= 500) {
-          outcomes.push({ label: `follow ${c.location}`, ok: false, line: `FAIL  ${status} ${c.location}` });
-          console.log(`  FAIL  ${status}  ${c.location}${where}`);
+          outcomes.push({ label: `follow ${location}`, ok: false, line: `FAIL  ${status} ${location}` });
+          console.log(`  FAIL  ${status}  ${location}${where}`);
         } else {
-          console.log(`  ${String(status).padEnd(5)} ${c.location}${where}`);
+          console.log(`  ${String(status).padEnd(5)} ${location}${where}`);
         }
       } catch (error) {
-        outcomes.push({ label: `follow ${c.location}`, ok: false, line: `FAIL  ${c.location}: ${String(error)}` });
-        console.log(`  FAIL  ${c.location}: ${String(error)}`);
+        outcomes.push({ label: `follow ${location}`, ok: false, line: `FAIL  ${location}: ${String(error)}` });
+        console.log(`  FAIL  ${location}: ${String(error)}`);
       }
     }
   }

@@ -73,6 +73,26 @@ describe('evaluateChain', () => {
     expect(result.verdict).toBe('fail');
   });
 
+  it('passes a query that Vercel re-encoded (same decoded pairs, same order)', () => {
+    const expectation: Expectation = { kind: 'redirect', location: `${STORE}/discount/X?redirect=/collections/anime&q=a+b` };
+    const actual = `${STORE}/discount/X?redirect=%2Fcollections%2Fanime&q=a%20b`;
+    expect(evaluateChain(`${APEX}/discount/X?redirect=/collections/anime&q=a+b`, expectation, [hop(301, actual)], STORE_HOST).verdict).toBe('pass');
+  });
+
+  it('fails a query with a changed value, a missing key or a different order', () => {
+    const expectation: Expectation = { kind: 'redirect', location: `${STORE}/cart?a=1&b=2` };
+    for (const actual of [`${STORE}/cart?a=1&b=3`, `${STORE}/cart?a=1`, `${STORE}/cart?b=2&a=1`, `${STORE}/cart/?a=1&b=2`]) {
+      expect(evaluateChain(`${APEX}/cart?a=1&b=2`, expectation, [hop(301, actual)], STORE_HOST).verdict, actual).toBe('fail');
+    }
+  });
+
+  it('accepts a domain hop whose query was re-encoded', () => {
+    const url = `${WWW}/search?q=a+b`;
+    const expectation: Expectation = { kind: 'redirect', location: `${STORE}/search?q=a+b` };
+    const result = evaluateChain(url, expectation, [hop(308, `${APEX}/search?q=a%20b`), hop(301, `${STORE}/search?q=a%20b`)], STORE_HOST);
+    expect(result.verdict).toBe('pass');
+  });
+
   it('fails a landing path redirected to the store (never a domain hop)', () => {
     const result = evaluateChain(`${APEX}/favicon.ico`, landingOk, [hop(301, `${STORE}/favicon.ico`)], STORE_HOST);
     expect(result.verdict).toBe('fail');

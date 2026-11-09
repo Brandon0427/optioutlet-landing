@@ -53,7 +53,10 @@ Vercel, con la integración de GitHub (`Brandon0427/optioutlet-landing`) y el pr
   - **Código explícito:** `statusCode: 301`, nunca `permanent` (que da 308).
   - **Patrones:** cada prefijo tiene una regla exacta (`/cart`, `/cart/`) y otra para subrutas (`/cart/…`), porque `/:path*` dejaría `Location` con una diagonal final.
   - **Prueba en `check`:** `scripts/redirects.test.ts` convierte las reglas con `@vercel/routing-utils`, la misma biblioteca de Vercel. Comprueba el 301, que el destino coincida con `DEFAULT_STORE_URL` y que ninguna ruta de la landing coincida con una regla. La tabla de casos es `scripts/redirect-cases.json`; un caso nuevo o un prefijo nuevo se agregan ahí.
-  - **En vivo:** `npm run verify:redirects -- https://optioutlet-landing.vercel.app --follow`. Contra `www` acepta un primer salto de dominio (www → raíz) y después exige el 301.
+  - **En vivo:** `npm run verify:redirects -- https://optioutlet-landing.vercel.app --follow`.
+    - Contra `www` acepta un primer salto de dominio (www → raíz) y después exige el 301.
+    - La query se compara por sus pares clave/valor decodificados y en orden. Vercel conserva claves, valores y orden, pero recodifica (`/` → `%2F`, `+` → `%20`).
+    - `--skip-post` omite el único `POST /api/chat` (cuerpo inválido, 400) cuando ya se verificó en otra corrida de la misma ventana del firewall.
   - La redirección de `www` al raíz no va en `vercel.json`: se configura en el panel de dominios de Vercel. La lista del corte y la reversa están en `docs/verificacion-sesion-6.md`.
 - `POST /api/chat` tiene un límite por IP en el firewall de Vercel (20 solicitudes cada 10 minutos, 429 al excederse). Se configura en el panel, no en código: ver `docs/verificacion-sesion-5.md`.
 
