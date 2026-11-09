@@ -31,12 +31,13 @@ Requiere Node `>=22.12`.
 - **Regla de imports `.js`:** todo archivo que el servidor importe en tiempo de ejecución (`api/`, `server/`, `scripts/` y lo que cargan del dominio: `schema.ts`, `catalog.ts`, `progress.ts`, `content/consulta.ts`, `content/landing.ts`) usa especificadores relativos con `.js` (`'./types.js'`). Vercel corre la función como ESM nativo y Node no resuelve imports sin extensión; Vite y tsc resuelven `.js` a `.ts`. Si un archivo nuevo entra a esa cadena, sigue la misma regla.
 - `npm run check` también revisa los tipos de `api/`, `server/` y `scripts/` (`tsconfig.server.json`).
 
-## Demo: planes A, B y C
+## Demo: planes A, A′, B y C
 
 | Plan | Dónde | Cómo | Qué responde |
 |---|---|---|---|
-| A | Producción | https://optioutlet-landing.vercel.app | Claude, con el guionado como respaldo por turno |
-| B | Producción | https://optioutlet-landing.vercel.app/?demo=1 | Solo el guionado; ninguna solicitud a `/api/chat` |
+| A | Producción | https://optioutlet.com.mx | Claude, con el guionado como respaldo por turno |
+| A′ | Producción, si el dominio falla | https://optioutlet-landing.vercel.app (y `/?demo=1`) | La misma app y el mismo despliegue |
+| B | Producción | https://optioutlet.com.mx/?demo=1 | Solo el guionado; ninguna solicitud a `/api/chat` |
 | C | Esta Mac, sin red | `npm run demo:local` → http://localhost:4173/?demo=1 | Solo el guionado; ninguna solicitud externa |
 
 - `?demo=1` se evalúa al cargar la página y tiene prioridad sobre `VITE_CONSULTA_PROVIDER`. Cualquier otro valor conserva el comportamiento normal. No hay indicador visible (en desarrollo, un aviso en consola).
@@ -127,4 +128,4 @@ en líneas separadas): un build roto llegó así a un commit en la Sesión 2.
 - `server/consulta/` — servidor de la consulta: configuración (modelo y effort), validación de la solicitud, esquema de salida, system prompt, conversión de mensajes, combinación del perfil y `handleChat`. `server/http/` y `server/dev/` — adaptadores. `api/chat.ts` — función de Vercel.
 - `scripts/eval-consulta.ts` — evaluación en vivo (`vitest.eval.config.ts`).
 - `scripts/verify-redirects.ts` — verificación en vivo de las redirecciones (Node puro, sin imports de `.ts`); `scripts/redirect-cases.json` — su tabla de casos, compartida con `scripts/redirects.test.ts`. `scripts/generate-icons.ts` — generador de los íconos provisionales.
-- `docs/verificacion-sesion-1.md` a `docs/verificacion-sesion-3.md` y `docs/verificacion-sesion-5.md` — cómo verificar la landing, la consulta, su conexión con Claude y el blindaje de la demo (planes A/B/C, límite del firewall, UTM); `docs/guion-demo.md` — guion de la presentación; `docs/backlog.md` — residuales abiertos.
+- `docs/verificacion-sesion-1.md` a `docs/verificacion-sesion-3.md`, `docs/verificacion-sesion-5.md` y `docs/verificacion-sesion-6.md` — cómo verificar la landing, la consulta, su conexión con Claude, el blindaje de la demo (planes A/B/C, límite del firewall, UTM) y los dominios (redirecciones, lista del corte y reversa); `docs/guion-demo.md` — guion de la presentación; `docs/backlog.md` — residuales abiertos.

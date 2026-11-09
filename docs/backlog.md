@@ -188,3 +188,20 @@ Lo que no se arregló aquí, por estar fuera de lo permitido en la sesión:
   `og:image:height`, y `twitter:card` = `summary_large_image`.
 - **Medición pendiente:** la vista previa del enlace en WhatsApp e iMessage
   muestra la imagen; la imagen responde 200.
+
+## Sesión 6 · Fases 3 y 4 — Redirecciones y corte (2026-11-09)
+
+### Verificación posterior al corte
+
+- **Razón:** el corte de DNS (GoDaddy) y los paneles de Vercel y Shopify los
+  hace Brandon, después de esta sesión. Las reglas ya se verificaron en
+  `optioutlet-landing.vercel.app` (48/48 con `--follow`).
+- **Ítems:** los pasos 1 a 5 de la lista del corte en
+  `docs/verificacion-sesion-6.md` (sección 5).
+- **Medición pendiente:**
+  - `npm run verify:redirects -- https://optioutlet.com.mx --follow` y
+    `npm run verify:redirects -- https://www.optioutlet.com.mx --follow`,
+    los dos con código de salida 0.
+  - Contra `www`, cada caso muestra primero el salto de dominio a
+    `https://optioutlet.com.mx/…`.
+  - Anotar aquí el resultado y la fecha.

@@ -1,8 +1,9 @@
 # Guion de la demo · 19 y 20 de noviembre de 2026
 
 Para Brandon. Presentación en la Mac (pantalla de 1470 × 956 o proyector de
-1920 × 1080 en espejo) con Chrome, sobre `optioutlet.com.mx` (si la Sesión 6 ya
-conectó el dominio) o sobre https://optioutlet-landing.vercel.app.
+1920 × 1080 en espejo) con Chrome, sobre **https://optioutlet.com.mx**. Si el
+dominio falla ese día, la misma app está en https://optioutlet-landing.vercel.app
+(Plan A′, abajo).
 
 ## Antes de presentar (15 minutos antes)
 
@@ -20,7 +21,12 @@ conectó el dominio) o sobre https://optioutlet-landing.vercel.app.
    medida en 2.8 s, contra 1.6 a 2.0 s las siguientes.
 6. **Recarga (⌘R) y vuelve arriba** antes de que entre el cliente. Cada recarga
    empieza una consulta nueva.
-7. **Ten a la mano el Plan B** (abajo), en una nota o en el portapapeles.
+7. **Ten a la mano los planes A′ y B** (abajo), en una nota o en el
+   portapapeles.
+8. **Comprueba el dominio:** https://optioutlet.com.mx abre la landing con
+   candado (certificado válido), y el favicon (la pupila verde agua) aparece en
+   la pestaña. Si no abre o el navegador advierte del certificado, pasa al
+   Plan A′ sin intentar arreglarlo.
 
 ## Recorrido de la landing (unos 3 minutos)
 
@@ -89,11 +95,11 @@ se reemplazan con el catálogo real de Johnson & Johnson. La lógica ya está
 completa: con astigmatismo nunca recomienda un lente esférico, y la tienda
 recibe de qué botón vino cada visita.”
 
-Si “Ver en la tienda” no abre nada: mientras no exista
-`shop.optioutlet.com.mx`, la pestaña nueva no carga. Di que la tienda se
-conecta aparte y sigue con la presentación.
+“Ver en la tienda” abre `shop.optioutlet.com.mx` en otra pestaña. Si no
+carga, es la tienda (Shopify), no la landing: di que la tienda se administra
+aparte y sigue con la presentación.
 
-## Planes B y C
+## Planes A′, B y C
 
 Úsalos si Claude tarda, si la red del lugar falla o si algo raro pasa. Para el
 público **no cambia nada visible**: mismo diseño, mismas preguntas y mismo tipo
@@ -102,8 +108,9 @@ turno).
 
 | Plan | Cuándo | Cómo se activa |
 |---|---|---|
-| **A** | Normal | https://optioutlet-landing.vercel.app (o `optioutlet.com.mx` tras la Sesión 6) |
-| **B** | Claude lento o con errores; hay internet | Agrega `?demo=1` y recarga: **https://optioutlet-landing.vercel.app/?demo=1**. Ninguna solicitud a la API. |
+| **A** | Normal | **https://optioutlet.com.mx** |
+| **A′** | El dominio falla (no abre, error de certificado, DNS) | La misma app, mismo despliegue: **https://optioutlet-landing.vercel.app**. Con Claude lento, además: **https://optioutlet-landing.vercel.app/?demo=1**. |
+| **B** | Claude lento o con errores; hay internet | Agrega `?demo=1` y recarga: **https://optioutlet.com.mx/?demo=1**. Ninguna solicitud a la API. |
 | **C** | Sin internet | En Terminal, dentro de la carpeta del proyecto: `npm run demo:local`. Hace el build y abre http://localhost:4173/?demo=1. Sin red; ningún dominio externo. Para detenerlo: ⌃C en la Terminal. |
 
 - **Ensaya el Plan C** una vez antes del día: el build tarda unos 5 s y la
