@@ -216,5 +216,7 @@ Lo que no se arregló aquí, por estar fuera de lo permitido en la sesión:
   - Lighthouse en `https://optioutlet.com.mx/?demo=1`: SEO **100** en móvil y
     escritorio.
   - Detalle en `docs/verificacion-sesion-6.md`, sección 11.
-- **Queda (Brandon):** quitar `optioutlet.com.mx` y `www` de Shopify y repetir
-  las dos corridas (sección 5, paso 5).
+- **Paso 5:** Brandon quitó los dominios de Shopify y se repitieron las dos
+  corridas, 49/49 cada una e iguales a las anteriores. La tienda responde 200
+  en `shop.optioutlet.com.mx`. Ver `docs/verificacion-sesion-6.md`,
+  sección 11.

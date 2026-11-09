@@ -504,11 +504,33 @@ temporal en `.cache/tmp`. Tres corridas por formato, mediana.
 Brandon: quitar `optioutlet.com.mx` y `www` de Shopify (sección 5, paso 5) y
 repetir las dos corridas de `verify:redirects`.
 
+### Después de quitar los dominios de Shopify (paso 5, 2026-11-09)
+
+Brandon quitó `optioutlet.com.mx` y `www.optioutlet.com.mx` de Shopify.
+`shop.optioutlet.com.mx` sigue como dominio principal.
+
+| Corrida | Resultado | Saltos de dominio | POST `/api/chat` | 404 de la tienda (rutas de ejemplo) | 5xx / errores |
+|---|---|---|---|---|---|
+| `https://optioutlet.com.mx --follow` | **49/49** | 0 | 400 | 12 | 0 |
+| `https://www.optioutlet.com.mx --follow` | **49/49** | 49 (`308 → https://optioutlet.com.mx/…`) | 400, tras el 308 | 12 | 0 |
+
+- **Igual a la corrida anterior** (sección 11), caso por caso: mismas
+  verificaciones y mismos códigos.
+- La única diferencia está en `--follow`, fuera de la tienda:
+  `/account/login` termina en `shopify.com/authentication/…` con 429 en
+  lugar de 406. Es la defensa contra bots de `shopify.com`, que ya alternaba
+  entre 406 y 429 antes del corte (sección 4). No es defecto.
+- **La tienda responde desde Shopify** (`powered-by: Shopify`), con `curl -I`:
+  - `https://shop.optioutlet.com.mx/` → **200** (`pageType` `index`).
+  - `https://shop.optioutlet.com.mx/products/pupilentes-rojo-vampiro-combo-halloween`
+    → **200** (`pageType` `product`).
+
+**El corte quedó completo:** `optioutlet.com.mx` sirve la landing, `www`
+redirige al raíz y cada ruta vieja de la tienda llega a la misma ruta en
+`shop.optioutlet.com.mx`.
+
 ## 12. Futuro (documentado, no implementado)
 
-- **Repetir `verify:redirects`** contra los dos dominios después de quitarlos de
-  Shopify (sección 5, paso 5). La verificación posterior al corte ya pasó
-  (sección 11).
 - **`og:image`** (pieza de la diseñadora), el **sitemap** y el **`robots.txt`**
   propios de la landing, y **Search Console**.
 - **B1** (errores de consola del listón), **B4** (cadena de carga de fuentes) y
