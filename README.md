@@ -49,6 +49,25 @@ Vercel, con la integración de GitHub (`Brandon0427/optioutlet-landing`) y el pr
 - `vercel.json` solo lleva `headers`: `/assets/*` (archivos con hash) con `public, max-age=31536000, immutable`. El HTML conserva `max-age=0, must-revalidate`. Las redirecciones de dominio son de la Sesión 6.
 - `POST /api/chat` tiene un límite por IP en el firewall de Vercel (20 solicitudes cada 10 minutos, 429 al excederse). Se configura en el panel, no en código: ver `docs/verificacion-sesion-5.md`.
 
+## Íconos y metadatos
+
+- **Íconos provisionales** (`TODO(brand-svg)`): salen de la pupila del isotipo (`ISOTIPO_SHAPE` en `geometry.ts`, con la mordida rompiendo el borde) y de los colores de `brandColors.ts`. Se reemplazan cuando lleguen los SVG oficiales.
+  - `public/favicon.svg`: pupila verde agua sobre fondo transparente.
+  - `public/favicon.ico`: 16, 32 y 48 px, PNG dentro de un contenedor ICO.
+  - `public/apple-touch-icon.png`: 180 × 180, pupila verde agua sobre azul marino, con 30 px de margen.
+- **Regenerarlos** (los archivos generados se commitean): el generador `scripts/generate-icons.ts` usa herramientas aisladas en `.cache/tools/` (carpeta local, fuera de git) y el Google Chrome instalado. No descarga navegadores.
+  ```sh
+  # una vez: .cache/tools/package.json con versiones exactas (regla de versiones)
+  # {"name":"qa-tools","private":true,"type":"module","dependencies":{"lighthouse":"13.5.0","playwright":"1.64.1","tsx":"4.23.15"}}
+  npm --prefix .cache/tools install --before=AAAA-MM-DDT23:59:59Z
+  node .cache/tools/node_modules/.bin/tsx scripts/generate-icons.ts
+  ```
+- **Metadatos en `index.html`:**
+  - El `<title>` y la `meta description`.
+  - Open Graph de texto (`og:type`, `og:site_name`, `og:locale`, `og:title`, `og:description`, `og:url`).
+  - `<link rel="canonical" href="https://optioutlet.com.mx/">`, para que `optioutlet-landing.vercel.app` no compita como duplicado.
+  - Sin `og:image`: pendiente en `docs/backlog.md`.
+
 ## Regla de versiones de dependencias
 
 Aplica a **toda** dependencia que se agregue o actualice, directa o de desarrollo:
