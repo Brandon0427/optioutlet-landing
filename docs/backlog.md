@@ -108,13 +108,31 @@ Lo que no se arregló aquí, por estar fuera de lo permitido en la sesión:
 - **Medición pendiente:** Buenas prácticas pasa de 96 a 100 junto con B2; el
   listón conserva su recorrido 0 → L − T (verificación de la Sesión 1).
 
-#### B2. `/favicon.ico` responde 404
-- **Razón:** el ícono es un recurso de marca (SVG oficiales: fuera de alcance).
-- **Medición pendiente:** 0 errores 404 en consola al cargar.
+- **Desde la Sesión 6:** el 404 del favicon ya no existe. Quedan solo estos 21
+  errores, y Buenas prácticas se mantiene en 96: B1 es lo único que lo separa
+  de 100.
 
-#### B3. Sin `<meta name="description">`
-- **Razón:** SEO y metadatos para compartir quedan fuera de esta sesión.
-- **Medición pendiente:** SEO de 90 a 100.
+#### B2. `/favicon.ico` responde 404 — CERRADA (Sesión 6 · Fase 2, 2026-11-09)
+- **Hecho:** `public/favicon.svg`, `public/favicon.ico` (16/32/48) y
+  `public/apple-touch-icon.png` (180), generados con `scripts/generate-icons.ts`.
+- **Medición:**
+  - `/favicon.ico`, `/favicon.svg` y `/apple-touch-icon.png` responden 200 en
+    producción.
+  - Errores de consola por carga: de 22 (21 del listón + 1 del 404) a 21 (solo
+    el listón). Lighthouse, escritorio.
+  - En Chrome 157 con ventana real, el ícono de la pestaña guardado en la base
+    `Favicons` del perfil es idéntico, byte por byte, al cuadro de 32 px de
+    `favicon.ico`. No se pudo tomar captura de la pestaña porque el equipo no
+    tiene el permiso de grabación de pantalla.
+- Siguen siendo provisionales: ver «Íconos provisionales» abajo.
+
+#### B3. Sin `<meta name="description">` — CERRADA (Sesión 6 · Fase 2, 2026-11-09)
+- **Hecho:** meta description, Open Graph de texto y
+  `<link rel="canonical" href="https://optioutlet.com.mx/">`.
+- **Medición:** SEO de 90 a **100** en móvil y escritorio (mediana de 3
+  corridas, producción con `?demo=1`). Lighthouse no marca el canonical
+  aunque apunte a otro dominio que `vercel.app`. Detalle en
+  `docs/verificacion-sesion-6.md`.
 
 #### B4. Cadena de carga CSS → fuentes
 - **Razón:** precargar las fuentes con hash pide tocar el build y cambia el
@@ -147,3 +165,26 @@ Lo que no se arregló aquí, por estar fuera de lo permitido en la sesión:
   interacción.
 - **Medición pendiente:** solicitudes a `/api/chat` por visita sin interacción
   (hoy 1) y tokens del turno de inicio medidos por separado.
+
+## Sesión 6 · Fase 2 — Íconos y metadatos (2026-11-09)
+
+### Íconos provisionales — `TODO(brand-svg)`
+
+- **Razón:** los SVG oficiales de marca no han llegado. Los íconos actuales se
+  derivan de `ISOTIPO_SHAPE` (`src/components/brand/geometry.ts`), la misma
+  aproximación que usa `Imagotipo`.
+- **Ítems:** `public/favicon.svg`, `public/favicon.ico` y
+  `public/apple-touch-icon.png`.
+- **Medición pendiente:** cuando lleguen los SVG oficiales, reemplazar la
+  geometría en `scripts/generate-icons.ts` (o el SVG de entrada), regenerar
+  (README › Íconos y metadatos) y confirmar que `/favicon.ico` sigue en 200 y
+  que el ícono nuevo aparece en la pestaña de Chrome.
+
+### `og:image`
+
+- **Razón:** necesita una pieza de la diseñadora (1200 × 630). No se inventa
+  una imagen aparte de los íconos.
+- **Ítems:** la imagen en `public/`, `og:image`, `og:image:width` y
+  `og:image:height`, y `twitter:card` = `summary_large_image`.
+- **Medición pendiente:** la vista previa del enlace en WhatsApp e iMessage
+  muestra la imagen; la imagen responde 200.
