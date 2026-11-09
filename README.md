@@ -15,6 +15,7 @@ Stack: Vite + React + TypeScript (estricto), Tailwind CSS v4 (CSS-first, `@theme
 | `npm test` | Pruebas unitarias (vitest) |
 | `npm run check` | Typecheck, pruebas y build, encadenados: se detiene en el primer fallo |
 | `npm run eval:consulta` | Evaluación en vivo de la consulta contra `/api/chat` (gasta tokens; no forma parte de `check`) |
+| `npm run verify:redirects -- <url base> [--follow]` | Verificación en vivo de las redirecciones 301 a la tienda y de las rutas de la landing (no forma parte de `check`) |
 
 Requiere Node `>=22.12`.
 
@@ -46,7 +47,14 @@ Requiere Node `>=22.12`.
 
 Vercel, con la integración de GitHub (`Brandon0427/optioutlet-landing`) y el preset de Vite. **`main` publica directo a producción** (https://optioutlet-landing.vercel.app) por decisión del proyecto en esta etapa. Cada cierre de fase va como `npm run check && git commit … && git push origin main`. Nunca hay push forzado ni se reescribe historial publicado.
 
-- `vercel.json` solo lleva `headers`: `/assets/*` (archivos con hash) con `public, max-age=31536000, immutable`. El HTML conserva `max-age=0, must-revalidate`. Las redirecciones de dominio son de la Sesión 6.
+- `vercel.json` lleva `headers`: `/assets/*` (archivos con hash) con `public, max-age=31536000, immutable`. El HTML conserva `max-age=0, must-revalidate`.
+- `vercel.json` lleva también `redirects` (Sesión 6): las rutas viejas de la tienda (`/products`, `/collections`, `/cart`, `/pages`, `/account`, `/discount`, `/<id de la tienda>/orders/…`, los sitemaps, etc.) responden **301** a la misma ruta y query en `https://shop.optioutlet.com.mx`.
+  - **Nunca se redirigen:** `/`, `/assets/*`, `/api/*`, los archivos de `public/` y `robots.txt`.
+  - **Código explícito:** `statusCode: 301`, nunca `permanent` (que da 308).
+  - **Patrones:** cada prefijo tiene una regla exacta (`/cart`, `/cart/`) y otra para subrutas (`/cart/…`), porque `/:path*` dejaría `Location` con una diagonal final.
+  - **Prueba en `check`:** `scripts/redirects.test.ts` convierte las reglas con `@vercel/routing-utils`, la misma biblioteca de Vercel. Comprueba el 301, que el destino coincida con `DEFAULT_STORE_URL` y que ninguna ruta de la landing coincida con una regla. La tabla de casos es `scripts/redirect-cases.json`; un caso nuevo o un prefijo nuevo se agregan ahí.
+  - **En vivo:** `npm run verify:redirects -- https://optioutlet-landing.vercel.app --follow`. Contra `www` acepta un primer salto de dominio (www → raíz) y después exige el 301.
+  - La redirección de `www` al raíz no va en `vercel.json`: se configura en el panel de dominios de Vercel. La lista del corte y la reversa están en `docs/verificacion-sesion-6.md`.
 - `POST /api/chat` tiene un límite por IP en el firewall de Vercel (20 solicitudes cada 10 minutos, 429 al excederse). Se configura en el panel, no en código: ver `docs/verificacion-sesion-5.md`.
 
 ## Íconos y metadatos
@@ -115,4 +123,5 @@ en líneas separadas): un build roto llegó así a un commit en la Sesión 2.
 - `src/consulta/providers/` — `scripted.ts` (guion), `api.ts` (llama a `/api/chat` y cae al guionado por turno) e `index.ts` (elige el proveedor).
 - `server/consulta/` — servidor de la consulta: configuración (modelo y effort), validación de la solicitud, esquema de salida, system prompt, conversión de mensajes, combinación del perfil y `handleChat`. `server/http/` y `server/dev/` — adaptadores. `api/chat.ts` — función de Vercel.
 - `scripts/eval-consulta.ts` — evaluación en vivo (`vitest.eval.config.ts`).
+- `scripts/verify-redirects.ts` — verificación en vivo de las redirecciones (Node puro, sin imports de `.ts`); `scripts/redirect-cases.json` — su tabla de casos, compartida con `scripts/redirects.test.ts`. `scripts/generate-icons.ts` — generador de los íconos provisionales.
 - `docs/verificacion-sesion-1.md` a `docs/verificacion-sesion-3.md` y `docs/verificacion-sesion-5.md` — cómo verificar la landing, la consulta, su conexión con Claude y el blindaje de la demo (planes A/B/C, límite del firewall, UTM); `docs/guion-demo.md` — guion de la presentación; `docs/backlog.md` — residuales abiertos.

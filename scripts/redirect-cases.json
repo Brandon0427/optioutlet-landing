@@ -1,0 +1,291 @@
+{
+  "$comment": "Sesión 6: tabla única de casos. La leen scripts/redirects.test.ts (dentro de npm run check) y scripts/verify-redirects.ts (en vivo). store: ruta vieja de la tienda → Location exacto (301). landing: rutas que la landing sirve y nunca se redirigen; @asset = un archivo real de /assets/ tomado del HTML de /.",
+  "store": [
+    {
+      "prefix": "/products",
+      "path": "/products/pupilentes-rojo-vampiro-combo-halloween?variant=1&utm_source=halloween&utm_medium=email&utm_campaign=nov",
+      "location": "https://shop.optioutlet.com.mx/products/pupilentes-rojo-vampiro-combo-halloween?variant=1&utm_source=halloween&utm_medium=email&utm_campaign=nov"
+    },
+    {
+      "prefix": "/products",
+      "path": "/products?utm_source=halloween&utm_medium=email&utm_campaign=nov",
+      "location": "https://shop.optioutlet.com.mx/products?utm_source=halloween&utm_medium=email&utm_campaign=nov"
+    },
+    {
+      "prefix": "/collections",
+      "path": "/collections/vampiros?utm_source=halloween&utm_medium=email&utm_campaign=nov",
+      "location": "https://shop.optioutlet.com.mx/collections/vampiros?utm_source=halloween&utm_medium=email&utm_campaign=nov"
+    },
+    {
+      "prefix": "/collections",
+      "path": "/collections/all?sort_by=price-ascending&page=2",
+      "location": "https://shop.optioutlet.com.mx/collections/all?sort_by=price-ascending&page=2"
+    },
+    {
+      "prefix": "/collections",
+      "path": "/collections/anime/products/pupilentes-sharingan-sasuke-combo-halloween",
+      "location": "https://shop.optioutlet.com.mx/collections/anime/products/pupilentes-sharingan-sasuke-combo-halloween"
+    },
+    {
+      "prefix": "/cart",
+      "path": "/cart?utm_source=halloween&utm_medium=email&utm_campaign=nov",
+      "location": "https://shop.optioutlet.com.mx/cart?utm_source=halloween&utm_medium=email&utm_campaign=nov"
+    },
+    {
+      "prefix": "/cart",
+      "path": "/cart/",
+      "location": "https://shop.optioutlet.com.mx/cart"
+    },
+    {
+      "prefix": "/cart",
+      "path": "/cart/c/abc123?key=xyz",
+      "location": "https://shop.optioutlet.com.mx/cart/c/abc123?key=xyz"
+    },
+    {
+      "prefix": "/carts",
+      "path": "/carts/abc123",
+      "location": "https://shop.optioutlet.com.mx/carts/abc123"
+    },
+    {
+      "prefix": "/pages",
+      "path": "/pages/contact?utm_source=halloween&utm_medium=email&utm_campaign=nov",
+      "location": "https://shop.optioutlet.com.mx/pages/contact?utm_source=halloween&utm_medium=email&utm_campaign=nov"
+    },
+    {
+      "prefix": "/blogs",
+      "path": "/blogs/news/primer-articulo?utm_source=halloween&utm_medium=email&utm_campaign=nov",
+      "location": "https://shop.optioutlet.com.mx/blogs/news/primer-articulo?utm_source=halloween&utm_medium=email&utm_campaign=nov"
+    },
+    {
+      "prefix": "/search",
+      "path": "/search?q=lentes+de+contacto&utm_source=halloween&utm_medium=email&utm_campaign=nov",
+      "location": "https://shop.optioutlet.com.mx/search?q=lentes+de+contacto&utm_source=halloween&utm_medium=email&utm_campaign=nov"
+    },
+    {
+      "prefix": "/account",
+      "path": "/account/login?return_url=/account",
+      "location": "https://shop.optioutlet.com.mx/account/login?return_url=/account"
+    },
+    {
+      "prefix": "/account",
+      "path": "/account",
+      "location": "https://shop.optioutlet.com.mx/account"
+    },
+    {
+      "prefix": "/customer_authentication",
+      "path": "/customer_authentication/login?return_to=/account",
+      "location": "https://shop.optioutlet.com.mx/customer_authentication/login?return_to=/account"
+    },
+    {
+      "prefix": "/policies",
+      "path": "/policies/privacy-policy",
+      "location": "https://shop.optioutlet.com.mx/policies/privacy-policy"
+    },
+    {
+      "prefix": "/discount",
+      "path": "/discount/HALLOWEEN?redirect=/collections/anime&utm_source=halloween&utm_medium=email&utm_campaign=nov",
+      "location": "https://shop.optioutlet.com.mx/discount/HALLOWEEN?redirect=/collections/anime&utm_source=halloween&utm_medium=email&utm_campaign=nov"
+    },
+    {
+      "prefix": "/gift_cards",
+      "path": "/gift_cards/abc123",
+      "location": "https://shop.optioutlet.com.mx/gift_cards/abc123"
+    },
+    {
+      "prefix": "/checkout",
+      "path": "/checkout",
+      "location": "https://shop.optioutlet.com.mx/checkout"
+    },
+    {
+      "prefix": "/checkouts",
+      "path": "/checkouts/cn/abc123?locale=es-MX",
+      "location": "https://shop.optioutlet.com.mx/checkouts/cn/abc123?locale=es-MX"
+    },
+    {
+      "prefix": "/orders",
+      "path": "/orders/abc123",
+      "location": "https://shop.optioutlet.com.mx/orders/abc123"
+    },
+    {
+      "prefix": "/apps",
+      "path": "/apps/reviews?utm_source=halloween&utm_medium=email&utm_campaign=nov",
+      "location": "https://shop.optioutlet.com.mx/apps/reviews?utm_source=halloween&utm_medium=email&utm_campaign=nov"
+    },
+    {
+      "prefix": "/application",
+      "path": "/application/abc",
+      "location": "https://shop.optioutlet.com.mx/application/abc"
+    },
+    {
+      "prefix": "/a",
+      "path": "/a/loyalty",
+      "location": "https://shop.optioutlet.com.mx/a/loyalty"
+    },
+    {
+      "prefix": "/community",
+      "path": "/community/abc",
+      "location": "https://shop.optioutlet.com.mx/community/abc"
+    },
+    {
+      "prefix": "/tools",
+      "path": "/tools/abc",
+      "location": "https://shop.optioutlet.com.mx/tools/abc"
+    },
+    {
+      "prefix": "/cdn",
+      "path": "/cdn/shop/files/logo.png?v=1730000000&width=600",
+      "location": "https://shop.optioutlet.com.mx/cdn/shop/files/logo.png?v=1730000000&width=600"
+    },
+    {
+      "prefix": "/password",
+      "path": "/password",
+      "location": "https://shop.optioutlet.com.mx/password"
+    },
+    {
+      "prefix": "/services",
+      "path": "/services/login_with_shop/authorize",
+      "location": "https://shop.optioutlet.com.mx/services/login_with_shop/authorize"
+    },
+    {
+      "prefix": "/recommendations",
+      "path": "/recommendations/products?product_id=1&limit=4",
+      "location": "https://shop.optioutlet.com.mx/recommendations/products?product_id=1&limit=4"
+    },
+    {
+      "prefix": "/admin",
+      "path": "/admin",
+      "location": "https://shop.optioutlet.com.mx/admin"
+    },
+    {
+      "prefix": "/sf_*",
+      "path": "/sf_private_access_tokens",
+      "location": "https://shop.optioutlet.com.mx/sf_private_access_tokens"
+    },
+    {
+      "prefix": "/<shop-id>/orders",
+      "path": "/102718701700/orders/abc123/authenticate?key=def456",
+      "location": "https://shop.optioutlet.com.mx/102718701700/orders/abc123/authenticate?key=def456"
+    },
+    {
+      "prefix": "/<shop-id>/checkouts",
+      "path": "/102718701700/checkouts/cn/abc123/thank-you",
+      "location": "https://shop.optioutlet.com.mx/102718701700/checkouts/cn/abc123/thank-you"
+    },
+    {
+      "prefix": "/sitemap.xml",
+      "path": "/sitemap.xml",
+      "location": "https://shop.optioutlet.com.mx/sitemap.xml"
+    },
+    {
+      "prefix": "/sitemap_*.xml",
+      "path": "/sitemap_products_1.xml?from=10509647478916&to=15400114126980",
+      "location": "https://shop.optioutlet.com.mx/sitemap_products_1.xml?from=10509647478916&to=15400114126980"
+    },
+    {
+      "prefix": "/sitemap_*.xml",
+      "path": "/sitemap_agentic_discovery.xml",
+      "location": "https://shop.optioutlet.com.mx/sitemap_agentic_discovery.xml"
+    },
+    {
+      "prefix": "/agents.md",
+      "path": "/agents.md",
+      "location": "https://shop.optioutlet.com.mx/agents.md"
+    },
+    {
+      "prefix": "/llms.txt",
+      "path": "/llms.txt",
+      "location": "https://shop.optioutlet.com.mx/llms.txt"
+    },
+    {
+      "prefix": "/<root>.json|.js",
+      "path": "/products.json",
+      "location": "https://shop.optioutlet.com.mx/products.json"
+    },
+    {
+      "prefix": "/<root>.json|.js",
+      "path": "/collections.json",
+      "location": "https://shop.optioutlet.com.mx/collections.json"
+    },
+    {
+      "prefix": "/<root>.json|.js",
+      "path": "/cart.js",
+      "location": "https://shop.optioutlet.com.mx/cart.js"
+    }
+  ],
+  "landing": [
+    {
+      "path": "/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/?demo=1&utm_source=halloween&utm_medium=email&utm_campaign=nov",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "@asset",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/favicon.ico",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/favicon.svg",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/apple-touch-icon.png",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/api/chat",
+      "method": "POST",
+      "status": 400
+    }
+  ],
+  "requiredPrefixes": {
+    "decision4": [
+      "/products",
+      "/collections",
+      "/cart",
+      "/pages",
+      "/blogs",
+      "/search",
+      "/account",
+      "/policies",
+      "/discount",
+      "/gift_cards",
+      "/checkouts",
+      "/apps",
+      "/a",
+      "/tools",
+      "/cdn",
+      "/password",
+      "/sitemap.xml",
+      "/sitemap_*.xml",
+      "/<shop-id>/orders",
+      "/<shop-id>/checkouts"
+    ],
+    "phase1": [
+      "/carts",
+      "/checkout",
+      "/orders",
+      "/services",
+      "/application",
+      "/community",
+      "/customer_authentication",
+      "/recommendations",
+      "/admin",
+      "/sf_*",
+      "/agents.md",
+      "/llms.txt",
+      "/<root>.json|.js"
+    ]
+  }
+}

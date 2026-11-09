@@ -5,5 +5,27 @@
       "source": "/assets/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
     }
+  ],
+  "redirects": [
+    {
+      "source": "/:prefix(products|collections|cart|carts|pages|blogs|search|account|customer_authentication|policies|discount|gift_cards|checkout|checkouts|orders|apps|application|a|community|tools|cdn|password|services|recommendations|admin|sf_[^/]+){/}?",
+      "destination": "https://shop.optioutlet.com.mx/:prefix",
+      "statusCode": 301
+    },
+    {
+      "source": "/:prefix(products|collections|cart|carts|pages|blogs|search|account|customer_authentication|policies|discount|gift_cards|checkout|checkouts|orders|apps|application|a|community|tools|cdn|password|services|recommendations|admin|sf_[^/]+)/:path+{/}?",
+      "destination": "https://shop.optioutlet.com.mx/:prefix/:path+",
+      "statusCode": 301
+    },
+    {
+      "source": "/:shopId(\\d+)/:path+{/}?",
+      "destination": "https://shop.optioutlet.com.mx/:shopId/:path+",
+      "statusCode": 301
+    },
+    {
+      "source": "/:file(sitemap\\.xml|sitemap_[\\w-]+\\.xml|agents\\.md|llms\\.txt|cart\\.js|cart\\.json|products\\.json|collections\\.json|search\\.json)",
+      "destination": "https://shop.optioutlet.com.mx/:file",
+      "statusCode": 301
+    }
   ]
 }
