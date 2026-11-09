@@ -53,3 +53,72 @@ Trabajo residual registrado al cerrar fases. Cada entrada tiene su razón, sus
 - **Medición pendiente:** `npm run build && npm run preview`, abrir
   http://localhost:4173 en Chrome → DevTools → Lighthouse → modo navegación,
   escritorio y móvil, y anotar las cuatro calificaciones aquí.
+
+## Sesión 5 · Fase 5 — Residuales R1, R2 y R3 (2026-11-09)
+
+### R1. Safari de escritorio — CERRADA CON RESIDUAL
+
+- **Hecho:** pasada automatizada con WebKit de Playwright 1.64.1 (WebKit 27.2)
+  contra producción con `?demo=1`, a 1440 × 800 y 1470 × 956 (resolución nativa
+  de la Mac de la demo). Pines, alturas de sección, modo compacto, secciones
+  fijadas a 72 px al 25/50/75 % de cada pin y la consulta completa: **idénticos a
+  Chrome 157** (0 diferencias de más de 1 px). Detalle en
+  `docs/verificacion-sesion-5.md`.
+- **Razón del residual:** WebKit de Playwright es una aproximación; no es Safari
+  (motor de scroll, barra y `font-display` del sistema pueden diferir).
+- **Ítems:** la lista manual "R1 · Safari de escritorio" de
+  `docs/verificacion-sesion-5.md`.
+- **Medición pendiente:** que Brandon recorra esa lista en Safari real y anote
+  aquí el resultado. No bloquea la demo: se presenta en Chrome.
+
+### R2. iPhone real — CERRADA CON RESIDUAL
+
+- **Razón:** requiere el dispositivo.
+- **Ítems:** la lista manual "R2 · iPhone" de `docs/verificacion-sesion-5.md`
+  (franja bajo el escenario fijo, mirada en reposo de la pupila, pines por
+  inercia, modo compacto).
+- **Medición pendiente:** confirmación visual de cada punto en Safari de iOS,
+  con https://optioutlet-landing.vercel.app/?demo=1. Si un pin brinca, evaluar
+  `ScrollTrigger.normalizeScroll()` (motor de scroll: va en su propia fase).
+
+### R3. Lighthouse — CERRADA
+
+Medido en producción (`https://optioutlet-landing.vercel.app/?demo=1`, para no
+gastar API), Lighthouse 13.5.0 con Chrome 157, tres corridas por formato,
+mediana. "Después" = con `vercel.json` (caché inmutable en `/assets/*`).
+
+| Formato | Momento | Rendimiento | Accesibilidad | Buenas prácticas | SEO |
+|---|---|---|---|---|---|
+| Móvil | Antes | 98 | 100 | 96 | 90 |
+| Móvil | Después | 98 | 100 | 96 | 90 |
+| Escritorio | Antes | 100 | 100 | 96 | 90 |
+| Escritorio | Después | 100 | 100 | 96 | 90 |
+
+La caché no cambia la calificación (Lighthouse mide una carga en frío), pero
+cada recarga posterior ya no vuelve a descargar JS, CSS ni fuentes.
+
+Lo que no se arregló aquí, por estar fuera de lo permitido en la sesión:
+
+#### B1. Errores de consola del listón (`<textPath> startOffset=""`)
+- **Razón:** vienen de la animación del listón del cierre (GSAP sobre
+  `startOffset` en `StoreCta`): el motor de scroll no se toca en esta sesión.
+  No se ve nada en pantalla; Lighthouse los cuenta en "Buenas prácticas".
+- **Ítems:** 21 errores "Unexpected end of attribute. Expected length, """ por
+  carga.
+- **Medición pendiente:** Buenas prácticas pasa de 96 a 100 junto con B2; el
+  listón conserva su recorrido 0 → L − T (verificación de la Sesión 1).
+
+#### B2. `/favicon.ico` responde 404
+- **Razón:** el ícono es un recurso de marca (SVG oficiales: fuera de alcance).
+- **Medición pendiente:** 0 errores 404 en consola al cargar.
+
+#### B3. Sin `<meta name="description">`
+- **Razón:** SEO y metadatos para compartir quedan fuera de esta sesión.
+- **Medición pendiente:** SEO de 90 a 100.
+
+#### B4. Cadena de carga CSS → fuentes
+- **Razón:** precargar las fuentes con hash pide tocar el build y cambia el
+  momento en que se sustituye la tipografía (algo visible al cargar).
+- **Ítems:** `render-blocking-insight` 0.5 y `network-dependency-tree-insight` 0;
+  FCP móvil de 1.73 s (mediana), CLS 0.026.
+- **Medición pendiente:** FCP y CLS móviles antes y después de un `preload`.
