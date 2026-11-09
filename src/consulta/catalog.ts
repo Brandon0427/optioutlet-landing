@@ -5,7 +5,7 @@
  * Session 2: placeholder products. Session 4 replaces the DATA with real
  * Johnson & Johnson products; the `Product` shape is final.
  */
-import { STORE_URL } from '../content/landing.js';
+import { STORE_URL } from '../config/store.js';
 
 export type Replacement = 'daily' | 'biweekly' | 'monthly';
 export type LensDesign = 'spherical' | 'toric' | 'multifocal';
@@ -20,7 +20,7 @@ export interface Product {
   material: Material;
   priceMXN: number | null; // null = shown as [PRECIO]
   imageUrl: string | null; // null = "Foto del producto" placeholder
-  storeUrl: string; // for now, the store URL
+  storeUrl: string; // absolute URL on the store's origin (STORE_URL); for now, the store's home
   isPlaceholder: boolean;
 }
 

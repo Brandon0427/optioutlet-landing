@@ -5,11 +5,10 @@
  */
 
 import type { LensDesign, Material, Replacement } from '../consulta/catalog.js';
+import { storeLink } from '../config/store.js';
 
 /** Mascot name. Change it here and nowhere else. */
 export const MASCOT_NAME = 'Opti';
-
-export const STORE_URL = 'https://shop.optioutlet.com.mx';
 
 const BRAND_NAME = 'Optioutlet';
 
@@ -142,7 +141,7 @@ export const landing: LandingContent = {
     navLabel: 'Principal',
     links: [
       { label: 'Cómo funciona', href: '#como' },
-      { label: 'Tienda', href: STORE_URL, external: true },
+      { label: 'Tienda', href: storeLink('/', 'header-tienda'), external: true },
     ],
     cta: consultaLink,
   },
@@ -151,7 +150,7 @@ export const landing: LandingContent = {
     title: 'Cuéntanos cómo vives y te decimos qué lentes van contigo.',
     body: `${MASCOT_NAME}, nuestro asistente, te hace cinco preguntas sobre tu día a día y te recomienda lentes de contacto de nuestro catálogo. Tú traes la receta; nosotros te ayudamos a elegir.`,
     primaryCta: consultaLink,
-    secondaryCta: { label: 'Prefiero ir directo a la tienda', href: STORE_URL, external: true },
+    secondaryCta: { label: 'Prefiero ir directo a la tienda', href: storeLink('/', 'hero-tienda'), external: true },
     seal: `CONSULTA CON ${MASCOT_NAME.toUpperCase()} • TODO PARA VER BIEN • CONSULTA CON ${MASCOT_NAME.toUpperCase()} • TODO PARA VER BIEN •`,
   },
 
@@ -297,7 +296,7 @@ export const landing: LandingContent = {
   storeCta: {
     title: '¿Ya sabes cuáles quieres?',
     body: 'Todo nuestro catálogo de lentes de contacto está en la tienda.',
-    primaryCta: { label: 'Ir a la tienda', href: STORE_URL, external: true },
+    primaryCta: { label: 'Ir a la tienda', href: storeLink('/', 'cierre-tienda'), external: true },
     secondaryCta: consultaLink,
     ribbon: 'TODO PARA VER BIEN • TODO PARA VER BIEN •',
   },

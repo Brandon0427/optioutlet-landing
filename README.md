@@ -25,6 +25,7 @@ Requiere Node `>=22.12`.
   - `ANTHROPIC_MODEL`: por defecto `claude-sonnet-5-5`.
   - `ANTHROPIC_EFFORT`: `low` | `medium` | `high`; por defecto `medium`.
   - En el cliente, `VITE_CONSULTA_PROVIDER` (`api` | `scripted`) y `VITE_API_BASE_URL`.
+  - `VITE_STORE_URL` (cliente): origen de la tienda; vacío = `https://shop.optioutlet.com.mx`.
 - **Regla de imports `.js`:** todo archivo que el servidor importe en tiempo de ejecución (`api/`, `server/`, `scripts/` y lo que cargan del dominio: `schema.ts`, `catalog.ts`, `progress.ts`, `content/consulta.ts`, `content/landing.ts`) usa especificadores relativos con `.js` (`'./types.js'`). Vercel corre la función como ESM nativo y Node no resuelve imports sin extensión; Vite y tsc resuelven `.js` a `.ts`. Si un archivo nuevo entra a esa cadena, sigue la misma regla.
 - `npm run check` también revisa los tipos de `api/`, `server/` y `scripts/` (`tsconfig.server.json`).
 
@@ -64,6 +65,7 @@ en líneas separadas): un build roto llegó así a un commit en la Sesión 2.
 
 ## Estructura
 
+- `src/config/store.ts` — único lugar con el dominio de la tienda (`STORE_URL`, de `VITE_STORE_URL`) y `storeLink(target, placement)`, que arma cada enlace a la tienda con UTM (`utm_source=landing`, `utm_medium=referral`, `utm_campaign=opti`, `utm_content=<placement>`) o reenvía los `utm_*` con los que llegó la visita. Ningún otro archivo escribe el dominio; lo prueba `scripts/storeDomain.test.ts`.
 - `src/content/landing.ts` — todo texto visible (es-MX). Los componentes no llevan texto suelto. El nombre de la mascota vive en `MASCOT_NAME`.
 - `src/styles/index.css` — tokens de marca y tipografías en `@theme`. La fuente de texto se cambia solo en `--font-sans`.
 - `src/styles/fonts.css` — `@font-face` autoalojados, solo subconjunto latín (español completo).

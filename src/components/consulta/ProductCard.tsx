@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import { storeLink } from '../../config/store';
 import { landing } from '../../content/landing';
 import type { ResolvedRecommendation } from '../../consulta/recommend';
 import { ActionLink } from '../ui/ActionLink';
@@ -51,7 +52,11 @@ export function ProductCard({ item }: { item: ResolvedRecommendation }) {
             {product.priceMXN === null ? result.price : priceFormat.format(product.priceMXN)}
           </span>
           <ActionLink
-            link={{ label: result.storeCta, href: product.storeUrl, external: true }}
+            link={{
+              label: result.storeCta,
+              href: storeLink(product.storeUrl, recommendation.rank === 1 ? 'recomendacion-1' : 'recomendacion-2'),
+              external: true,
+            }}
             className="inline-flex min-h-11 items-center rounded-full bg-teal px-5 text-[15px] font-bold text-navy no-underline transition-colors hover:bg-mint hover:text-navy"
           >
             {result.storeCta}
