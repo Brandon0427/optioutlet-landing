@@ -28,3 +28,6 @@ vite.config.ts
 index.html
 .claude/
 .vscode/
+
+# Vercel project config (headers only)
+vercel.json
