@@ -35,12 +35,12 @@ avanzan con el scroll: si bajas rápido, la animación pasa rápido.
 
 | Sección | Qué mostrar | Tiempo |
 |---|---|---|
-| Inicio | La promesa: “Cuéntanos cómo vives y te decimos qué lentes van contigo”. Mueve el cursor sobre el disco: la pupila lo sigue. | 25 s |
-| Revelación | Se queda fija: la pupila crece hasta cubrir la pantalla y aparece Opti con “Antes de recomendarte algo, queremos conocerte”. Lee los tres puntos: no calcula graduación, pide receta vigente y refiere si hay molestias. | 35 s |
+| Inicio | Quiénes somos: “Lentes para cada forma de ver.” y “Somos Optioutlet: lentes de contacto graduados y de color, soluciones y armazones.” Señala los dos sellos (“+100 mil ventas”, “Envío a todo México”) y la fila “También en” (Mercado Libre, Amazon, Liverpool; por ahora con su nombre, mientras llegan los logos oficiales). Mueve el cursor sobre el disco: la pupila lo sigue. | 30 s |
+| Revelación | Al entrar, debajo de la pupila: “Sigue bajando para conocer a Opti”, con el mouse y las flechas animadas. Sigue bajando: la pupila crece hasta cubrir la pantalla y aparece Opti con “¿No sabes cuáles elegir?” y “Conoce a Opti.”. Lee la presentación: cinco preguntas sobre tu día a día; tú traes la receta, Opti te ayuda a elegir. | 35 s |
 | Cómo funciona | Tres pasos que cambian con el scroll, con el teléfono mostrando cada pantalla. | 35 s |
 | Perfiles | Las cinco tarjetas corren de lado: para quién es cada tipo de lente. | 30 s |
 | Consulta | Detente aquí: Opti ya saluda solo. Pasa a la conversación principal. | — |
-| Receta y cierre | Después de la conversación: “Tu receta primero” y el listón “Todo para ver bien” con “Ir a la tienda”. | 25 s |
+| Receta y cierre | Después de la conversación: “Tu receta primero” y el listón “Todo para ver bien” con “Ir a la tienda”. El listón corre como una banda continua mientras bajas por el cierre. | 25 s |
 
 ## Conversación principal (unos 15 s de espera en total con Claude)
 

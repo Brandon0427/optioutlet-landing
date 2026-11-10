@@ -223,3 +223,19 @@ Lo que no se arregló aquí, por estar fuera de lo permitido en la sesión:
   corridas, 49/49 cada una e iguales a las anteriores. La tienda responde 200
   en `shop.optioutlet.com.mx`. Ver `docs/verificacion-sesion-6.md`,
   sección 11.
+
+## Sesión 7 — Narrativa de marca (2026-11-10)
+
+### Logos de las tiendas — `TODO(brand-logos)`
+
+- **Razón:** no tenemos los archivos oficiales de Mercado Libre, Amazon y
+  Liverpool, y no se dibujan ni se aproximan. Mientras tanto, la fila
+  “También en” del hero muestra el nombre de cada tienda como texto.
+- **Ítems:** `src/components/brand/MarketplaceLogos.tsx`: reemplazar el
+  contenido de cada `li` por el logo oficial (Mercado Libre, de preferencia su
+  sello de Tienda oficial). La prueba de `src/sections/__tests__/hero.test.tsx`
+  que pide nombres en texto y ningún `<svg>`/`<img>` se ajusta en ese momento.
+- **Medición pendiente:** contraste o legibilidad de cada logo sobre el
+  gradiente del hero en el peor caso (mismo método que en
+  `docs/verificacion-sesion-7.md`) y que la fila siga acomodándose en varias
+  filas a 375 px.
