@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>Optioutlet, consulta con Opti</title>
+<title>Optioutlet — Todo para ver bien</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -20,7 +20,12 @@ a{color:#214367}a:hover{color:#163049}
 .oo-chip:hover{background:#214367;color:#ffffff}
 @keyframes ooBlink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(0.08)}}
 .oo-blink{animation:ooBlink 5.5s infinite ease-in-out;transform-origin:center}
-@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}.oo-dot{animation:none}.oo-blink{animation:none}}
+@keyframes ooWheel{0%{transform:translateY(0);opacity:1}70%{transform:translateY(13px);opacity:0}100%{transform:translateY(0);opacity:0}}
+.oo-wheel{animation:ooWheel 1.6s infinite ease-in-out}
+@keyframes ooChev{0%,100%{opacity:.15;transform:translateY(-3px)}50%{opacity:1;transform:translateY(2px)}}
+.oo-chev{animation:ooChev 1.6s infinite ease-in-out}
+.oo-chev2{animation-delay:.25s}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}.oo-dot{animation:none}.oo-blink{animation:none}.oo-wheel{animation:none}.oo-chev{animation:none;opacity:1}}
 </style>
 </helmet>
 <div style="position: relative; font-family: 'Albert Sans', system-ui, sans-serif; color: #2b3a4a; background: #ffffff">
@@ -79,8 +84,22 @@ a{color:#214367}a:hover{color:#163049}
   </sc-for>
   <div style="position: relative; z-index: 2; max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 56px">
     <div style="flex: 1 1 460px; max-width: 600px; display: flex; flex-direction: column; gap: 30px">
-      <h1 style="margin: 0; font-family: 'Unbounded', sans-serif; font-weight: 600; font-size: clamp(40px, 5.2vw, 72px); line-height: 1.04; letter-spacing: -0.03em; color: #ffffff">Cuéntanos cómo vives y te decimos qué lentes van contigo.</h1>
-      <p style="margin: 0; max-width: 30em; font-size: 20px; line-height: 1.6; color: #e4f3f1">Opti, nuestro asistente, te hace cinco preguntas sobre tu día a día y te recomienda lentes de contacto de nuestro catálogo. Tú traes la receta; nosotros te ayudamos a elegir.</p>
+      <h1 style="margin: 0; font-family: 'Unbounded', sans-serif; font-weight: 600; font-size: clamp(34px, 4.2vw, 58px); line-height: 1.06; letter-spacing: -0.03em; color: #ffffff">Lentes para cada forma de ver.</h1>
+      <p style="margin: 0; max-width: 26em; font-size: 20px; line-height: 1.55; color: #e4f3f1">Somos Optioutlet: lentes de contacto graduados y de color, soluciones y armazones.</p>
+      <div style="display: flex; flex-direction: column; gap: 14px; margin-top: -4px">
+        <ul aria-label="Por qué comprar en Optioutlet" style="list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px">
+          <li style="display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 0 16px 0 10px; border-radius: 999px; background: #ffffff; color: #214367; font-size: 15px; font-weight: 700"><svg viewBox="0 0 20 20" aria-hidden="true" style="width: 20px; height: 20px"><circle cx="10" cy="10" r="9" fill="#67bbb5"></circle><path d="M6 10.4 L8.8 13 L14 7.6" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>+100 mil ventas</li>
+          <li style="display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 0 16px 0 12px; border-radius: 999px; border: 1.5px solid rgba(255,255,255,0.6); box-sizing: border-box; color: #ffffff; font-size: 15px; font-weight: 600"><svg viewBox="0 0 24 24" aria-hidden="true" style="width: 20px; height: 20px"><path d="M2 6 H14 V16 H2 Z M14 9 H18.5 L22 12.5 V16 H14" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linejoin="round"></path><circle cx="6.5" cy="17.5" r="2" fill="#214367" stroke="#ffffff" stroke-width="1.8"></circle><circle cx="17.5" cy="17.5" r="2" fill="#214367" stroke="#ffffff" stroke-width="1.8"></circle></svg>Envío a todo México</li>
+        </ul>
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+          <span style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #b2ddd5">También en</span>
+          <ul aria-label="Tiendas donde vendemos" style="list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px">
+            <li style="display: inline-flex; align-items: center; justify-content: center; width: 112px; height: 36px; border-radius: 10px; border: 1.5px dashed rgba(255,255,255,0.55); box-sizing: border-box; font-size: 11px; font-weight: 600; color: #d6ecea">[Mercado Libre]</li>
+            <li style="display: inline-flex; align-items: center; justify-content: center; width: 112px; height: 36px; border-radius: 10px; border: 1.5px dashed rgba(255,255,255,0.55); box-sizing: border-box; font-size: 11px; font-weight: 600; color: #d6ecea">[Amazon]</li>
+            <li style="display: inline-flex; align-items: center; justify-content: center; width: 112px; height: 36px; border-radius: 10px; border: 1.5px dashed rgba(255,255,255,0.55); box-sizing: border-box; font-size: 11px; font-weight: 600; color: #d6ecea">[Liverpool]</li>
+          </ul>
+        </div>
+      </div>
       <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 22px">
         <a href="#consulta" style="display: inline-flex; align-items: center; min-height: 58px; padding: 0 32px; border-radius: 999px; background: #ffffff; color: #214367; font-size: 18px; font-weight: 700; text-decoration: none">Empezar mi consulta</a>
         <a href="https://shop.optioutlet.com.mx" target="_blank" rel="noopener" style="font-size: 17px; font-weight: 600; color: #ffffff; text-underline-offset: 5px">Prefiero ir directo a la tienda</a>
@@ -104,13 +123,18 @@ a{color:#214367}a:hover{color:#163049}
       <div style="position: absolute; width: 60px; height: 60px; right: 22px; top: 6px; border-radius: 50%; background: #eef7f6; opacity: {{biteOpacity}}"></div>
     </div>
     <svg aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: {{revealPat}}; pointer-events: none"><rect width="100%" height="100%" fill="url(#oo-pat-dark)"></rect></svg>
-    <p aria-hidden="true" style="position: absolute; left: 0; right: 0; top: calc(50% + 112px); margin: 0; text-align: center; font-size: 17px; font-weight: 600; color: #214367; opacity: {{capOpacity}}">Sigue bajando para conocer a Opti</p>
+    <div aria-hidden="true" style="position: absolute; left: 0; right: 0; top: calc(50% + 104px); display: flex; flex-direction: column; align-items: center; gap: 12px; opacity: {{capOpacity}}; pointer-events: none">
+      <p style="margin: 0; text-align: center; font-size: 17px; font-weight: 600; color: #214367">Sigue bajando para conocer a Opti</p>
+      <svg viewBox="0 0 28 44" style="width: 28px; height: 44px"><rect x="1.5" y="1.5" width="25" height="41" rx="12.5" fill="none" stroke="#214367" stroke-width="2.5"></rect><circle class="oo-wheel" cx="14" cy="12" r="3.2" fill="#214367"></circle></svg>
+      <svg viewBox="0 0 24 26" style="width: 22px; height: 24px; margin-top: -4px"><path class="oo-chev oo-chev1" d="M5 4 L12 11 L19 4" fill="none" stroke="#214367" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path><path class="oo-chev oo-chev2" d="M5 14 L12 21 L19 14" fill="none" stroke="#67bbb5" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </div>
     <div style="position: relative; z-index: 2; max-width: 880px; display: flex; flex-direction: column; align-items: center; gap: 26px; text-align: center; opacity: {{t1Opacity}}">
       <div style="width: 168px; height: 168px; border-radius: 50%; background: #214367; display: flex; align-items: center; justify-content: center; transform: scale({{mascotScale}})">
         <svg viewBox="0 0 120 120" role="img" aria-label="Opti, la mascota de Optioutlet" style="width: 150px; height: 150px"><path d="M58 46 L30 56 C14 62 16 80 32 80 L46 76" fill="none" stroke="#67bbb5" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"></path><path d="M50 46 C44 30 48 14 60 14 C70 14 72 26 76 36 L84 56" fill="none" stroke="#67bbb5" stroke-width="10" stroke-linecap="round"></path><path d="M84 56 L100 28" fill="none" stroke="#67bbb5" stroke-width="10" stroke-linecap="round"></path><path d="M84 60 C92 72 86 86 72 86 L62 86 C52 86 48 80 46 74" fill="none" stroke="#67bbb5" stroke-width="10" stroke-linecap="round"></path><circle cx="48" cy="58" r="15" fill="#ffffff" stroke="#67bbb5" stroke-width="4"></circle><circle cx="76" cy="58" r="15" fill="#ffffff" stroke="#67bbb5" stroke-width="4"></circle><circle cx="50" cy="59" r="7" fill="#214367"></circle><circle cx="78" cy="59" r="7" fill="#214367"></circle><circle cx="53" cy="56" r="2.6" fill="#ffffff"></circle><circle cx="81" cy="56" r="2.6" fill="#ffffff"></circle><path d="M56 90 L56 106" fill="none" stroke="#67bbb5" stroke-width="6"></path><path d="M70 90 L70 106" fill="none" stroke="#67bbb5" stroke-width="6"></path><path d="M47 110 A8 8 0 0 1 61 110 Z" fill="#67bbb5"></path><path d="M65 110 A8 8 0 0 1 79 110 Z" fill="#67bbb5"></path></svg>
       </div>
-      <h2 style="margin: 0; font-family: 'Unbounded', sans-serif; font-weight: 600; font-size: clamp(32px, 4.2vw, 58px); line-height: 1.1; letter-spacing: -0.025em; color: #ffffff">Antes de recomendarte algo, queremos conocerte.</h2>
-      <p style="margin: 0 auto; max-width: 32em; font-size: 20px; line-height: 1.6; color: #d6ecea">Soy Opti. Te haré unas preguntas sobre cómo vives, no sobre qué quieres comprar.</p>
+      <p style="margin: 0 0 -12px; font-size: 17px; font-weight: 600; letter-spacing: 0.04em; color: #b2ddd5">¿No sabes cuáles elegir?</p>
+      <h2 style="margin: 0; font-family: 'Unbounded', sans-serif; font-weight: 600; font-size: clamp(32px, 4.2vw, 58px); line-height: 1.1; letter-spacing: -0.025em; color: #ffffff">Conoce a Opti.</h2>
+      <p style="margin: 0 auto; max-width: 34em; font-size: 20px; line-height: 1.6; color: #d6ecea">Soy el asistente de Optioutlet. Antes de recomendarte algo, quiero conocerte: te hago cinco preguntas sobre tu día a día y te muestro los lentes que van contigo. Tú traes la receta; yo te ayudo a elegir.</p>
     </div>
   </div>
 </section>
@@ -319,8 +343,8 @@ a{color:#214367}a:hover{color:#163049}
   </div>
 </section>
 
-<section style="position: relative; overflow: hidden; padding: 120px clamp(20px, 4vw, 48px); background: radial-gradient(55% 80% at 100% 30%, #6fc8c1 0%, rgba(111,200,193,0) 70%), radial-gradient(45% 70% at 80% 110%, #9ad4c7 0%, rgba(154,212,199,0) 70%), radial-gradient(60% 90% at 0% 50%, #1b3756 0%, rgba(27,55,86,0) 75%), #26506f">
-  <svg aria-hidden="true" viewBox="0 0 340 420" style="position: absolute; right: clamp(-120px, -2vw, 0px); top: 50%; width: 400px; height: 494px; margin-top: -247px; transform: rotate(-14deg); pointer-events: none"><defs><path id="oo-ribbon" d="M60 10 V250 A110 110 0 0 0 280 250 V10"></path></defs><path d="M60 10 V250 A110 110 0 0 0 280 250 V10" fill="none" stroke="#67bbb5" stroke-width="60"></path><text fill="#214367" dominant-baseline="central" style="font-family: 'Unbounded', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: 2px"><textPath href="#oo-ribbon" startOffset="{{ribbonOff}}">TODO PARA VER BIEN • TODO PARA VER BIEN •</textPath></text></svg>
+<section id="oo-cierre" style="position: relative; overflow: hidden; padding: 120px clamp(20px, 4vw, 48px); background: radial-gradient(55% 80% at 100% 30%, #6fc8c1 0%, rgba(111,200,193,0) 70%), radial-gradient(45% 70% at 80% 110%, #9ad4c7 0%, rgba(154,212,199,0) 70%), radial-gradient(60% 90% at 0% 50%, #1b3756 0%, rgba(27,55,86,0) 75%), #26506f">
+  <svg aria-hidden="true" viewBox="0 0 340 420" style="position: absolute; right: clamp(-120px, -2vw, 0px); top: 50%; width: 400px; height: 494px; margin-top: -247px; transform: rotate(-14deg); pointer-events: none"><defs><path id="oo-ribbon" d="M60 10 V250 A110 110 0 0 0 280 250 V10"></path></defs><path d="M60 10 V250 A110 110 0 0 0 280 250 V10" fill="none" stroke="#67bbb5" stroke-width="60"></path><text fill="#214367" dominant-baseline="central" style="font-family: 'Unbounded', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: 2px"><textPath href="#oo-ribbon" startOffset="{{ribbonOff}}" textLength="1680" lengthAdjust="spacing">TODO PARA VER BIEN • TODO PARA VER BIEN • TODO PARA VER BIEN • TODO PARA VER BIEN •</textPath></text></svg>
   <div style="position: relative; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; padding-right: clamp(0px, 24vw, 380px)">
     <h2 style="margin: 0; font-family: 'Unbounded', sans-serif; font-weight: 600; font-size: clamp(30px, 3.6vw, 52px); line-height: 1.1; letter-spacing: -0.025em; color: #ffffff">¿Ya sabes cuáles quieres?</h2>
     <p style="margin: 0; max-width: 28em; font-size: 20px; line-height: 1.6; color: #e4f3f1">Todo nuestro catálogo de lentes de contacto está en la tienda.</p>
@@ -356,7 +380,7 @@ a{color:#214367}a:hover{color:#163049}
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { mode: 'static', narrow: false, comoW: 1200, vh: 800, vw: 1280, sy: 0, heroP: 0, p1: 0, p2: 0, p3: 0, overflow: 0, eyeX: 0, eyeY: 0, answers: [], typing: false, draft: '' };
+    this.state = { mode: 'static', narrow: false, comoW: 1200, vh: 800, vw: 1280, sy: 0, heroP: 0, p1: 0, p2: 0, p3: 0, pC: 0, overflow: 0, eyeX: 0, eyeY: 0, answers: [], typing: false, draft: '' };
     this.raf = null;
     this.timer = null;
     this.lastCount = 0;
@@ -459,7 +483,13 @@ class Component extends DCLogic {
     }
     const comoInner = document.getElementById('oo-como-inner');
     const comoW = comoInner ? comoInner.clientWidth : 1200;
-    const next = { mode, narrow, comoW, vh, vw, sy, heroP, p1: prog('oo-t1'), p2: prog('como'), p3: prog('oo-t3'), overflow };
+    const cierre = document.getElementById('oo-cierre');
+    let pC = 0;
+    if (cierre) {
+      const rc = cierre.getBoundingClientRect();
+      pC = r3(clamp((vh - rc.top) / (vh + rc.height)));
+    }
+    const next = { mode, narrow, comoW, vh, vw, sy, heroP, p1: prog('oo-t1'), p2: prog('como'), p3: prog('oo-t3'), pC, overflow };
     const s = this.state;
     const changed = Object.keys(next).some((k) => next[k] !== s[k]);
     if (!changed) return;
@@ -637,7 +667,7 @@ class Component extends DCLogic {
       inputDisabled: done || s.typing,
       restart: this.restart,
 
-      ribbonOff: anim ? Math.round((Math.sin(sy / 420) + 1) * 130) : 40,
+      ribbonOff: anim ? Math.round(-420 + s.pC * 420) : -210,
       stripY: anim ? Math.round(-((sy * 0.15) % 374.4)) : 0
     };
   }

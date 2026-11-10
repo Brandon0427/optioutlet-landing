@@ -45,6 +45,10 @@ export type LandingContent = {
   hero: {
     title: string;
     body: string;
+    /** Trust badges (a `ul` with `listLabel`). */
+    badges: { listLabel: string; sales: string; shipping: string };
+    /** "También en" row. `stores` are shown as text until the official logos arrive. */
+    marketplaces: { label: string; listLabel: string; stores: string[] };
     primaryCta: Link;
     secondaryCta: Link;
     seal: string;
@@ -147,8 +151,18 @@ export const landing: LandingContent = {
   },
 
   hero: {
-    title: 'Cuéntanos cómo vives y te decimos qué lentes van contigo.',
-    body: `${MASCOT_NAME}, nuestro asistente, te hace cinco preguntas sobre tu día a día y te recomienda lentes de contacto de nuestro catálogo. Tú traes la receta; nosotros te ayudamos a elegir.`,
+    title: 'Lentes para cada forma de ver.',
+    body: `Somos ${BRAND_NAME}: lentes de contacto graduados y de color, soluciones y armazones.`,
+    badges: {
+      listLabel: `Por qué comprar en ${BRAND_NAME}`,
+      sales: '+100 mil ventas',
+      shipping: 'Envío a todo México',
+    },
+    marketplaces: {
+      label: 'También en',
+      listLabel: 'Tiendas donde vendemos',
+      stores: ['Mercado Libre', 'Amazon', 'Liverpool'],
+    },
     primaryCta: consultaLink,
     secondaryCta: { label: 'Prefiero ir directo a la tienda', href: storeLink('/', 'hero-tienda'), external: true },
     seal: `CONSULTA CON ${MASCOT_NAME.toUpperCase()} • TODO PARA VER BIEN • CONSULTA CON ${MASCOT_NAME.toUpperCase()} • TODO PARA VER BIEN •`,

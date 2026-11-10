@@ -2,9 +2,11 @@ import { useRef } from 'react';
 import { landing } from '../content/landing';
 import { BrandShape } from '../components/brand/BrandShape';
 import { Isotipo } from '../components/brand/Isotipo';
+import { MarketplaceLogos } from '../components/brand/MarketplaceLogos';
 import { Seal } from '../components/brand/Seal';
 import type { ShapeName } from '../components/brand/geometry';
 import { ActionLink, pill } from '../components/ui/ActionLink';
+import { BRAND_COLORS as C } from '../styles/brandColors';
 import { HEADER_OFFSET, MEDIA, ORDER, SCRUB, ScrollTrigger, gsap, useGSAP } from '../lib/gsap';
 
 const { hero } = landing;
@@ -189,10 +191,33 @@ export function Hero() {
 
       <div className="relative z-[2] mx-auto flex max-w-[1200px] flex-wrap items-center gap-14">
         <div className="flex max-w-[600px] flex-[1_1_460px] flex-col gap-[30px]">
-          <h1 className="m-0 font-display text-[clamp(40px,5.2vw,72px)] leading-[1.04] font-semibold tracking-[-0.03em] text-white">
+          <h1 className="m-0 font-display text-[clamp(34px,4.2vw,58px)] leading-[1.06] font-semibold tracking-[-0.03em] text-white">
             {hero.title}
           </h1>
-          <p className="m-0 max-w-[30em] text-xl leading-[1.6] text-foam-2">{hero.body}</p>
+          <p className="m-0 max-w-[26em] text-xl leading-[1.55] text-foam-2">{hero.body}</p>
+          <div className="-mt-1 flex flex-col gap-[14px]">
+            <ul aria-label={hero.badges.listLabel} className="m-0 flex list-none flex-wrap gap-2.5 p-0">
+              <li className="inline-flex min-h-[38px] items-center gap-2 rounded-full bg-white pr-4 pl-2.5 text-[15px] font-bold text-navy">
+                <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false" className="size-5 shrink-0">
+                  <circle cx="10" cy="10" r="9" fill={C.teal} />
+                  <path d="M6 10.4 L8.8 13 L14 7.6" fill="none" stroke={C.white} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                {hero.badges.sales}
+              </li>
+              <li className="box-border inline-flex min-h-[38px] items-center gap-2 rounded-full border-[1.5px] border-solid border-white/60 pr-4 pl-3 text-[15px] font-semibold text-white">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" className="size-5 shrink-0">
+                  <path d="M2 6 H14 V16 H2 Z M14 9 H18.5 L22 12.5 V16 H14" fill="none" stroke={C.white} strokeWidth="1.8" strokeLinejoin="round" />
+                  <circle cx="6.5" cy="17.5" r="2" fill={C.navy} stroke={C.white} strokeWidth="1.8" />
+                  <circle cx="17.5" cy="17.5" r="2" fill={C.navy} stroke={C.white} strokeWidth="1.8" />
+                </svg>
+                {hero.badges.shipping}
+              </li>
+            </ul>
+            <div className="flex flex-wrap items-center gap-2.5">
+              <span className="text-[13px] font-semibold tracking-[0.06em] text-mint uppercase">{hero.marketplaces.label}</span>
+              <MarketplaceLogos stores={hero.marketplaces.stores} label={hero.marketplaces.listLabel} />
+            </div>
+          </div>
           <div className="flex flex-wrap items-center gap-[22px]">
             <ActionLink link={hero.primaryCta} className={`${pill.base} ${pill.lg} bg-white text-navy hover:bg-mist hover:text-navy`} />
             <ActionLink
