@@ -1,0 +1,1 @@
+{"nodes": [{"id": "consulta_outputschema", "label": "outputSchema (JSON Schema for structured output)", "file_type": "code", "source_file": "server/consulta/outputSchema.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}
