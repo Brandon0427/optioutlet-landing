@@ -119,7 +119,7 @@ en líneas separadas): un build roto llegó así a un commit en la Sesión 2.
 - `src/lib/gsap.ts` — registro único de ScrollTrigger y `useGSAP`; `HEADER_OFFSET = 72`.
 - `src/components/brand/` — isotipo, trazos del patrón, patrones, sello, listón, mascota e imagotipo. `geometry.ts` guarda la geometría compartida.
   - `Mascot.tsx` e `Imagotipo.tsx` son aproximaciones marcadas con `TODO(brand-svg)`; al llegar los vectores oficiales se reemplaza el contenido de ese archivo y nada más.
-  - `MarketplaceLogos.tsx` (fila “También en” del hero) muestra el nombre de cada tienda como texto, marcado con `TODO(brand-logos)`; al llegar los logos oficiales se reemplaza el contenido de cada `li`. No se dibujan logos de terceros.
+  - `MarketplaceLogos.tsx` (fila “También en” del hero) muestra los logos oficiales de `src/assets/brand/marketplaces/` en `<img>` (importados con `?no-inline` para que siempre salgan como archivo con hash). Esos SVG se usan tal cual se entregaron: no se editan ni se dibujan logos de terceros.
   - `Ribbon.tsx` es una banda continua: el lema se repite `RIBBON_REPEATS` veces con un largo fijo por repetición (`RIBBON_REPEAT_LENGTH`, vía `textLength`), y su progreso depende solo de la sección del cierre.
 - `src/styles/brandColors.ts` — hexadecimales de marca para atributos SVG; debe coincidir con `@theme`.
 - `src/components/layout/` — encabezado, footer y franja de patrón. `src/components/ui/ActionLink.tsx` — enlaces y CTAs.

@@ -226,16 +226,13 @@ Lo que no se arregló aquí, por estar fuera de lo permitido en la sesión:
 
 ## Sesión 7 — Narrativa de marca (2026-11-10)
 
-### Logos de las tiendas — `TODO(brand-logos)`
+### Logos de las tiendas — `TODO(brand-logos)` — CERRADA (2026-11-10)
 
-- **Razón:** no tenemos los archivos oficiales de Mercado Libre, Amazon y
-  Liverpool, y no se dibujan ni se aproximan. Mientras tanto, la fila
-  “También en” del hero muestra el nombre de cada tienda como texto.
-- **Ítems:** `src/components/brand/MarketplaceLogos.tsx`: reemplazar el
-  contenido de cada `li` por el logo oficial (Mercado Libre, de preferencia su
-  sello de Tienda oficial). La prueba de `src/sections/__tests__/hero.test.tsx`
-  que pide nombres en texto y ningún `<svg>`/`<img>` se ajusta en ese momento.
-- **Medición pendiente:** contraste o legibilidad de cada logo sobre el
-  gradiente del hero en el peor caso (mismo método que en
-  `docs/verificacion-sesion-7.md`) y que la fila siga acomodándose en varias
-  filas a 375 px.
+- **Hecho:** `MarketplaceLogos` muestra los logos oficiales de Mercado Libre,
+  Amazon y Liverpool (`src/assets/brand/marketplaces/`, usados tal cual se
+  entregaron) en `<img>` con `alt` desde `landing.hero.marketplaces.stores`,
+  sobre pastillas blancas de 112 × 44 px. No son enlaces.
+- **Medición:** logos sin deformar (proporción dibujada contra la del archivo,
+  ±0.003), geometría con el criterio de la Sesión 7, 0 errores de consola y
+  Lighthouse con CLS 0. Detalle en `docs/verificacion-sesion-7.md` › Logos
+  oficiales.

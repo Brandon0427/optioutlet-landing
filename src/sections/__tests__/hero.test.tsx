@@ -51,16 +51,23 @@ describe('Hero', () => {
 describe('MarketplaceLogos', () => {
   const html = renderToStaticMarkup(<MarketplaceLogos stores={hero.marketplaces.stores} label={hero.marketplaces.listLabel} />);
 
-  it('shows the three store names as text while there are no logos', () => {
+  it('shows exactly three official logos as <img>, with the store names from landing.ts as alt', () => {
     expect(hero.marketplaces.stores).toEqual(['Mercado Libre', 'Amazon', 'Liverpool']);
-    const items = html.match(/<li[^>]*>([^<]*)<\/li>/g)?.map((li) => textOf(li).trim());
-    expect(items).toEqual(hero.marketplaces.stores);
+    const imgs = html.match(/<img[^>]*>/g) ?? [];
+    expect(imgs).toHaveLength(3);
+    expect(imgs.map((img) => img.match(/alt="([^"]*)"/)?.[1])).toEqual(hero.marketplaces.stores);
+    for (const img of imgs) {
+      expect(img).toMatch(/src="[^"]+\.svg(\?[^"]*)?"/);
+      expect(img).not.toContain('src="data:');
+      expect(img).toMatch(/width="\d+"/);
+      expect(img).toMatch(/height="\d+"/);
+    }
   });
 
-  it('draws no logos and shows no placeholder brackets', () => {
+  it('draws no logo as inline <svg>, links nowhere and shows no brackets', () => {
     expect(html).not.toContain('<svg');
-    expect(html).not.toContain('<img');
+    expect(html).not.toContain('<a ');
     expect(textOf(html)).not.toMatch(/[[\]]/);
-    expect(html).not.toContain('dashed');
+    expect(html).not.toMatch(/alt="[^"]*[[\]][^"]*"/);
   });
 });
