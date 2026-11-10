@@ -199,3 +199,45 @@
     --store-g1-size: 70% 38%;
   }
 }
+
+/*
+ * Reveal scroll cue (mockup: ooWheel, ooChev — 1.6 s cycles, second chevron
+ * 0.25 s later). Without motion preference it stays still and complete: the
+ * wheel at the top of the mouse and both chevrons fully lit.
+ */
+@keyframes scroll-wheel {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  70% {
+    transform: translateY(13px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+}
+@keyframes scroll-chev {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: translateY(-3px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(2px);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-wheel {
+    animation: scroll-wheel 1.6s infinite ease-in-out;
+  }
+  .scroll-chev {
+    animation: scroll-chev 1.6s infinite ease-in-out;
+  }
+  .scroll-chev-2 {
+    animation-delay: 0.25s;
+  }
+}

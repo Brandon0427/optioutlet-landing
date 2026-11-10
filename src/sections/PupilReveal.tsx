@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { landing } from '../content/landing';
 import { Mascot } from '../components/brand/Mascot';
 import { PatternFill } from '../components/brand/PatternFill';
+import { BRAND_COLORS as C } from '../styles/brandColors';
 import { HEADER_OFFSET, MEDIA, ORDER, SCRUB, STAGE_HEIGHT, STAGE_PAD, ScrollTrigger, gsap, useGSAP } from '../lib/gsap';
 
 const { reveal } = landing;
@@ -14,7 +15,7 @@ const PUPIL_START = 160;
 const MIN_FIT = 0.6;
 
 /**
- * "Antes de recomendarte algo…".
+ * "Conoce a Opti." — the moment the page introduces the mascot.
  * Static (Phase 4 / reduced motion): navy stage, dark pattern at 0.18, Opti visible.
  * Animated: pinned below the header for 1200px of scroll. The navy pupil grows
  * until it covers the stage, its bite fades, the pattern appears and Opti
@@ -25,7 +26,7 @@ export function PupilReveal() {
   const stage = useRef<HTMLDivElement>(null);
   const pupil = useRef<HTMLDivElement>(null);
   const bite = useRef<HTMLDivElement>(null);
-  const caption = useRef<HTMLParagraphElement>(null);
+  const caption = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
   const mascot = useRef<HTMLDivElement>(null);
   const pattern = useRef<SVGSVGElement>(null);
@@ -106,27 +107,50 @@ export function PupilReveal() {
 
         <PatternFill ref={pattern} variant="dark" style={{ opacity: 0.18 }} />
 
-        <p
+        {/* Caption + scroll cue: one block, so the cue shares the caption's opacity tween. */}
+        <div
           ref={caption}
           aria-hidden="true"
-          className="absolute inset-x-0 top-[calc(50%+112px)] m-0 text-center text-[17px] font-semibold text-navy opacity-0"
+          className="pointer-events-none absolute inset-x-0 top-[calc(50%+104px)] flex flex-col items-center gap-3 opacity-0"
         >
-          {reveal.caption}
-        </p>
+          <p className="m-0 text-center text-[17px] font-semibold text-navy">{reveal.caption}</p>
+          <ScrollCue />
+        </div>
 
         <div ref={content} className="relative z-[2] flex max-w-[880px] flex-col items-center gap-[26px] text-center">
           <div ref={mascot} className="flex size-[168px] items-center justify-center rounded-full bg-navy">
             <Mascot variant="onNavy" size={150} />
           </div>
+          <p className="m-0 -mb-3 text-[17px] font-semibold tracking-[0.04em] text-mint">{reveal.eyebrow}</p>
           <h2
             id="reveal-title"
             className="m-0 font-display text-[clamp(32px,4.2vw,58px)] leading-[1.1] font-semibold tracking-[-0.025em] text-white"
           >
             {reveal.title}
           </h2>
-          <p className="m-0 mx-auto max-w-[32em] text-xl leading-[1.6] text-foam">{reveal.body}</p>
+          <p className="m-0 mx-auto max-w-[34em] text-xl leading-[1.6] text-foam">{reveal.body}</p>
         </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * Mouse outline with a wheel that drops and fades, and two chevrons that light
+ * up one after the other (navy, then teal). CSS-only (`scroll-wheel`,
+ * `scroll-chev` in index.css); still and complete with reduced motion.
+ */
+function ScrollCue() {
+  return (
+    <>
+      <svg viewBox="0 0 28 44" focusable="false" className="h-11 w-7">
+        <rect x="1.5" y="1.5" width="25" height="41" rx="12.5" fill="none" stroke={C.navy} strokeWidth="2.5" />
+        <circle className="scroll-wheel" cx="14" cy="12" r="3.2" fill={C.navy} />
+      </svg>
+      <svg viewBox="0 0 24 26" focusable="false" className="-mt-1 h-6 w-[22px]">
+        <path className="scroll-chev" d="M5 4 L12 11 L19 4" fill="none" stroke={C.navy} strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+        <path className="scroll-chev scroll-chev-2" d="M5 14 L12 21 L19 14" fill="none" stroke={C.teal} strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </>
   );
 }

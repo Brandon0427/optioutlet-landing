@@ -55,6 +55,7 @@ export type LandingContent = {
   };
   reveal: {
     caption: string;
+    eyebrow: string;
     title: string;
     body: string;
   };
@@ -170,8 +171,9 @@ export const landing: LandingContent = {
 
   reveal: {
     caption: `Sigue bajando para conocer a ${MASCOT_NAME}`,
-    title: 'Antes de recomendarte algo, queremos conocerte.',
-    body: `Soy ${MASCOT_NAME}. Te haré unas preguntas sobre cómo vives, no sobre qué quieres comprar.`,
+    eyebrow: '¿No sabes cuáles elegir?',
+    title: `Conoce a ${MASCOT_NAME}.`,
+    body: `Soy el asistente de ${BRAND_NAME}. Antes de recomendarte algo, quiero conocerte: te hago cinco preguntas sobre tu día a día y te muestro los lentes que van contigo. Tú traes la receta; yo te ayudo a elegir.`,
   },
 
   howItWorks: {
