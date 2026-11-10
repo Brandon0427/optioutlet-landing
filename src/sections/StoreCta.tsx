@@ -1,8 +1,8 @@
 import { useRef } from 'react';
 import { landing } from '../content/landing';
-import { Ribbon, centerRibbonText, measureRibbon } from '../components/brand/Ribbon';
+import { RIBBON_REPEAT_LENGTH, Ribbon } from '../components/brand/Ribbon';
 import { ActionLink, pill } from '../components/ui/ActionLink';
-import { MEDIA, ORDER, SCRUB, ScrollTrigger, gsap, useGSAP } from '../lib/gsap';
+import { MEDIA, ORDER, SCRUB, gsap, useGSAP } from '../lib/gsap';
 
 const { storeCta } = landing;
 
@@ -11,10 +11,13 @@ const { storeCta } = landing;
  * sits to the right of the copy (as in the mockup); below it, it moves under
  * the buttons, smaller, so it never sits behind the text.
  *
- * Static: the whole text centered on the stroke.
- * Animated: while the section crosses the screen, startOffset goes linearly
- * from 0 to L − T (stroke length − text length), so the text never leaves the
- * stroke. L and T are measured on every refresh ('revert', after fonts).
+ * The ribbon is a continuous band (see Ribbon). Static / reduced motion: the
+ * offset rests at −REP / 2. Animated: its progress belongs to this section
+ * only — 0 when the section peeks in at the bottom, 1 when it leaves at the
+ * top (or at the max scroll, if that comes first) — and startOffset goes
+ * linearly from −REP to 0: exactly one repetition, so both ends look alike.
+ * The tween starts from the numeric attribute Ribbon renders, so reverting it
+ * on refresh restores a valid length (Session 7: B1).
  */
 export function StoreCta() {
   const root = useRef<HTMLElement>(null);
@@ -24,41 +27,23 @@ export function StoreCta() {
     () => {
       const mm = gsap.matchMedia();
       mm.add(MEDIA.motion, () => {
-        const tp = textPath.current!;
-        tp.dataset.animated = 'true';
-        let range = 0;
-        const measure = () => {
-          const { pathLength, textLength } = measureRibbon(tp);
-          range = Math.max(0, pathLength - textLength);
-        };
-        ScrollTrigger.addEventListener('revert', measure);
-        measure();
-
         gsap.fromTo(
-          tp,
-          { attr: { startOffset: 0 } },
+          textPath.current,
+          { attr: { startOffset: -RIBBON_REPEAT_LENGTH } },
           {
-            attr: { startOffset: () => range },
+            attr: { startOffset: 0 },
             ease: 'none',
             scrollTrigger: {
               trigger: root.current,
               start: 'top bottom',
               // The section sits near the end of the page: clamp so the
-              // full 0 → L − T travel completes at the max scroll.
+              // full −REP → 0 travel completes at the max scroll.
               end: 'clamp(bottom top)',
               scrub: SCRUB,
-              invalidateOnRefresh: true,
               refreshPriority: ORDER.store,
             },
           },
         );
-
-        return () => {
-          ScrollTrigger.removeEventListener('revert', measure);
-          delete tp.dataset.animated;
-          // After the context restores the attribute, go back to the static centered text.
-          requestAnimationFrame(() => centerRibbonText(tp));
-        };
       });
     },
     { scope: root },

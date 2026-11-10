@@ -99,18 +99,21 @@ cada recarga posterior ya no vuelve a descargar JS, CSS ni fuentes.
 
 Lo que no se arregló aquí, por estar fuera de lo permitido en la sesión:
 
-#### B1. Errores de consola del listón (`<textPath> startOffset=""`)
-- **Razón:** vienen de la animación del listón del cierre (GSAP sobre
-  `startOffset` en `StoreCta`): el motor de scroll no se toca en esta sesión.
-  No se ve nada en pantalla; Lighthouse los cuenta en "Buenas prácticas".
-- **Ítems:** 21 errores "Unexpected end of attribute. Expected length, """ por
-  carga.
-- **Medición pendiente:** Buenas prácticas pasa de 96 a 100 junto con B2; el
-  listón conserva su recorrido 0 → L − T (verificación de la Sesión 1).
-
-- **Desde la Sesión 6:** el 404 del favicon ya no existe. Quedan solo estos 21
-  errores, y Buenas prácticas se mantiene en 96: B1 es lo único que lo separa
-  de 100.
+#### B1. Errores de consola del listón (`<textPath> startOffset=""`) — CERRADA (Sesión 7 · Fase 4, 2026-11-10)
+- **Causa:** el plugin `attr` de GSAP guarda como valor inicial
+  `getAttribute('startOffset') || ""`. El `<textPath>` se montaba sin ese
+  atributo en modo animado, y cada vez que ScrollTrigger revertía el tween
+  (cada `refresh` con `invalidateOnRefresh`) escribía `startOffset=""`.
+  Antes: 21 errores al cargar y 24 en un recorrido completo, todos
+  «Unexpected end of attribute. Expected length, ""», desde `render` del
+  plugin `attr`.
+- **Hecho:** `Ribbon` siempre renderiza un `startOffset` numérico
+  (−`RIBBON_REPEAT_LENGTH` / 2), y `StoreCta` anima con `fromTo` de −REP a 0,
+  sin medición en tiempo real ni `invalidateOnRefresh`. Al revertir, GSAP
+  restaura un largo válido.
+- **Medición:** 0 errores de consola en un recorrido completo a 1440 × 800 y
+  375 × 812 (CDP con los dominios Runtime y Log). Buenas prácticas de
+  Lighthouse: ver `docs/verificacion-sesion-7.md`.
 
 #### B2. `/favicon.ico` responde 404 — CERRADA (Sesión 6 · Fase 2, 2026-11-09)
 - **Hecho:** `public/favicon.svg`, `public/favicon.ico` (16/32/48) y

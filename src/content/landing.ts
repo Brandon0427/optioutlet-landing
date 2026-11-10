@@ -314,7 +314,8 @@ export const landing: LandingContent = {
     body: 'Todo nuestro catálogo de lentes de contacto está en la tienda.',
     primaryCta: { label: 'Ir a la tienda', href: storeLink('/', 'cierre-tienda'), external: true },
     secondaryCta: consultaLink,
-    ribbon: 'TODO PARA VER BIEN • TODO PARA VER BIEN •',
+    /** One repetition, trailing space included; Ribbon repeats it along the U. */
+    ribbon: 'TODO PARA VER BIEN • ',
   },
 
   footer: {

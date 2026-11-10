@@ -1,67 +1,44 @@
-import { useEffect, useId, useRef, type Ref } from 'react';
+import { useId, type Ref } from 'react';
 import { BRAND_COLORS as C } from '../../styles/brandColors';
 import { svgId } from './geometry';
 
-/** The U ribbon's centerline (viewBox 0 0 340 420). Length ≈ 240 + π·110 + 240 ≈ 826. */
+/** The U ribbon's centerline (viewBox 0 0 340 420). */
 export const RIBBON_PATH = 'M60 10 V250 A110 110 0 0 0 280 250 V10';
 
+/** Length of RIBBON_PATH in user units: two 240 straights + a half circle of r 110 (≈ 825.6). */
+export const RIBBON_PATH_LENGTH = 240 + Math.PI * 110 + 240;
+
+/**
+ * Fixed length of one repetition of the motto, in user units (mockup: 420).
+ * The natural length of «TODO PARA VER BIEN • » at 22px Unbounded 700 is ≈ 348,
+ * so `lengthAdjust="spacing"` only widens the gaps; letters never overlap.
+ */
+export const RIBBON_REPEAT_LENGTH = 420;
+
+/**
+ * Repetitions: the text must cover the stroke plus one full travel
+ * (REPEATS × REP ≥ L + REP), so the band never shows an empty stretch.
+ */
+export const RIBBON_REPEATS = 4;
+
+/** Resting offset (static and reduced motion): half a repetition. */
+export const RIBBON_REST_OFFSET = -RIBBON_REPEAT_LENGTH / 2;
+
 type RibbonProps = {
-  /** Text that runs along the stroke. */
+  /** One repetition of the text that runs along the stroke (repeated RIBBON_REPEATS times). */
   text: string;
-  /**
-   * `startOffset` in user units along the path, or 'center' to place the
-   * whole text centered on the stroke: (path length − text length) / 2,
-   * measured at runtime and again once fonts have loaded.
-   */
-  startOffset?: number | 'center';
   className?: string;
-  /** The <textPath>; sections animate its `startOffset`. */
+  /** The <textPath>; sections animate its `startOffset` from −REP to 0. */
   textPathRef?: Ref<SVGTextPathElement>;
 };
 
-/** Length of the ribbon's stroke (L) and of its text (T), in SVG user units. */
-export function measureRibbon(tp: SVGTextPathElement): { pathLength: number; textLength: number } {
-  const svg = tp.ownerSVGElement;
-  const path = svg?.querySelector<SVGPathElement>('path[stroke]');
-  const label = tp.parentElement as unknown as SVGTextElement | null;
-  if (!path || !label) return { pathLength: 0, textLength: 0 };
-  return { pathLength: path.getTotalLength(), textLength: label.getComputedTextLength() };
-}
-
 /**
- * Places the whole text centered on the stroke: (L − T) / 2.
- * Skipped while a section animates the offset (data-animated on the textPath).
+ * Teal U-shaped ribbon with navy text riding on the stroke, as a continuous
+ * band: each repetition has a fixed length (textLength), so the motion is the
+ * same in every browser. Always decorative.
  */
-export function centerRibbonText(tp: SVGTextPathElement) {
-  if (tp.dataset.animated === 'true') return;
-  const { pathLength, textLength } = measureRibbon(tp);
-  tp.setAttribute('startOffset', Math.max(0, (pathLength - textLength) / 2).toFixed(1));
-}
-
-/** Teal U-shaped ribbon with navy text riding on the stroke. Always decorative. */
-export function Ribbon({ text, startOffset = 'center', className, textPathRef }: RibbonProps) {
+export function Ribbon({ text, className, textPathRef }: RibbonProps) {
   const pathId = svgId(useId(), 'ribbon-path');
-  const textPathEl = useRef<SVGTextPathElement>(null);
-
-  useEffect(() => {
-    if (startOffset !== 'center') return;
-    let cancelled = false;
-    const center = () => {
-      const tp = textPathEl.current;
-      if (!cancelled && tp) centerRibbonText(tp);
-    };
-    center();
-    document.fonts?.ready.then(center).catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [startOffset, text]);
-
-  const setTextPath = (el: SVGTextPathElement | null) => {
-    textPathEl.current = el;
-    if (typeof textPathRef === 'function') textPathRef(el);
-    else if (textPathRef) textPathRef.current = el;
-  };
 
   return (
     <svg viewBox="0 0 340 420" aria-hidden="true" focusable="false" className={className}>
@@ -76,11 +53,13 @@ export function Ribbon({ text, startOffset = 'center', className, textPathRef }:
         style={{ fontSize: 22, fontWeight: 700, letterSpacing: 2 }}
       >
         <textPath
-          ref={setTextPath}
+          ref={textPathRef}
           href={`#${pathId}`}
-          startOffset={typeof startOffset === 'number' ? startOffset : undefined}
+          startOffset={RIBBON_REST_OFFSET}
+          textLength={RIBBON_REPEATS * RIBBON_REPEAT_LENGTH}
+          lengthAdjust="spacing"
         >
-          {text}
+          {text.repeat(RIBBON_REPEATS)}
         </textPath>
       </text>
     </svg>
