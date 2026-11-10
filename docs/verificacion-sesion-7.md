@@ -349,3 +349,76 @@ Llegaron los logos oficiales y se resolvió `TODO(brand-logos)`.
   diferencias de más de 1 px). Hay 0 errores de consola en el recorrido
   completo a 1440 y a 375, y `amazon-PhULPKGW.svg` responde 200
   `image/svg+xml`.
+
+## 15. Listón: texto recortado a la banda (2026-11-10, después del cierre)
+
+- **Defecto:** las letras que pasaban por un extremo de la U se dibujaban
+  completas aunque la banda ya hubiera terminado, y sobresalían de la punta
+  (se veía en producción, en el brazo izquierdo). Chrome solo descarta un
+  glifo cuando su punto medio queda fuera del trazado, así que la mitad de una
+  letra podía quedar fuera de la banda.
+- **Cambio:** `Ribbon.tsx` recorta el `<text>` con un `<mask>` que dibuja la
+  banda con la misma geometría: el mismo `d` (`RIBBON_PATH`), el mismo grosor
+  (`RIBBON_BAND_WIDTH` = 60, también usado por la banda) y extremos `butt`, en
+  blanco sobre un rectángulo negro (`maskUnits="userSpaceOnUse"`, todo el
+  viewBox). La máscara se aplica al texto, no a la banda, y su id sale de
+  `useId`. No cambian el desplazamiento, `RIBBON_REPEAT_LENGTH` ni
+  `RIBBON_REPEATS`, la animación, ni el reposo en −REP / 2.
+- **Pruebas:** `ribbon.test.tsx` comprueba que la máscara existe, que su
+  trazado tiene el mismo `d` y grosor que la banda, con extremos `butt`, que
+  el `<text>` la referencia y la banda no, y que dos listones tienen ids
+  distintos.
+- **Método (`.cache/qa-s7/ribbonmask.mjs`, build local con `?demo=1`):**
+  1. En cada progreso se fija el scroll real y se lee el `startOffset` que
+     escribió GSAP.
+  2. El listón se pone en una pose de medición: completo dentro de la
+     ventana, con el `overflow` de la sección apagado y el mismo offset
+     reaplicado cuando el scrub ya asentó.
+  3. Se toman tres capturas de la caja del SVG, que solo cambian la pintura
+     del listón: fondo (todo transparente), texto en rojo puro y banda en
+     verde puro.
+  4. Píxel de texto: cambia entre el fondo y la captura del texto. Píxel
+     fuera: es de texto y no cambia en la captura de la banda. Umbral
+     estricto: cualquier diferencia cuenta.
+
+  La misma medición sin la máscara (quitando el atributo) prueba que el
+  método sí detecta el defecto.
+
+  | Ancho | Progreso | Offset | Píxeles de texto | Fuera de la banda | Sin máscara |
+  |---|---|---|---|---|---|
+  | 375 | 0 | −420 | 4220 | **0** | 0 |
+  | 375 | 0.25 | −315.2 | 4067 | **0** | 0 |
+  | 375 | 0.5 | −210 | 4100 | **0** | 0 |
+  | 375 | 0.75 | −105.2 | 4084 | **0** | 0 |
+  | 375 | 1 | 0 | 4215 | **0** | 0 |
+  | 1440 | 0 | −420 | 9099 | **0** | 0 |
+  | 1440 | 0.25 | −314.9 | 8758 | **0** | 0 |
+  | 1440 | 0.5 | −209.7 | 8794 | **0** | 0 |
+  | 1440 | 0.75 | −105.1 | 8840 | **0** | 0 |
+  | 1440 | 1 | 0 | 9098 | **0** | 0 |
+  | 375, movimiento reducido | 0 y 1 | −210 | 4100 | **0** | 0 |
+  | 1440, movimiento reducido | 0 y 1 | −210 | 8810 | **0** | 0 |
+
+  En esos cinco puntos ninguna letra queda montada en una punta, por eso
+  también da 0 sin la máscara. Por eso se agregó un **barrido** de todo el
+  recorrido (−420 → 0, cada 2 unidades, 211 offsets):
+
+  | Ancho | Con máscara: peor caso | Sin máscara: offsets con píxeles fuera | Sin máscara: peor caso |
+  |---|---|---|---|
+  | 375 | **0** | 106 de 211 | 125 px (offset −58) |
+  | 1440 | **0** | 106 de 211 | 277 px (offset −56) |
+
+  El atributo no se movió durante ninguna medición (0 desvíos).
+- **Capturas** (pose de medición, ×4) en `.cache/qa-s7/mask-shots/`:
+  `tip-<ancho>[-reduced]-p<0|1>-<left|right>.png`, las dos puntas de la U en
+  los progresos 0 y 1, en 375 y 1440. El blanco que aparece arriba en algunas
+  es la sección anterior: en la pose, la punta pasa del borde de la sección.
+- **Cobertura** (`ribbon.mjs`): igual que en la Sección 7.
+  - 40 o 41 glifos visibles; hueco máximo entre glifos de 3.5 unidades; 0
+    encimados.
+  - Espacio libre en las puntas ≤ 12.3 unidades en 375 y 1440, en los cinco
+    progresos.
+  - Con movimiento reducido: offset −210 y sin huecos.
+- **Consola:** 0 errores en el recorrido completo a 375 y a 1440.
+- **Geometría** (contra `geom-logos-local.json`): Δ 0 en todo. Hero, pines,
+  secciones, alto del documento y modo compacto, en 375, 768, 1440 y 1470.

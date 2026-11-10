@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { landing } from '../../../content/landing';
 import {
+  RIBBON_BAND_WIDTH,
   RIBBON_PATH,
   RIBBON_PATH_LENGTH,
   RIBBON_REPEATS,
@@ -33,6 +34,47 @@ describe('Ribbon (continuous band)', () => {
     expect(tag).toContain('lengthAdjust="spacing"');
     expect(tag).toContain(`startOffset="${RIBBON_REST_OFFSET}"`);
     expect(content).toBe(landing.storeCta.ribbon.repeat(RIBBON_REPEATS));
+  });
+
+  it('clips the text to the band: a mask with the band geometry, referenced by the <text>', () => {
+    const html = renderToStaticMarkup(<Ribbon text={landing.storeCta.ribbon} />);
+    const mask = html.match(/<mask id="([^"]+)"[^>]*>(.*?)<\/mask>/);
+    expect(mask).not.toBeNull();
+    const maskId = mask![1]!;
+    const maskBody = mask![2]!;
+    const attrs = (tag: string) => Object.fromEntries([...tag.matchAll(/([a-zA-Z-]+)="([^"]*)"/g)].map((m) => [m[1], m[2]]));
+
+    // The band: the stroked path outside <defs>.
+    const band = html.match(/<\/defs>.*?(<path[^>]*>)/)![1]!;
+    const b = attrs(band);
+    expect(b.d).toBe(RIBBON_PATH);
+    expect(b['stroke-width']).toBe(String(RIBBON_BAND_WIDTH));
+
+    // Mask: black background, the same stroke in white with butt caps.
+    expect(maskBody).toMatch(/<rect[^>]*fill="black"/);
+    const m = attrs(maskBody.match(/<path[^>]*>/)![0]);
+    expect(m.d).toBe(b.d);
+    expect(m['stroke-width']).toBe(b['stroke-width']);
+    expect(m.stroke).toBe('white');
+    expect(m.fill).toBe('none');
+    expect(m['stroke-linecap']).toBe('butt');
+    expect(b['stroke-linecap'] ?? 'butt').toBe('butt');
+
+    // Applied to the text, not to the band.
+    expect(attrs(html.match(/<text[^>]*>/)![0]).mask).toBe(`url(#${maskId})`);
+    expect(b.mask).toBeUndefined();
+  });
+
+  it('gives every ribbon its own mask id', () => {
+    const html = renderToStaticMarkup(
+      <>
+        <Ribbon text="A" />
+        <Ribbon text="B" />
+      </>,
+    );
+    const ids = [...html.matchAll(/<mask id="([^"]+)"/g)].map((m) => m[1]);
+    expect(ids).toHaveLength(2);
+    expect(new Set(ids).size).toBe(2);
   });
 
   it('one repetition is the motto with its separator and trailing space', () => {
