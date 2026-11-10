@@ -238,9 +238,9 @@ por formato, mediana.
   secciones no cambia su recorrido.
 - **El `startOffset` siempre es un número.** `Ribbon` lo renderiza en
   −REP/2, y por eso el revert de GSAP ya no escribe un atributo vacío (B1).
-- **`MarketplaceLogos` espera los logos oficiales** (`TODO(brand-logos)`).
-  Mientras tanto muestra los nombres como texto. No se dibujó ni se aproximó
-  ningún logo de terceros.
+- **`MarketplaceLogos` usa los logos oficiales** desde el 2026-11-10 (sección
+  14). Durante la sesión mostró los nombres como texto. Nunca se dibujó ni se
+  aproximó un logo de terceros.
 - **La indicación de scroll comparte el tween del texto:** está dentro del
   mismo contenedor que “Sigue bajando…”, así que aparece y se desvanece con
   él, sin tocar el timeline de la revelación.
@@ -288,10 +288,64 @@ por formato, mediana.
 
 ## 13. Futuro (documentado, no implementado)
 
-- Los logos oficiales de Mercado Libre (de preferencia su sello de Tienda
-  oficial), Amazon y Liverpool en `MarketplaceLogos` (backlog,
-  `TODO(brand-logos)`).
 - Ajustes de redacción de la diseñadora sobre los textos nuevos: se cambian
   solo en `src/content/landing.ts`.
 - Sesión 4: catálogo real de J&J.
 - `og:image`, B4 y B5 (backlog).
+
+## 14. Logos oficiales (2026-11-10, después del cierre)
+
+Llegaron los logos oficiales y se resolvió `TODO(brand-logos)`.
+
+- **Archivos:** `src/assets/brand/marketplaces/mercadolibre.svg`,
+  `amazon.svg` y `liverpool.svg`, usados tal cual se entregaron, sin
+  modificarlos. Se importan con `?no-inline`: `amazon.svg` pesa 3.77 kB y
+  Vite lo habría incrustado como data URI por su límite de 4 KB. Así los tres
+  salen como archivo con hash (`mercadolibre-BSOa5GMO.svg`,
+  `amazon-PhULPKGW.svg`, `liverpool-yjk4W1UD.svg`).
+- **Pastillas:** blancas, 112 × 44 px, radio 10, padding 0 14px, sin borde ni
+  texto. `<img>` con `alt` desde `landing.hero.marketplaces.stores`. No son
+  enlaces. La etiqueta “También en” no cambió.
+- **Tamaños:** `width`/`height` en enteros con el tamaño final, `height: auto`,
+  `max-width: 100%`.
+
+  | Logo | Archivo | Tope de alto | Atributos | Dibujado | Proporción (dibujada / archivo) |
+  |---|---|---|---|---|---|
+  | Mercado Libre | 150.1 × 135.8 | 32 px | 35 × 32 | 35 × 31.7 | 1.106 / 1.103 |
+  | Amazon | 2500 × 752 | 26 px | 84 × 25 | 84 × 25.3 | 3.325 / 3.324 |
+  | Liverpool | 184 × 49 | 24 px | 84 × 22 | 84 × 22.4 | 3.757 / 3.755 |
+
+  Amazon y Liverpool llegan primero al ancho útil de 84 px y se reducen desde
+  ahí sin deformarse. Mercado Libre queda en 31.7 px porque manda su ancho
+  entero (35).
+- **Pruebas:** `hero.test.tsx` confirma exactamente tres `<img>` con `alt`
+  igual a los nombres de `landing.ts` y `src` de archivo (no data URI),
+  ningún `<svg>` en línea, ningún enlace y ningún corchete.
+- **Geometría** (criterio de la Sección 4, contra la producción final de la
+  sesión): 0 diferencias de duración, secciones y modo compacto.
+
+  | Tamaño | Δ hero | Por qué |
+  |---|---|---|
+  | 375 × 812 | +16 px | La fila ocupa dos renglones: +8 px por cada uno |
+  | 768 × 1024 | +8 px | Un renglón, pastillas 8 px más altas |
+  | 1440 × 800 | 0 px | La altura del hero la define la columna del ojo |
+  | 1470 × 956 | 0 px | Igual |
+
+  Los inicios de cada pin se movieron exactamente lo mismo.
+- **Capturas:** `.cache/qa-s7/logos-375.png` (dos renglones: Mercado Libre y
+  Amazon arriba, Liverpool abajo) y `logos-1440.png` (un renglón).
+- **Consola:** 0 errores.
+
+- **Lighthouse** (producción con `?demo=1`, mediana de 3):
+
+  | Formato | Rendimiento | Accesibilidad | Buenas prácticas | SEO | CLS |
+  |---|---|---|---|---|---|
+  | Móvil | 97 (97/98/95) | 100 | 100 | 100 | 0.000 |
+  | Escritorio | 100 (100/100/85) | 100 | 100 | 100 | 0.000 |
+
+  La corrida de 85 en escritorio tuvo un TBT de 280 ms. Fue ruido del equipo:
+  las otras dos dieron 100 con el mismo bundle (`index-bmFCc-8u.js`).
+- **Producción:** la geometría coincide con la local (93 números, 0
+  diferencias de más de 1 px). Hay 0 errores de consola en el recorrido
+  completo a 1440 y a 375, y `amazon-PhULPKGW.svg` responde 200
+  `image/svg+xml`.
