@@ -125,6 +125,7 @@ en líneas separadas): un build roto llegó así a un commit en la Sesión 2.
 - `src/components/layout/` — encabezado, footer y franja de patrón. `src/components/ui/ActionLink.tsx` — enlaces y CTAs.
 - `src/sections/` — una sección de la página por archivo, en el orden de `App.tsx`.
 - `docs/mockup/optioutlet-mockup.dc.html` — mockup aprobado (referencia, no ejecutable).
+  - El mockup es referencia de diseño, no fuente de verdad. Donde la landing ya se apartó de él a propósito, gana la landing. Desviaciones conocidas: la fila "También en" usa los logos oficiales sobre pastillas blancas de 112×44 (el mockup muestra recuadros punteados con corchetes), y las tiendas se muestran sin enlace. Ver `docs/verificacion-sesion-7.md`.
 - `src/consulta/` — dominio de la consulta: contrato (`types.ts`, `schema.ts`), catálogo, reglas, proveedor guionado y estado (`useConsulta.ts`). `src/content/consulta.ts` — guion de Opti.
 - `src/consulta/providers/` — `scripted.ts` (guion), `api.ts` (llama a `/api/chat` y cae al guionado por turno) e `index.ts` (elige el proveedor).
 - `server/consulta/` — servidor de la consulta: configuración (modelo y effort), validación de la solicitud, esquema de salida, system prompt, conversión de mensajes, combinación del perfil y `handleChat`. `server/http/` y `server/dev/` — adaptadores. `api/chat.ts` — función de Vercel.
