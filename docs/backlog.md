@@ -236,3 +236,47 @@ Lo que no se arregló aquí, por estar fuera de lo permitido en la sesión:
   ±0.003), geometría con el criterio de la Sesión 7, 0 errores de consola y
   Lighthouse con CLS 0. Detalle en `docs/verificacion-sesion-7.md` › Logos
   oficiales.
+
+## Sesión 4 — Catálogo J&J real (2026-11-17)
+
+### Fase 3 — CERRADA CON RESIDUAL: título de las publicaciones de Mercado Libre
+
+- **Razón:** Mercado Libre bloquea el acceso automatizado. `curl -sIL` a
+  `https://articulo.mercadolibre.com.mx/MLM-<id>` termina en 200, pero en
+  `/gz/account-verification?go=<la URL pedida>`, y responde igual para una
+  publicación que no existe (`MLM-9999999999`). Chrome headless recibe
+  "Hubo un error accediendo a esta pagina…" y la API pública
+  (`api.mercadolibre.com/items`) da 403 `PA_UNAUTHORIZED_RESULT_FROM_POLICIES`.
+  Con eso no se puede confirmar el producto de forma automática.
+- **Ítems:** los 6 enlaces del catálogo (`src/consulta/catalog.ts`):
+  MLM-1895638309, MLM-1895663565, MLM-2209649768, MLM-672456958,
+  MLM-1895649425, MLM-2705311961.
+- **Medición pendiente:** abrir cada uno en un navegador normal y confirmar
+  que el título corresponde al producto (lista en
+  `docs/verificacion-sesion-4.md`). Anotar aquí el resultado y la fecha.
+
+### Detalles encontrados
+
+- **Foto de ACUVUE® OASYS for ASTIGMATISM:** la primera imagen de la
+  publicación trae una etiqueta naranja que dice "Reemplazo **mensual**", pero
+  el producto es quincenal. Las otras dos candidatas son infografías, y
+  recortar la etiqueta corta el texto de la caja, así que se usó completa (a
+  104 px no se lee). Conviene corregir la imagen en la publicación de ML y
+  volver a bajarla.
+- **`/products/*` pertenece a la tienda:** `vercel.json` manda `/products/…`
+  a Shopify con un 301 antes de servir archivos estáticos, así que las fotos
+  viven en `public/productos/`. `scripts/redirects.test.ts` comprueba ahora
+  que ninguna `imageUrl` del catálogo coincida con una redirección.
+
+### FUTURO (documentado, no implementado)
+
+- **ACOA (`acuvue-oasys`):** cuando exista la publicación, poner `priceMXN`,
+  `lensesPerBox`, `boxDaysBothEyes`, `imageUrl` (`public/productos/acuvue-oasys.webp`)
+  y `storeUrl: mercadoLibreUrl('MLM…')` en `catalog.ts`. El botón pasa solo a
+  "Ver en Mercado Libre" (depende del destino del enlace, no del id).
+- **Rangos de graduación y parámetros tóricos** (están en
+  `docs/data/catalogo-jj.json`): para fichas de producto o validación de
+  receta.
+- **Catálogo multimarca y Supabase.**
+- **Seguimiento de clics a Mercado Libre:** los UTM no aplican ahí; hace falta
+  otro mecanismo (por ejemplo, un evento propio antes de abrir la pestaña).

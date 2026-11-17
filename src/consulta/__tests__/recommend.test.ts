@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { CATALOG, findProduct, type Product } from '../catalog';
-import { recommend, resolveRecommendations } from '../recommend';
+import { consultaScript } from '../../content/consulta';
+import { preferredReplacement, recommend, resolveRecommendations, SLOTS } from '../recommend';
 import type { Astigmatism, CustomerProfile, Frequency, Routine } from '../types';
 
 const ROUTINES: Routine[] = ['office-screens', 'outdoors-active', 'mixed'];
@@ -20,19 +21,42 @@ const combos = ROUTINES.flatMap((routine) =>
 );
 
 describe('catalog', () => {
-  it('covers daily/biweekly × spherical/toric with placeholders', () => {
-    expect(CATALOG.length).toBeGreaterThanOrEqual(4);
-    expect(CATALOG.length).toBeLessThanOrEqual(6);
-    for (const replacement of ['daily', 'biweekly'] as const) {
-      for (const design of ['spherical', 'toric'] as const) {
-        expect(CATALOG.some((p) => p.replacement === replacement && p.design === design)).toBe(true);
-      }
-    }
+  it('has exactly the seven real J&J products, no placeholders and no multifocals', () => {
+    expect(CATALOG.map((p) => p.id)).toEqual([
+      'acuvue-1-day-moist',
+      'acuvue-oasys-1-day',
+      'acuvue-vita',
+      'acuvue-oasys',
+      'acuvue-1-day-moist-astigmatismo',
+      'acuvue-vita-astigmatismo',
+      'acuvue-oasys-astigmatismo',
+    ]);
     for (const p of CATALOG) {
-      expect(p.isPlaceholder).toBe(true);
-      expect(p.name).toMatch(/^\[.*\]$/);
+      expect(p.isPlaceholder).toBe(false);
+      expect(p.name).not.toMatch(/[[\]]/);
+      expect(p.design).not.toBe('multifocal');
+      expect(p.specs).toBeDefined();
     }
-    expect(new Set(CATALOG.map((p) => p.id)).size).toBe(CATALOG.length);
+  });
+
+  it('has a photo and a price for every product with a listing; ACOA has neither and links to the store', () => {
+    for (const p of CATALOG.filter((p) => p.id !== 'acuvue-oasys')) {
+      expect(p.imageUrl).toBe(`/productos/${p.id}.webp`);
+      expect(p.priceMXN).toBeGreaterThan(0);
+      expect(p.storeUrl).toMatch(/^https:\/\/articulo\.mercadolibre\.com\.mx\/MLM-\d+$/);
+    }
+    const acoa = findProduct('acuvue-oasys')!;
+    expect(acoa.priceMXN).toBeNull();
+    expect(acoa.imageUrl).toBeNull();
+    expect(acoa.lensesPerBox).toBeUndefined();
+    expect(acoa.boxDaysBothEyes).toBeUndefined();
+  });
+
+  it('every slot points at two products of the catalog with the slot design', () => {
+    for (const [slot, ids] of Object.entries(SLOTS)) {
+      const design = slot.split('-')[1];
+      for (const id of ids) expect(findProduct(id)?.design, `${slot} ${id}`).toBe(design);
+    }
   });
 });
 
@@ -52,10 +76,11 @@ describe('recommend', () => {
     expect(first!.design).toBe(expectedDesign);
     expect(second!.design).toBe(expectedDesign);
 
-    const expectedReplacement =
-      profile.frequency !== 'daily' || profile.routine === 'outdoors-active' ? 'daily' : 'biweekly';
-    expect(first!.replacement).toBe(expectedReplacement);
-    expect(second!.replacement).not.toBe(first!.replacement);
+    expect(recs.map((r) => r.productId)).toEqual(SLOTS[`${preferredReplacement(profile)}-${expectedDesign}`]);
+    const { alternative, alternativeSameReplacement } = consultaScript.reasons;
+    expect(recs[1]!.reason).toBe(
+      second!.replacement === first!.replacement ? alternativeSameReplacement : alternative[second!.replacement],
+    );
 
     for (const r of recs) expect(r.reason.trim().length).toBeGreaterThan(0);
   });
@@ -77,12 +102,11 @@ describe('recommend', () => {
   });
 
   it('relaxes the replacement, never the design', () => {
-    const noDailyToric = CATALOG.filter((p) => p.id !== 'jj-daily-toric');
+    const noDailyToric = CATALOG.filter((p) => p.id !== 'acuvue-1-day-moist-astigmatismo');
     const profile: CustomerProfile = { routine: 'outdoors-active', frequency: 'daily', astigmatism: 'yes' };
     const recs = recommend(profile, noDailyToric);
-    expect(recs).toHaveLength(1);
-    expect(findProduct(recs[0]!.productId)!.design).toBe('toric');
-    expect(findProduct(recs[0]!.productId)!.replacement).toBe('biweekly');
+    expect(recs.map((r) => r.productId)).toEqual(['acuvue-oasys-astigmatismo', 'acuvue-vita-astigmatismo']);
+    for (const r of recs) expect(findProduct(r.productId)!.design).toBe('toric');
   });
 
   it('returns nothing rather than a spherical lens when no toric exists', () => {
@@ -98,19 +122,19 @@ describe('resolveRecommendations', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const resolved = resolveRecommendations(
       [
-        { productId: 'jj-daily-toric', rank: 2, reason: 'b' },
+        { productId: 'acuvue-1-day-moist-astigmatismo', rank: 2, reason: 'b' },
         { productId: 'does-not-exist', rank: 1, reason: 'a' },
-        { productId: 'jj-biweekly-toric', rank: 1, reason: 'c' },
+        { productId: 'acuvue-oasys-astigmatismo', rank: 1, reason: 'c' },
       ],
       CATALOG,
     );
-    expect(resolved.map((r) => r.product.id)).toEqual(['jj-biweekly-toric', 'jj-daily-toric']);
+    expect(resolved.map((r) => r.product.id)).toEqual(['acuvue-oasys-astigmatismo', 'acuvue-1-day-moist-astigmatismo']);
     expect(warn).toHaveBeenCalledTimes(1);
   });
 
   it('returns an empty list when nothing exists', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {});
     const empty: Product[] = [];
-    expect(resolveRecommendations([{ productId: 'jj-daily-toric', rank: 1, reason: 'x' }], empty)).toEqual([]);
+    expect(resolveRecommendations([{ productId: 'acuvue-1-day-moist-astigmatismo', rank: 1, reason: 'x' }], empty)).toEqual([]);
   });
 });

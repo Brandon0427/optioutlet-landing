@@ -35,7 +35,7 @@ avanzan con el scroll: si bajas rápido, la animación pasa rápido.
 
 | Sección | Qué mostrar | Tiempo |
 |---|---|---|
-| Inicio | Quiénes somos: “Lentes para cada forma de ver.” y “Somos Optioutlet: lentes de contacto graduados y de color, soluciones y armazones.” Señala los dos sellos (“+100 mil ventas”, “Envío a todo México”) y la fila “También en” (Mercado Libre, Amazon, Liverpool; por ahora con su nombre, mientras llegan los logos oficiales). Mueve el cursor sobre el disco: la pupila lo sigue. | 30 s |
+| Inicio | Quiénes somos: “Lentes para cada forma de ver.” y “Somos Optioutlet: lentes de contacto graduados y de color, soluciones y armazones.” Señala los dos sellos (“+100 mil ventas”, “Envío a todo México”) y la fila “También en” (Mercado Libre, Amazon, Liverpool, con sus logos oficiales). Mueve el cursor sobre el disco: la pupila lo sigue. | 30 s |
 | Revelación | Al entrar, debajo de la pupila: “Sigue bajando para conocer a Opti”, con el mouse y las flechas animadas. Sigue bajando: la pupila crece hasta cubrir la pantalla y aparece Opti con “¿No sabes cuáles elegir?” y “Conoce a Opti.”. Lee la presentación: cinco preguntas sobre tu día a día; tú traes la receta, Opti te ayuda a elegir. | 35 s |
 | Cómo funciona | Tres pasos que cambian con el scroll, con el teléfono mostrando cada pantalla. | 35 s |
 | Perfiles | Las cinco tarjetas corren de lado: para quién es cada tipo de lente. | 30 s |
@@ -54,11 +54,17 @@ receta vigente. Toca las opciones en este orden:
 5. “Sí, es reciente”
 
 **Cierre:** Opti dice que ya tiene la recomendación y muestra dos productos
-**para astigmatismo** (tóricos): primero el quincenal y luego el diario.
+**para astigmatismo** (tóricos), cada uno con foto, precio y botón.
 
-- Cada producto trae su razón; el texto lo redacta Claude.
-- Para terminar, da clic en “Ver en la tienda” del primero: abre la tienda en
-  otra pestaña.
+- Con Claude, los dos son siempre tóricos; cuáles y en qué orden puede variar
+  (por ejemplo, ACUVUE® OASYS for ASTIGMATISM y 1-DAY ACUVUE® MOIST for
+  ASTIGMATISM).
+- Con el guionado (`?demo=1`) siempre sale lo mismo: primero **ACUVUE® OASYS
+  for ASTIGMATISM** (quincenal, $1,446.11) y luego **ACUVUE® VITA® for
+  ASTIGMATISM** (mensual, $2,159).
+- Cada producto trae su razón; con Claude, el texto lo redacta Claude.
+- Para terminar, da clic en “Ver en Mercado Libre” del primero: abre nuestra
+  publicación en Mercado Libre en otra pestaña.
 
 **Tiempos medidos en producción el 2026-11-09, con Claude:**
 
@@ -90,14 +96,29 @@ mensajes; con el guionado es siempre la misma.
 
 ## Si preguntan por los productos
 
-“Son marcadores: los nombres entre corchetes, `[PRECIO]` y ‘Foto del producto’
-se reemplazan con el catálogo real de Johnson & Johnson. La lógica ya está
-completa: con astigmatismo nunca recomienda un lente esférico, y la tienda
-recibe de qué botón vino cada visita.”
+“Es el catálogo real de Johnson & Johnson que vendemos: siete lentes ACUVUE,
+con el precio y la foto de nuestras publicaciones de Mercado Libre. Opti
+argumenta con la ficha técnica oficial (material, oxígeno, reemplazo) y con
+astigmatismo nunca recomienda un lente esférico.”
 
-“Ver en la tienda” abre `shop.optioutlet.com.mx` en otra pestaña. Si no
-carga, es la tienda (Shopify), no la landing: di que la tienda se administra
-aparte y sigue con la presentación.
+- **“Ver en Mercado Libre”** abre la publicación del producto en otra pestaña.
+  Si Mercado Libre tarda o pide verificación, es Mercado Libre, no la landing:
+  sigue con la presentación.
+- **ACUVUE® OASYS** (quincenal, sin astigmatismo) todavía no tiene publicación:
+  su tarjeta no muestra precio, lleva el isotipo en lugar de foto y su botón
+  dice “Ver en la tienda” (abre `shop.optioutlet.com.mx`). Es intencional. Con
+  el guionado aparece como alternativa en la consulta de oficina sin
+  astigmatismo.
+
+**Qué recomienda el guionado (`?demo=1`) según el camino:**
+
+| Camino | Primera opción | Alternativa |
+|---|---|---|
+| Uso diario, oficina o mixto, sin astigmatismo (o “no sé”) | ACUVUE® VITA® (mensual) | ACUVUE® OASYS (quincenal) |
+| Uso ocasional o algunos días, o día afuera, sin astigmatismo (o “no sé”) | ACUVUE® OASYS 1-Day (diario) | 1-DAY ACUVUE® MOIST (diario, más económico) |
+| Uso diario, oficina o mixto, con astigmatismo (conversación principal) | ACUVUE® OASYS for ASTIGMATISM (quincenal) | ACUVUE® VITA® for ASTIGMATISM (mensual) |
+| Uso ocasional o algunos días, o día afuera, con astigmatismo | 1-DAY ACUVUE® MOIST for ASTIGMATISM (diario) | ACUVUE® OASYS for ASTIGMATISM (quincenal) |
+| Síntomas (conversación corta) | Refiere al especialista, sin productos | — |
 
 ## Planes A′, B y C
 

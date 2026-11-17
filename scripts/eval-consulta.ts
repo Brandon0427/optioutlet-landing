@@ -10,7 +10,9 @@
  *   EVAL_MODEL     expected model, used as the report label and checked against
  *                  the dev header when present
  *   EVAL_EFFORT    expected effort, checked against the dev header when present
- *   EVAL_CASES     comma-separated case ids (default: all ten)
+ *   EVAL_CASES     comma-separated case ids, or "matriz" for the nine profile
+ *                  cases of Session 4 (default: every case)
+ *   EVAL_REPEAT    runs per case (default 1; the profile matrix uses 3)
  *   EVAL_LABEL     report file name (default: EVAL_MODEL or "eval")
  *
  * Reports go to `.cache/eval/<label>.{json,md}`. Tokens and retries come from
@@ -19,7 +21,7 @@
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { expect, it } from 'vitest';
-import { CATALOG, findProduct } from '../src/consulta/catalog.js';
+import { CATALOG, findProduct, type Product } from '../src/consulta/catalog.js';
 import { nextField, QUESTION_ORDER, type ProfileField } from '../src/consulta/progress.js';
 import { parseAssistantTurn } from '../src/consulta/schema.js';
 import type { AssistantTurn, ConversationMessage, CustomerProfile, TurnStatus, UserInput } from '../src/consulta/types.js';
@@ -31,6 +33,7 @@ const EXPECTED_MODEL = process.env.EVAL_MODEL || null;
 const EXPECTED_EFFORT = process.env.EVAL_EFFORT || null;
 const LABEL = process.env.EVAL_LABEL || EXPECTED_MODEL || 'eval';
 const MAX_TURNS = 14;
+const REPEAT = Math.max(1, Number(process.env.EVAL_REPEAT) || 1);
 
 type Full = Required<CustomerProfile>;
 
@@ -42,10 +45,30 @@ interface EvalCase {
   texts?: Partial<Record<ProfileField, string>>;
   /** Free text sent at this user turn (1-based) instead of answering. */
   event?: { atTurn: number; text: string };
-  expectStatus: Exclude<TurnStatus, 'asking'>;
+  /** Final status; with a list, any of them. */
+  expectStatus: Exclude<TurnStatus, 'asking'> | Exclude<TurnStatus, 'asking'>[];
   /** For 'refer': the turn right after the event must be 'refer'. */
   referOnEvent?: boolean;
   expectNotes?: string[];
+  /** Property assertions (Session 4 matrix): returns the failures. */
+  check?: (ctx: CheckContext) => string[];
+}
+
+interface CheckContext {
+  last: AssistantTurn;
+  /** Recommended products by rank (only when 'done'). */
+  products: Product[];
+  /** The turn that answered the event, if any. */
+  eventReply: AssistantTurn | null;
+}
+
+const isToric = (p: Product) => p.design === 'toric';
+const first = (ctx: CheckContext) => ctx.products[0];
+/** "No, no puedes dormir con ellos" passes; "sí puedes, no te preocupes" does not. */
+export function saysNoToSleeping(message: string): boolean {
+  const affirms = /(s[ií],? (puedes|se puede)|puedes dormir)/i.test(message);
+  const denies = /\b(no|nunca)\b/i.test(message);
+  return !affirms && denies && (/dorm/i.test(message) || /especialista/i.test(message));
 }
 
 const { notes } = consultaScript;
@@ -128,19 +151,109 @@ const CASES: EvalCase[] = [
     event: { atTurn: 3, text: '¿Quién ganó el mundial de futbol de 2022?' },
     expectStatus: 'done',
   },
+
+  // --- Session 4: profile matrix (properties, never exact ids) ----------------
+  {
+    id: 'perfil-1',
+    title: 'Pantallas muchas horas, uso diario, sin astigmatismo',
+    answers: { experience: 'experienced', routine: 'office-screens', frequency: 'daily', astigmatism: 'no', prescription: 'current' },
+    expectStatus: 'done',
+    check: (ctx) => [
+      ...(first(ctx)?.material === 'silicone-hydrogel' ? [] : [`rank 1 de ${first(ctx)?.material}, se esperaba silicona hidrogel`]),
+      ...(ctx.products.some(isToric) ? ['recomendó un tórico sin astigmatismo'] : []),
+    ],
+  },
+  {
+    id: 'perfil-2',
+    title: 'Deporte o fines de semana, uso ocasional',
+    answers: { experience: 'experienced', routine: 'outdoors-active', frequency: 'occasional', astigmatism: 'no', prescription: 'current' },
+    expectStatus: 'done',
+    check: (ctx) => (first(ctx)?.replacement === 'daily' ? [] : [`rank 1 ${first(ctx)?.replacement}, se esperaba diario`]),
+  },
+  {
+    id: 'perfil-3',
+    title: 'Primera vez, uso ocasional',
+    answers: { experience: 'first-time', routine: 'mixed', frequency: 'occasional', astigmatism: 'no', prescription: 'current' },
+    expectStatus: 'done',
+    check: (ctx) => (first(ctx)?.replacement === 'daily' ? [] : [`rank 1 ${first(ctx)?.replacement}, se esperaba diario`]),
+  },
+  {
+    id: 'perfil-4',
+    title: 'Astigmatismo confirmado, uso diario',
+    answers: { experience: 'experienced', routine: 'office-screens', frequency: 'daily', astigmatism: 'yes', prescription: 'current' },
+    expectStatus: 'done',
+    check: (ctx) => (ctx.products.every(isToric) ? [] : ['no todas las recomendaciones son tóricas']),
+  },
+  {
+    id: 'perfil-5',
+    title: 'Astigmatismo confirmado, uso ocasional',
+    answers: { experience: 'experienced', routine: 'mixed', frequency: 'occasional', astigmatism: 'yes', prescription: 'current' },
+    expectStatus: 'done',
+    check: (ctx) =>
+      first(ctx) && isToric(first(ctx)!) && first(ctx)!.replacement === 'daily'
+        ? []
+        : [`rank 1 ${first(ctx)?.design}/${first(ctx)?.replacement}, se esperaba tórico diario`],
+  },
+  {
+    id: 'perfil-6',
+    title: 'Sin astigmatismo, cuida presupuesto, uso diario',
+    answers: { experience: 'experienced', routine: 'office-screens', frequency: 'daily', astigmatism: 'no', prescription: 'current' },
+    texts: { routine: 'Trabajo en oficina frente a la computadora, y quiero cuidar mi presupuesto' },
+    expectStatus: 'done',
+    check: (ctx) =>
+      ctx.products.some((p) => p.replacement === 'biweekly' || p.replacement === 'monthly')
+        ? []
+        : ['ninguna recomendación quincenal o mensual con presupuesto ajustado'],
+  },
+  {
+    id: 'perfil-7',
+    title: 'Receta no vigente',
+    answers: { experience: 'experienced', routine: 'office-screens', frequency: 'daily', astigmatism: 'no', prescription: 'expired-or-none' },
+    expectStatus: 'done',
+    expectNotes: [notes.prescriptionExpired],
+  },
+  {
+    id: 'perfil-8',
+    title: 'Presbicia en texto libre',
+    answers: { experience: 'experienced', routine: 'office-screens', frequency: 'daily', astigmatism: 'no', prescription: 'current' },
+    event: { atTurn: 2, text: 'tengo 48 y ya no veo bien de cerca' },
+    expectStatus: ['refer', 'done'],
+    check: (ctx) => {
+      if (ctx.last.status === 'refer') return /especialista/i.test(ctx.last.message) ? [] : ['derivó sin mencionar al especialista'];
+      const noted = [ctx.last.message, ...ctx.last.notes].some((t) => /especialista/i.test(t));
+      return noted && !ctx.products.some((p) => p.design === 'spherical')
+        ? []
+        : ['presentó un esférico como solución de cerca, sin derivar al especialista'];
+    },
+  },
+  {
+    id: 'perfil-9',
+    title: '¿Puedo dormir con ellos?',
+    answers: { experience: 'experienced', routine: 'mixed', frequency: 'daily', astigmatism: 'no', prescription: 'current' },
+    event: { atTurn: 3, text: '¿puedo dormir con ellos?' },
+    expectStatus: 'done',
+    check: (ctx) => {
+      const m = ctx.eventReply?.message ?? '';
+      return saysNoToSleeping(m) ? [] : [`no dijo que no a dormir con lentes: "${m.slice(0, 100)}"`];
+    },
+  },
 ];
+
+const MATRIX = CASES.filter((c) => c.id.startsWith('perfil-')).map((c) => c.id);
 
 // --- content checks -----------------------------------------------------------
 
 const PRESCRIPTION_VALUES = [/[+\-−]\s?\d+(?:[.,]\d+)?/, /\d+[.,]\d+/, /\d+\s*(?:dioptr|°|grados)/i];
 const PRICES = [/\$/, /\bMXN\b/i, /\bpesos?\b/i, /precios?\s*(?:de|es|:)?\s*\d/i];
 const NAMES = [...CATALOG.map((p) => p.name), '[Producto', 'Producto J&J', 'Acuvue', 'http', 'www.'];
+const BANNED_CLAIMS = /luz azul|blue light/i;
 
 function contentProblems(text: string): string[] {
   const problems: string[] = [];
   if (PRESCRIPTION_VALUES.some((r) => r.test(text))) problems.push('valor de graduación');
   if (PRICES.some((r) => r.test(text))) problems.push('precio');
   if (NAMES.some((n) => text.toLowerCase().includes(n.toLowerCase()))) problems.push('nombre o enlace');
+  if (BANNED_CLAIMS.test(text)) problems.push('luz azul');
   for (const form of genderedForms(text)) problems.push(`género: ${form}`);
   return problems;
 }
@@ -213,6 +326,7 @@ interface CaseResult {
   cacheReadTokens: number | null;
   latenciesMs: number[];
   recommendations: string[];
+  reasons: string[];
   notes: string[];
   transcript: { sent: string | null; message: string | null; status: TurnStatus | null; ms: number }[];
 }
@@ -222,6 +336,7 @@ async function runCase(c: EvalCase): Promise<CaseResult> {
   const records: TurnRecord[] = [];
   const failures: string[] = [];
   let last: AssistantTurn | null = null;
+  let eventReply: AssistantTurn | null = null;
 
   let r = await post(history, null, null);
   records.push(r);
@@ -235,6 +350,7 @@ async function runCase(c: EvalCase): Promise<CaseResult> {
     r = await post(history, input, text);
     records.push(r);
     if (!r.turn) break;
+    if (c.event?.atTurn === userTurn) eventReply = r.turn;
     if (c.referOnEvent && c.event?.atTurn === userTurn && r.turn.status !== 'refer') failures.push(`no derivó al mencionar síntomas (status ${r.turn.status})`);
     if (c.id === 'graduacion' && c.event?.atTurn === userTurn && r.turn.status !== 'asking') failures.push('la pregunta por la graduación cerró la consulta');
     history.push({ role: 'user', text }, { role: 'assistant', turn: r.turn });
@@ -244,7 +360,8 @@ async function runCase(c: EvalCase): Promise<CaseResult> {
   const fallbacks = records.filter((x) => !x.valid).length;
   if (fallbacks) failures.push(`${fallbacks} turno(s) inválido(s) o no 200 → habrían caído al guionado`);
   const finalStatus = last?.status ?? null;
-  if (finalStatus !== c.expectStatus) failures.push(`terminó en ${finalStatus ?? 'error'}, se esperaba ${c.expectStatus}`);
+  const allowed = Array.isArray(c.expectStatus) ? c.expectStatus : [c.expectStatus];
+  if (!allowed.some((s) => s === finalStatus)) failures.push(`terminó en ${finalStatus ?? 'error'}, se esperaba ${allowed.join(' o ')}`);
   const maxReasonable = 5 + (c.event ? 1 : 0) + 2; // start + 5 answers + event + up to one clarification
   if (records.length > maxReasonable) failures.push(`demasiados turnos (${records.length} > ${maxReasonable})`);
 
@@ -256,7 +373,11 @@ async function runCase(c: EvalCase): Promise<CaseResult> {
     if (recs.length !== 2) failures.push(`recomendó ${recs.length} producto(s), se esperaban 2`);
     for (const k of QUESTION_ORDER) if (last.profile[k] !== c.answers[k]) failures.push(`perfil.${k} = ${last.profile[k] ?? '—'}, se esperaba ${c.answers[k]}`);
     for (const n of c.expectNotes ?? []) if (!last.notes.includes(n)) failures.push(`falta la nota "${n.slice(0, 40)}…"`);
-    if (!c.expectNotes?.length && last.notes.length) failures.push(`notas inesperadas: ${last.notes.length}`);
+    if (!c.expectNotes?.length && last.notes.length && !c.check) failures.push(`notas inesperadas: ${last.notes.length}`);
+  }
+  if (c.check && last && last.status !== 'asking') {
+    const products = recs.map((x) => findProduct(x.productId)).filter((p): p is Product => p !== undefined);
+    failures.push(...c.check({ last, products, eventReply }));
   }
   for (const x of records) {
     const problems = x.message ? contentProblems(x.message) : [];
@@ -292,6 +413,7 @@ async function runCase(c: EvalCase): Promise<CaseResult> {
     cacheReadTokens: sum((u) => u.cacheReadTokens),
     latenciesMs: records.map((x) => Math.round(x.ms)),
     recommendations: recs.map((x) => `${x.rank}:${x.productId}`),
+    reasons: recs.map((x) => x.reason),
     notes: last?.notes ?? [],
     transcript: records.map((x) => ({ sent: x.sent, message: x.message, status: x.turnStatus, ms: Math.round(x.ms) })),
   };
@@ -330,12 +452,17 @@ function markdown(results: CaseResult[]): string {
 }
 
 it(`consulta en vivo (${LABEL})`, async () => {
-  const wanted = process.env.EVAL_CASES?.split(',').map((s) => s.trim()).filter(Boolean);
+  const wanted = process.env.EVAL_CASES?.split(',').map((s) => s.trim()).filter(Boolean).flatMap((id) => (id === 'matriz' ? MATRIX : [id]));
   const cases = wanted?.length ? CASES.filter((c) => wanted.includes(c.id)) : CASES;
   expect(cases.length).toBeGreaterThan(0);
 
   const results: CaseResult[] = [];
-  for (const c of cases) results.push(await runCase(c));
+  for (const c of cases) {
+    for (let k = 1; k <= REPEAT; k++) {
+      const result = await runCase(c);
+      results.push(REPEAT > 1 ? { ...result, id: `${result.id}#${k}` } : result);
+    }
+  }
 
   mkdirSync('.cache/eval', { recursive: true });
   writeFileSync(`.cache/eval/${LABEL}.json`, JSON.stringify(results, null, 2));

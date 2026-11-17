@@ -52,6 +52,8 @@ export type ConsultaScript = {
     lead: string;
     fallback: string;
     alternative: { daily: string; biweekly: string; monthly: string };
+    /** Rank 2 when it shares rank 1's replacement (today only daily spherical: a cheaper daily). */
+    alternativeSameReplacement: string;
   };
 };
 
@@ -205,6 +207,7 @@ export const consultaScript: ConsultaScript = {
       biweekly: 'Si prefieres un par que dure dos semanas y no te molesta limpiarlos con solución cada noche.',
       monthly: 'Si prefieres un par que dure un mes y no te molesta limpiarlos con solución cada noche.',
     },
+    alternativeSameReplacement: 'Otra opción de uso diario, a un precio menor: tampoco necesita estuche ni solución.',
   },
 };
 

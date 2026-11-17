@@ -20,8 +20,8 @@ const done: AssistantTurn = {
   profile: { experience: 'experienced', routine: 'mixed', frequency: 'daily', astigmatism: 'no', prescription: 'current' },
   status: 'done',
   recommendations: [
-    { productId: 'jj-biweekly-spherical', rank: 1, reason: 'Porque sí.' },
-    { productId: 'jj-daily-spherical', rank: 2, reason: 'Alternativa.' },
+    { productId: 'acuvue-vita', rank: 1, reason: 'Porque sí.' },
+    { productId: 'acuvue-1-day-moist', rank: 2, reason: 'Alternativa.' },
   ],
   notes: [],
 };
@@ -58,7 +58,7 @@ describe('parseAssistantTurn', () => {
   });
 
   it.each([0, 3, 1.5, '1'])('returns null with rank %s', (rank) => {
-    const recommendations = [{ productId: 'jj-daily-spherical', rank, reason: 'x' }];
+    const recommendations = [{ productId: 'acuvue-1-day-moist', rank, reason: 'x' }];
     expect(parseAssistantTurn({ ...done, recommendations })).toBeNull();
   });
 

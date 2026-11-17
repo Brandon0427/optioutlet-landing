@@ -1,12 +1,17 @@
 import { useId } from 'react';
-import { storeLink } from '../../config/store';
+import { productLink } from '../../config/store';
 import { landing } from '../../content/landing';
 import type { ResolvedRecommendation } from '../../consulta/recommend';
+import { Isotipo } from '../brand/Isotipo';
 import { ActionLink } from '../ui/ActionLink';
 
 const { result } = landing.consulta;
 
-const priceFormat = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
+const wholeFormat = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 });
+const centsFormat = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2 });
+
+/** MXN, with cents only when the price has them ($1,069 · $1,446.11). */
+export const formatPrice = (mxn: number) => (Number.isInteger(mxn) ? wholeFormat : centsFormat).format(mxn);
 
 /**
  * Product card. Everything shown about the product comes from the catalog
@@ -15,6 +20,8 @@ const priceFormat = new Intl.NumberFormat('es-MX', { style: 'currency', currency
 export function ProductCard({ item }: { item: ResolvedRecommendation }) {
   const { product, recommendation } = item;
   const titleId = useId();
+  const link = productLink(product.storeUrl, recommendation.rank === 1 ? 'recomendacion-1' : 'recomendacion-2');
+  const cta = link.destination === 'marketplace' ? result.marketplaceCta : result.storeCta;
   const tags = [
     result.tags.replacement[product.replacement],
     result.tags.material[product.material],
@@ -27,10 +34,10 @@ export function ProductCard({ item }: { item: ResolvedRecommendation }) {
       className="flex shrink-0 flex-wrap gap-4 rounded-[20px_48px_20px_20px] border border-line-2 bg-white p-4"
     >
       {product.imageUrl ? (
-        <img src={product.imageUrl} alt="" width={104} height={104} loading="lazy" className="size-[104px] flex-[0_0_104px] rounded-[14px] object-cover" />
+        <img src={product.imageUrl} alt="" width={104} height={104} loading="lazy" className="size-[104px] flex-[0_0_104px] rounded-[14px] object-contain" />
       ) : (
-        <div className="flex size-[104px] flex-[0_0_104px] items-center justify-center rounded-[14px] bg-mist text-center text-xs leading-[1.3] text-ink-3">
-          {result.photo}
+        <div aria-hidden="true" className="bg-phone-disc flex size-[104px] flex-[0_0_104px] items-center justify-center rounded-[14px]">
+          <Isotipo className="size-12 text-white/90" />
         </div>
       )}
 
@@ -48,18 +55,12 @@ export function ProductCard({ item }: { item: ResolvedRecommendation }) {
         </ul>
         <p className="m-0 text-[15px] leading-[1.5] text-ink-2">{recommendation.reason}</p>
         <div className="mt-1 flex flex-wrap items-center justify-between gap-3">
-          <span className="text-base font-bold text-navy">
-            {product.priceMXN === null ? result.price : priceFormat.format(product.priceMXN)}
-          </span>
+          {product.priceMXN !== null && <span className="text-base font-bold text-navy">{formatPrice(product.priceMXN)}</span>}
           <ActionLink
-            link={{
-              label: result.storeCta,
-              href: storeLink(product.storeUrl, recommendation.rank === 1 ? 'recomendacion-1' : 'recomendacion-2'),
-              external: true,
-            }}
-            className="inline-flex min-h-11 items-center rounded-full bg-teal px-5 text-[15px] font-bold text-navy no-underline transition-colors hover:bg-mint hover:text-navy"
+            link={{ label: cta, href: link.href, external: true }}
+            className="ml-auto inline-flex min-h-11 items-center rounded-full bg-teal px-5 text-[15px] font-bold text-navy no-underline transition-colors hover:bg-mint hover:text-navy"
           >
-            {result.storeCta}
+            {cta}
             <span className="sr-only">: {product.name}</span>
           </ActionLink>
         </div>

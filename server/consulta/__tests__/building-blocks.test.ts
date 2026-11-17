@@ -68,20 +68,46 @@ describe('output schema', () => {
 });
 
 describe('system prompt', () => {
-  it('contains every catalog id and no price, product name or link', () => {
+  it('contains every catalog id, its reference name and no price figure or link', () => {
     for (const p of CATALOG) {
       expect(SYSTEM_PROMPT).toContain(`"${p.id}"`);
-      expect(SYSTEM_PROMPT).not.toContain(p.name);
+      expect(SYSTEM_PROMPT).toContain(p.name);
       expect(SYSTEM_PROMPT).not.toContain(p.storeUrl);
+      if (p.priceMXN !== null) expect(SYSTEM_PROMPT).not.toContain(String(p.priceMXN));
     }
     // "precios" appears in the rule that forbids them; what must not appear is a price.
     expect(SYSTEM_PROMPT).not.toMatch(/\$|MXN|\[PRECIO\]|https?:\/\/|\d+\s*pesos/);
   });
 
+  it('never prints a missing value', () => {
+    expect(SYSTEM_PROMPT).not.toMatch(/\b(null|undefined|NaN)\b/);
+  });
+
+  it('leaves out what a product lacks: ACOA has no box size, duration or relative cost', () => {
+    const acoa = SYSTEM_PROMPT.split('\n').find((l) => l.startsWith('- id "acuvue-oasys":'))!;
+    expect(acoa).toBeDefined();
+    expect(acoa).not.toMatch(/por caja|una caja dura|costo/);
+    const vita = SYSTEM_PROMPT.split('\n').find((l) => l.startsWith('- id "acuvue-vita":'))!;
+    expect(vita).toMatch(/6 lentes por caja/);
+    expect(vita).toMatch(/costo por día bajo \(más el costo de la solución\)/);
+  });
+
+  it('leaves base curve and diameter out (rule 2 forbids them)', () => {
+    expect(SYSTEM_PROMPT).not.toMatch(/14\.[0-5]|8\.[4-9]\b/);
+  });
+
+  it('has no multifocal product and the rules of Session 4', () => {
+    expect(SYSTEM_PROMPT).not.toMatch(/Recomienda el multifocal/);
+    expect(SYSTEM_PROMPT).toMatch(/luz azul/);
+    expect(SYSTEM_PROMPT).toMatch(/no sustituye a los lentes de sol/);
+    expect(SYSTEM_PROMPT).toMatch(/Nunca sugieras dormir/);
+    expect(SYSTEM_PROMPT).toMatch(/no hay lentes multifocales/);
+  });
+
   it('regenerates from the catalog it receives', () => {
     const prompt = buildSystemPrompt([{ ...CATALOG[0]!, id: 'otro-producto', priceMXN: 499 }]);
     expect(prompt).toContain('"otro-producto"');
-    expect(prompt).not.toContain('jj-daily-spherical');
+    expect(prompt).not.toContain('acuvue-oasys-1-day');
     expect(prompt).not.toContain('499');
   });
 

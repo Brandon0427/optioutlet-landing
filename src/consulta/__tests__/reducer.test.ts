@@ -185,7 +185,7 @@ describe('consultaReducer', () => {
       status: 'done',
       recommendations: [
         { productId: 'ghost', rank: 1, reason: 'x' },
-        { productId: 'jj-daily-spherical', rank: 2, reason: 'y' },
+        { productId: 'acuvue-1-day-moist', rank: 2, reason: 'y' },
       ],
       notes: [],
     };
@@ -194,7 +194,7 @@ describe('consultaReducer', () => {
     try {
       const s = consultaReducer(s1, { type: 'received', requestId: s1.requestId, raw: turn });
       expect(s.phase).toBe('done');
-      expect(s.recommendations.map((r) => r.product.id)).toEqual(['jj-daily-spherical']);
+      expect(s.recommendations.map((r) => r.product.id)).toEqual(['acuvue-1-day-moist']);
     } finally {
       console.warn = original;
     }

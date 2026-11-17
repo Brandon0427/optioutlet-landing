@@ -5,6 +5,7 @@ import {
   DEFAULT_STORE_URL,
   DEFAULT_UTM,
   STORE_URL,
+  buildProductLink,
   buildStoreLink,
   readIncomingUtm,
   storeLink,
@@ -93,7 +94,25 @@ describe('targets', () => {
 });
 
 describe('catalog', () => {
-  it.each(CATALOG.map((p) => [p.id, p.storeUrl]))('%s lives on the store origin', (_id, storeUrl) => {
-    expect(new URL(storeUrl).origin).toBe(new URL(STORE_URL).origin);
+  const ML_LISTING = /^https:\/\/articulo\.mercadolibre\.com\.mx\/MLM-\d+$/;
+  it.each(CATALOG.map((p) => [p.id, p.storeUrl]))('%s links to the store origin or to its Mercado Libre listing', (_id, storeUrl) => {
+    const onStore = new URL(storeUrl).origin === new URL(STORE_URL).origin;
+    expect(onStore || ML_LISTING.test(storeUrl)).toBe(true);
+  });
+});
+
+describe('buildProductLink', () => {
+  const ml = 'https://articulo.mercadolibre.com.mx/MLM-1895638309';
+
+  it('returns a Mercado Libre listing untouched, without UTM', () => {
+    expect(buildProductLink(ml, 'recomendacion-1', {})).toEqual({ href: ml, destination: 'marketplace' });
+    expect(buildProductLink(ml, 'recomendacion-1', { utm_source: 'instagram' }).href).toBe(ml);
+  });
+
+  it('sends a store URL through the UTM builder', () => {
+    const link = buildProductLink(STORE_URL, 'recomendacion-2', {});
+    expect(link.destination).toBe('store');
+    expect(link.href).toBe(buildStoreLink(STORE_URL, 'recomendacion-2', {}));
+    expect(params(link.href).utm_content).toBe('recomendacion-2');
   });
 });

@@ -13,6 +13,7 @@ import { fileURLToPath } from 'node:url';
 import { getTransformedRoutes, isHandler, type Route } from '@vercel/routing-utils';
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_STORE_URL } from '../src/config/store.js';
+import { CATALOG } from '../src/consulta/catalog.js';
 
 type Redirect = { source: string; destination: string; statusCode?: number; permanent?: boolean };
 type VercelJson = { headers: unknown; redirects: Redirect[] };
@@ -76,6 +77,8 @@ describe('vercel.json redirects', () => {
     const landingPaths = [
       ...cases.landing.map((c) => (c.path === '@asset' ? '/assets/index-abc123.js' : c.path)),
       ...PUBLIC_FILES,
+      // Product photos: /products/* belongs to the store, so they must live elsewhere.
+      ...CATALOG.flatMap((p) => (p.imageUrl ? [p.imageUrl] : [])),
       '/index.html',
       '/assets/albert-sans-latin-wght-normal-abc123.woff2',
       '/api/chat',

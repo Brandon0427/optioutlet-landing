@@ -87,7 +87,8 @@ describe('scripted provider', () => {
     });
     expect(done.recommendations.map((r) => r.rank)).toEqual([1, 2]);
     for (const r of done.recommendations) expect(findProduct(r.productId)).toBeDefined();
-    expect(findProduct(done.recommendations[0]!.productId)!.replacement).toBe('biweekly');
+    // Office + every day → the biweekly-spherical slot: Vita first (photo and price), Oasys as the alternative.
+    expect(done.recommendations.map((r) => r.productId)).toEqual(['acuvue-vita', 'acuvue-oasys']);
     expect(done.quickReplies).toEqual([]);
     expect(done.notes).toEqual([]);
     expect(allValid(s.turns)).toBe(true);

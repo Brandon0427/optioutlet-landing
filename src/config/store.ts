@@ -75,3 +75,31 @@ export const INCOMING_UTM: UtmParams = readIncomingUtm(locationSearch);
 export function storeLink(target: string, placement: StoreLinkPlacement): string {
   return buildStoreLink(target, placement, INCOMING_UTM);
 }
+
+/** Where a product card's button leads: the store (with UTM) or a marketplace listing (as is). */
+export interface ProductLink {
+  href: string;
+  destination: 'store' | 'marketplace';
+}
+
+/**
+ * Pure builder for a product card's link. A URL on the store's origin goes
+ * through `buildStoreLink()` (UTM added); any other absolute URL (a Mercado
+ * Libre listing) is returned untouched: UTM parameters do not apply there.
+ */
+export function buildProductLink(
+  storeUrl: string,
+  placement: StoreLinkPlacement,
+  incoming: UtmParams,
+  base: string = STORE_URL,
+): ProductLink {
+  const url = new URL(storeUrl, base);
+  return url.origin === new URL(base).origin
+    ? { href: buildStoreLink(storeUrl, placement, incoming, base), destination: 'store' }
+    : { href: url.toString(), destination: 'marketplace' };
+}
+
+/** Product card link with the UTM parameters that apply to this visit. */
+export function productLink(storeUrl: string, placement: StoreLinkPlacement): ProductLink {
+  return buildProductLink(storeUrl, placement, INCOMING_UTM);
+}

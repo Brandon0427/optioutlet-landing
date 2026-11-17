@@ -100,9 +100,8 @@ export type LandingContent = {
       notesLabel: string;
       firstLabel: string;
       secondLabel: string;
-      photo: string;
-      price: string;
       storeCta: string;
+      marketplaceCta: string;
       tags: {
         replacement: Record<Replacement, string>;
         material: Record<Material, string>;
@@ -214,7 +213,7 @@ export const landing: LandingContent = {
           bubbles: [
             { from: 'opti', text: 'Listo. Por tus horas de pantalla, estos son los que te recomiendo.' },
           ],
-          product: { photo: 'Foto del producto', name: '[Producto J&J]', tag: 'Reemplazo diario' },
+          product: { photo: 'Foto del producto', name: 'ACUVUE® OASYS 1-Day', tag: 'Reemplazo diario' },
           cta: 'Ver en la tienda',
         },
       ],
@@ -231,31 +230,31 @@ export const landing: LandingContent = {
         title: 'Ocho horas frente a la pantalla',
         question: '¿Cuántas horas al día pasas frente a una computadora?',
         answer: 'Materiales que conservan la humedad y dejan pasar más oxígeno, como la silicona hidrogel.',
-        product: '[Producto J&J]',
+        product: 'ACUVUE® VITA®',
       },
       {
         title: 'Siempre en movimiento',
         question: '¿Haces deporte o pasas el día afuera?',
         answer: 'Desechables diarios: un par nuevo cada mañana, sin estuche ni solución.',
-        product: '[Producto J&J]',
+        product: 'ACUVUE® OASYS 1-Day',
       },
       {
         title: 'Solo para ocasiones especiales',
         question: '¿Cada cuánto los usarías?',
         answer: 'Diarios, para abrir un par solo los días que los necesitas.',
-        product: '[Producto J&J]',
+        product: '1-DAY ACUVUE® MOIST',
       },
       {
         title: 'Mi receta dice astigmatismo',
         question: '¿Tu receta tiene valores de cilindro y eje?',
         answer: 'Lentes tóricos, diseñados para mantenerse en la posición correcta.',
-        product: '[Producto J&J]',
+        product: 'ACUVUE® OASYS for ASTIGMATISM',
       },
       {
         title: 'Primera vez con lentes de contacto',
         question: '¿Ya los has usado antes?',
         answer: 'Opciones fáciles de manejar, y el recordatorio de pedirle a tu especialista una prueba de adaptación.',
-        product: '[Producto J&J]',
+        product: '1-DAY ACUVUE® MOIST',
       },
     ],
   },
@@ -288,9 +287,8 @@ export const landing: LandingContent = {
       notesLabel: 'Avisos',
       firstLabel: 'Mi primera opción para ti',
       secondLabel: 'También te puede funcionar',
-      photo: 'Foto del producto',
-      price: '[PRECIO]',
       storeCta: 'Ver en la tienda',
+      marketplaceCta: 'Ver en Mercado Libre',
       tags: {
         replacement: { daily: 'Reemplazo diario', biweekly: 'Reemplazo cada 2 semanas', monthly: 'Reemplazo mensual' },
         material: { 'silicone-hydrogel': 'Silicona hidrogel', hydrogel: 'Hidrogel' },

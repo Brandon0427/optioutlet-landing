@@ -2,14 +2,18 @@
  * Recommendation rules (pure functions, no React or DOM).
  *
  * - Daily replacement if the frequency isn't 'daily' or the routine is
- *   'outdoors-active'; otherwise biweekly.
+ *   'outdoors-active'; otherwise biweekly (the "slot").
  * - Toric design if astigmatism === 'yes'; otherwise spherical.
- * - Rank 1 meets both rules; rank 2 changes the replacement and keeps the design.
+ * - Each slot has a fixed pair of real products (SLOTS). If the catalog lacks
+ *   one of them, the generic rule takes over: rank 1 meets both rules, rank 2
+ *   changes the replacement and keeps the design.
  * - When no product fits, the replacement is relaxed first and the design
  *   never is: someone with astigmatism never gets a spherical lens.
+ * - Rank 1's reason comes from the profile, never from the slot, so it never
+ *   names a replacement the product doesn't have.
  */
 import { consultaScript } from '../content/consulta';
-import type { Product, Replacement } from './catalog';
+import type { LensDesign, Product, Replacement } from './catalog';
 import type { CustomerProfile, Recommendation } from './types';
 
 const { reasons } = consultaScript;
@@ -20,7 +24,7 @@ export interface ResolvedRecommendation {
 }
 
 /** Replacement the rules prefer for this profile. */
-export function preferredReplacement(profile: CustomerProfile): Replacement {
+export function preferredReplacement(profile: CustomerProfile): 'daily' | 'biweekly' {
   return profile.frequency !== 'daily' || profile.routine === 'outdoors-active' ? 'daily' : 'biweekly';
 }
 
@@ -37,9 +41,35 @@ export function firstChoiceReason(profile: CustomerProfile): string {
   return parts.length ? `${reasons.lead} ${joinEs(parts)}.` : reasons.fallback;
 }
 
+type Slot = `${'daily' | 'biweekly'}-${Exclude<LensDesign, 'multifocal'>}`;
+
+/** Fixed [rank 1, rank 2] product ids per slot (Session 4). */
+export const SLOTS: Record<Slot, readonly [string, string]> = {
+  'daily-spherical': ['acuvue-oasys-1-day', 'acuvue-1-day-moist'],
+  'daily-toric': ['acuvue-1-day-moist-astigmatismo', 'acuvue-oasys-astigmatismo'],
+  'biweekly-spherical': ['acuvue-vita', 'acuvue-oasys'],
+  'biweekly-toric': ['acuvue-oasys-astigmatismo', 'acuvue-vita-astigmatismo'],
+};
+
+/** Rank 2's reason: its replacement, or the same-replacement text when it matches rank 1's. */
+function alternativeReason(first: Product, second: Product): string {
+  return second.replacement === first.replacement ? reasons.alternativeSameReplacement : reasons.alternative[second.replacement];
+}
+
 export function recommend(profile: CustomerProfile, catalog: readonly Product[]): Recommendation[] {
   const design = profile.astigmatism === 'yes' ? 'toric' : 'spherical';
   const preferred = preferredReplacement(profile);
+
+  const [id1, id2] = SLOTS[`${preferred}-${design}`];
+  const p1 = catalog.find((p) => p.id === id1);
+  const p2 = catalog.find((p) => p.id === id2);
+  if (p1 && p2) {
+    return [
+      { productId: p1.id, rank: 1, reason: firstChoiceReason(profile) },
+      { productId: p2.id, rank: 2, reason: alternativeReason(p1, p2) },
+    ];
+  }
+
   const other: Replacement = preferred === 'daily' ? 'biweekly' : 'daily';
   // Relax the replacement in this order; the design is fixed.
   const order: Replacement[] = [preferred, other, 'monthly'];
@@ -57,7 +87,7 @@ export function recommend(profile: CustomerProfile, catalog: readonly Product[])
 
   const result: Recommendation[] = [{ productId: first.id, rank: 1, reason: firstChoiceReason(profile) }];
   if (second) {
-    result.push({ productId: second.id, rank: 2, reason: reasons.alternative[second.replacement] });
+    result.push({ productId: second.id, rank: 2, reason: alternativeReason(first, second) });
   }
   return result;
 }

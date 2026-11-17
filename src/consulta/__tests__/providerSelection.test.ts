@@ -44,7 +44,7 @@ describe('?demo=1', () => {
     const provider = createConsultaProvider({ setting: 'api', mode: 'production', search: '?demo=1', fetchImpl: fetchImpl as unknown as typeof fetch, scriptedLatencyMs: 0 });
     const { last, turns } = await runConsultation(provider);
     expect(last.status).toBe('done');
-    expect(last.recommendations.map((r) => r.productId)).toEqual(['jj-biweekly-toric', 'jj-daily-toric']);
+    expect(last.recommendations.map((r) => r.productId)).toEqual(['acuvue-oasys-astigmatismo', 'acuvue-vita-astigmatismo']);
     expect(turns).toHaveLength(6);
     expect(fetchImpl).not.toHaveBeenCalled();
   });

@@ -1,0 +1,424 @@
+{
+  "_meta": {
+    "generated": "2026-11-17",
+    "sources": [
+      "Export de publicaciones J&J en Mercado Libre (6 publicaciones); ACOA solo con ficha técnica",
+      "ACUVUE Technical Specifications AS112401 (ficha de EE. UU.)"
+    ],
+    "notes": [
+      "Las especificaciones técnicas vienen de la ficha de EE. UU.; material, agua, Dk/t y UV son los mismos en México, pero tamaños de caja y rangos podrían variar.",
+      "priceMXN es el precio actual en Mercado Libre.",
+      "boxDurationDaysBothEyes asume la misma graduación en ambos ojos (un lente por ojo por periodo). Con graduación distinta en cada ojo se necesitan dos cajas.",
+      "imageCandidates siguen el patrón de URL de mlstatic y no se han verificado; conviene descargarlas al repo en lugar de enlazarlas.",
+      "ACUVUE OASYS for ASTIGMATISM también está aprobado para uso extendido de 1 semana; Opti no debe sugerir dormir con lentes, se trata como quincenal de uso diario.",
+      "pricePerDayBothEyesMXN no incluye solución; los quincenales y mensuales la necesitan, los diarios no."
+    ]
+  },
+  "products": [
+    {
+      "id": "acuvue-1-day-moist",
+      "skuCode": "AC1D",
+      "name": "1-DAY ACUVUE® MOIST",
+      "replacement": "daily",
+      "design": "spherical",
+      "material": "hydrogel",
+      "specs": {
+        "lensMaterial": "etafilcon A",
+        "waterContent": "58%",
+        "dkt": 25.5,
+        "uvBlocking": "~97% UVB y 82% UVA",
+        "technology": [
+          "LACREON®"
+        ],
+        "baseCurveMm": [
+          8.5,
+          9.0
+        ],
+        "diameterMm": 14.2,
+        "ioMark": true,
+        "centerThicknessMm": 0.084,
+        "powers": "-0.50 a -12.00 y +0.50 a +6.00 (pasos de 0.25; de 0.50 después de -6.00)"
+      },
+      "lensesPerBox": 30,
+      "boxDurationDaysBothEyes": 15,
+      "brand": "Johnson & Johnson",
+      "priceMXN": 1069.0,
+      "pricePerDayBothEyesMXN": 71.27,
+      "imageCandidates": [
+        "https://http2.mlstatic.com/D_NQ_NP_728680-MLM88828357712_082025-O.webp",
+        "https://http2.mlstatic.com/D_NQ_NP_756356-MLM69552137424_052023-O.webp",
+        "https://http2.mlstatic.com/D_NQ_NP_769382-MLM69551960870_052023-O.webp"
+      ],
+      "mercadoLibre": {
+        "itemId": "MLM1895638309",
+        "sku": "QTY1-LC_AC1D:M050-MELI:38309",
+        "listingType": "gold_special",
+        "title": "Lentes De Contacto Acuvue 1 Day Moist 30 Piezas Uso Diario 1"
+      },
+      "isPlaceholder": false
+    },
+    {
+      "id": "acuvue-oasys-1-day",
+      "skuCode": "AC1O",
+      "name": "ACUVUE® OASYS 1-Day",
+      "replacement": "daily",
+      "design": "spherical",
+      "material": "silicone-hydrogel",
+      "specs": {
+        "lensMaterial": "senofilcon A",
+        "waterContent": "38%",
+        "dkt": 121,
+        "uvBlocking": ">99.9% UVB y 96% UVA",
+        "technology": [
+          "HydraLuxe®"
+        ],
+        "baseCurveMm": [
+          8.5,
+          9.0
+        ],
+        "diameterMm": 14.3,
+        "ioMark": true,
+        "centerThicknessMm": 0.085,
+        "powers": "-0.50 a -12.00 y +0.50 a +8.00 (pasos de 0.25; de 0.50 después de ±6.00)"
+      },
+      "lensesPerBox": 30,
+      "boxDurationDaysBothEyes": 15,
+      "brand": "Johnson & Johnson",
+      "priceMXN": 1199.0,
+      "pricePerDayBothEyesMXN": 79.93,
+      "imageCandidates": [
+        "https://http2.mlstatic.com/D_NQ_NP_856286-MLM90948686244_082025-O.webp",
+        "https://http2.mlstatic.com/D_NQ_NP_884279-MLM80657771859_112024-O.webp",
+        "https://http2.mlstatic.com/D_NQ_NP_704227-MLM80657654241_112024-O.webp"
+      ],
+      "mercadoLibre": {
+        "itemId": "MLM1895663565",
+        "sku": "QTY1-LC_AC1O:M050-MELI:63565",
+        "listingType": "gold_special",
+        "title": "Lentes De Contacto Acuvue 1 Day Oasys 30 Pzas Uso Diario"
+      },
+      "isPlaceholder": false
+    },
+    {
+      "id": "acuvue-vita",
+      "skuCode": "ACVI",
+      "name": "ACUVUE® VITA®",
+      "replacement": "monthly",
+      "design": "spherical",
+      "material": "silicone-hydrogel",
+      "specs": {
+        "lensMaterial": "senofilcon C",
+        "waterContent": "41%",
+        "dkt": 147,
+        "uvBlocking": ">99% UVB y >93% UVA",
+        "technology": [
+          "HydraMax®"
+        ],
+        "baseCurveMm": [
+          8.4,
+          8.8
+        ],
+        "diameterMm": 14.0,
+        "ioMark": true,
+        "centerThicknessMm": 0.07,
+        "powers": "-0.50 a -12.00 y +0.50 a +8.00 (pasos de 0.25; de 0.50 después de ±6.00)"
+      },
+      "lensesPerBox": 6,
+      "boxDurationDaysBothEyes": 90,
+      "brand": "Johnson & Johnson",
+      "priceMXN": 1199.0,
+      "pricePerDayBothEyesMXN": 13.32,
+      "imageCandidates": [
+        "https://http2.mlstatic.com/D_NQ_NP_917337-MLM80661674041_112024-O.webp",
+        "https://http2.mlstatic.com/D_NQ_NP_696746-MLM69565577119_052023-O.webp",
+        "https://http2.mlstatic.com/D_NQ_NP_823319-MLM69552141528_052023-O.webp"
+      ],
+      "mercadoLibre": {
+        "itemId": "MLM2209649768",
+        "sku": "QTY1-LC_ACVI:M050-MELI:49768",
+        "listingType": "gold_special",
+        "title": "Lentes De Contacto Acuvue Vita Uso Mensual 6 Piezas Hidramax"
+      },
+      "isPlaceholder": false
+    },
+    {
+      "id": "acuvue-oasys",
+      "skuCode": "ACOA",
+      "name": "ACUVUE® OASYS",
+      "replacement": "biweekly",
+      "design": "spherical",
+      "material": "silicone-hydrogel",
+      "specs": {
+        "lensMaterial": "senofilcon A",
+        "waterContent": "38%",
+        "dkt": 147,
+        "uvBlocking": ">99.9% UVB y ~96% UVA",
+        "technology": [
+          "HYDRACLEAR® PLUS"
+        ],
+        "baseCurveMm": [
+          8.4,
+          8.8
+        ],
+        "diameterMm": 14.0,
+        "ioMark": true,
+        "centerThicknessMm": 0.07,
+        "powers": "-0.50 a -12.00 y +0.50 a +8.00 (pasos de 0.25; de 0.50 después de ±6.00)"
+      },
+      "lensesPerBox": null,
+      "boxDurationDaysBothEyes": null,
+      "brand": "Johnson & Johnson",
+      "priceMXN": null,
+      "pricePerDayBothEyesMXN": null,
+      "imageCandidates": [],
+      "mercadoLibre": null,
+      "isPlaceholder": false,
+      "pendingNote": "Se vende, pero no hay publicación de ML en el export: falta caja (piezas), precio, foto y enlace."
+    },
+    {
+      "id": "acuvue-1-day-moist-astigmatismo",
+      "skuCode": "AC1DAS",
+      "name": "1-DAY ACUVUE® MOIST for ASTIGMATISM",
+      "replacement": "daily",
+      "design": "toric",
+      "material": "hydrogel",
+      "specs": {
+        "lensMaterial": "etafilcon A",
+        "waterContent": "58%",
+        "dkt": 23.8,
+        "uvBlocking": "~97% UVB y 82% UVA",
+        "technology": [
+          "LACREON®",
+          "BLINK STABILIZED® Design"
+        ],
+        "baseCurveMm": [
+          8.5
+        ],
+        "diameterMm": 14.5,
+        "ioMark": false,
+        "centerThicknessMm": 0.09,
+        "toric": {
+          "cylinders": [
+            "-0.75",
+            "-1.25",
+            "-1.75",
+            "-2.25"
+          ],
+          "ranges": [
+            {
+              "sphere": "Plano a -6.00 (pasos de 0.25)",
+              "cyl": [
+                "-0.75",
+                "-1.25",
+                "-1.75"
+              ],
+              "axis": "10° a 180° cada 10°"
+            },
+            {
+              "sphere": "Plano a -6.00 (pasos de 0.25)",
+              "cyl": [
+                "-2.25"
+              ],
+              "axis": "10, 20, 70, 80, 90, 100, 110, 160, 170, 180"
+            },
+            {
+              "sphere": "-6.50 a -9.00 (pasos de 0.50)",
+              "cyl": [
+                "-0.75",
+                "-1.25",
+                "-1.75"
+              ],
+              "axis": "10, 20, 70, 80, 90, 100, 110, 160, 170, 180"
+            },
+            {
+              "sphere": "+0.25 a +4.00 (pasos de 0.25)",
+              "cyl": [
+                "-0.75",
+                "-1.25",
+                "-1.75"
+              ],
+              "axis": "10, 20, 70, 80, 90, 100, 110, 160, 170, 180"
+            }
+          ]
+        }
+      },
+      "lensesPerBox": 30,
+      "boxDurationDaysBothEyes": 15,
+      "brand": "Johnson & Johnson",
+      "priceMXN": 1479.0,
+      "pricePerDayBothEyesMXN": 98.6,
+      "imageCandidates": [
+        "https://http2.mlstatic.com/D_NQ_NP_982660-MLM92393621777_092025-O.webp",
+        "https://http2.mlstatic.com/D_NQ_NP_669477-MLM82943710592_032025-O.webp",
+        "https://http2.mlstatic.com/D_NQ_NP_996235-MLM82943720500_032025-O.webp"
+      ],
+      "mercadoLibre": {
+        "itemId": "MLM672456958",
+        "sku": "QTY1-LC_AC1DAS:X-MELI:F23023",
+        "listingType": "gold_special",
+        "title": "Lentes De Contacto Acuvue 1 Day Moist Torico 30 Pzas Mensual Transparente Envía Tu Graduación Por Mensaje"
+      },
+      "isPlaceholder": false
+    },
+    {
+      "id": "acuvue-vita-astigmatismo",
+      "skuCode": "ACVIAS",
+      "name": "ACUVUE® VITA® for ASTIGMATISM",
+      "replacement": "monthly",
+      "design": "toric",
+      "material": "silicone-hydrogel",
+      "specs": {
+        "lensMaterial": "senofilcon C",
+        "waterContent": "41%",
+        "dkt": 129,
+        "uvBlocking": ">99% UVB y >93% UVA",
+        "technology": [
+          "HydraMax®",
+          "BLINK STABILIZED® Design"
+        ],
+        "baseCurveMm": [
+          8.6
+        ],
+        "diameterMm": 14.5,
+        "ioMark": false,
+        "centerThicknessMm": 0.08,
+        "toric": {
+          "cylinders": [
+            "-0.75",
+            "-1.25",
+            "-1.75",
+            "-2.25"
+          ],
+          "ranges": [
+            {
+              "sphere": "Plano a -6.00 (pasos de 0.25)",
+              "cyl": [
+                "-0.75",
+                "-1.25",
+                "-1.75"
+              ],
+              "axis": "10° a 180° cada 10°"
+            },
+            {
+              "sphere": "Plano a -6.00 (pasos de 0.25)",
+              "cyl": [
+                "-2.25"
+              ],
+              "axis": "10, 20, 70, 80, 90, 100, 110, 160, 170, 180"
+            },
+            {
+              "sphere": "-6.50 a -9.00 (pasos de 0.50)",
+              "cyl": [
+                "-0.75",
+                "-1.25",
+                "-1.75"
+              ],
+              "axis": "10, 20, 70, 80, 90, 100, 110, 160, 170, 180"
+            },
+            {
+              "sphere": "+0.25 a +4.00 (pasos de 0.25)",
+              "cyl": [
+                "-0.75",
+                "-1.25",
+                "-1.75"
+              ],
+              "axis": "10, 20, 70, 80, 90, 100, 110, 160, 170, 180"
+            }
+          ]
+        }
+      },
+      "lensesPerBox": 6,
+      "boxDurationDaysBothEyes": 90,
+      "brand": "Johnson & Johnson",
+      "priceMXN": 2159.0,
+      "pricePerDayBothEyesMXN": 23.99,
+      "imageCandidates": [
+        "https://http2.mlstatic.com/D_NQ_NP_857069-MLM83236453093_032025-O.webp",
+        "https://http2.mlstatic.com/D_NQ_NP_919492-MLM69565340437_052023-O.webp",
+        "https://http2.mlstatic.com/D_NQ_NP_901047-MLM69551963320_052023-O.webp"
+      ],
+      "mercadoLibre": {
+        "itemId": "MLM1895649425",
+        "sku": "QTY1-LC_ACVIAS:X-MELI:F60461",
+        "listingType": "gold_special",
+        "title": "Lentes De Contacto Acuvue Vita Tórico Mensual 6 Piezas Sin Color Envía Tu Graduación Por Mensaje"
+      },
+      "isPlaceholder": false
+    },
+    {
+      "id": "acuvue-oasys-astigmatismo",
+      "skuCode": "ACOAAS",
+      "name": "ACUVUE® OASYS for ASTIGMATISM",
+      "replacement": "biweekly",
+      "design": "toric",
+      "material": "silicone-hydrogel",
+      "specs": {
+        "lensMaterial": "senofilcon A",
+        "waterContent": "38%",
+        "dkt": 129,
+        "uvBlocking": ">99.9% UVB y ~96% UVA",
+        "technology": [
+          "HYDRACLEAR® PLUS",
+          "BLINK STABILIZED® Design"
+        ],
+        "baseCurveMm": [
+          8.6
+        ],
+        "diameterMm": 14.5,
+        "ioMark": false,
+        "centerThicknessMm": 0.08,
+        "toric": {
+          "cylinders": [
+            "-0.75",
+            "-1.25",
+            "-1.75",
+            "-2.25",
+            "-2.75"
+          ],
+          "ranges": [
+            {
+              "sphere": "-6.00 a +6.00 (pasos de 0.25)",
+              "cyl": [
+                "-0.75",
+                "-1.25",
+                "-1.75",
+                "-2.25",
+                "-2.75"
+              ],
+              "axis": "10° a 180° cada 10°"
+            },
+            {
+              "sphere": "-6.50 a -9.00 (pasos de 0.50)",
+              "cyl": [
+                "-0.75",
+                "-1.25",
+                "-1.75",
+                "-2.25",
+                "-2.75"
+              ],
+              "axis": "10° a 180° cada 10°"
+            }
+          ]
+        }
+      },
+      "lensesPerBox": 6,
+      "boxDurationDaysBothEyes": 42,
+      "stockNote": "Según la publicación de ML: sin positivos en stock; ejes 180, 10 y 170 inmediatos, otros ejes sobre pedido (hasta 1 semana hábil).",
+      "brand": "Johnson & Johnson",
+      "priceMXN": 1446.11,
+      "pricePerDayBothEyesMXN": 34.43,
+      "imageCandidates": [
+        "https://http2.mlstatic.com/D_NQ_NP_945409-MLA110790856405_042026-O.webp",
+        "https://http2.mlstatic.com/D_NQ_NP_665581-MLA109861371826_042026-O.webp",
+        "https://http2.mlstatic.com/D_NQ_NP_727803-MLA107769476338_032026-O.webp"
+      ],
+      "mercadoLibre": {
+        "itemId": "MLM2705311961",
+        "sku": "QTY1-LC_ACOAAS:X-MELI:11961",
+        "listingType": "gold_pro",
+        "title": "Lentes De Contacto Acuvue Oasys Tórico Para Astigmatismo Hydraclear Plus, Caja Con 6 Pupilentes Quincenales"
+      },
+      "isPlaceholder": false
+    }
+  ]
+}

@@ -121,8 +121,8 @@ describe('handleChat', () => {
   });
 
   it("'done' with an unknown productId counts as invalid", async () => {
-    const bad = done(FULL, ['jj-biweekly-spherical', 'producto-inventado']);
-    const good = done(FULL, ['jj-biweekly-spherical', 'jj-daily-spherical']);
+    const bad = done(FULL, ['acuvue-vita', 'producto-inventado']);
+    const good = done(FULL, ['acuvue-vita', 'acuvue-1-day-moist']);
     const { client, create } = fakeClient(message(JSON.stringify(bad)), message(JSON.stringify(good)));
     const res = await handleChat('POST', body(midHistory({ ...FULL, prescription: undefined }), quick), deps(client));
     expect(res.status).toBe(200);
@@ -132,7 +132,7 @@ describe('handleChat', () => {
 
   it("'done' with astigmatism 'yes' and a spherical recommendation counts as invalid and is retried", async () => {
     const astig = { ...FULL, astigmatism: 'yes' } as const;
-    const bad = done(astig, ['jj-biweekly-toric', 'jj-daily-spherical']);
+    const bad = done(astig, ['acuvue-oasys-astigmatismo', 'acuvue-1-day-moist']);
     const { client, create } = fakeClient(message(JSON.stringify(bad)), message(JSON.stringify(bad)));
     const res = await handleChat('POST', body(midHistory({ ...astig, prescription: undefined }), quick), deps(client));
     expect(res.status).toBe(502);
@@ -140,7 +140,7 @@ describe('handleChat', () => {
     const retry = create.mock.calls[1]![0] as Anthropic.MessageCreateParamsNonStreaming;
     expect(String(retry.messages[retry.messages.length - 1]!.content)).toContain('astigmatismo');
 
-    const good = done(astig, ['jj-biweekly-toric', 'jj-daily-toric']);
+    const good = done(astig, ['acuvue-oasys-astigmatismo', 'acuvue-1-day-moist-astigmatismo']);
     const second = fakeClient(message(JSON.stringify(bad)), message(JSON.stringify(good)));
     const ok = await handleChat('POST', body(midHistory({ ...astig, prescription: undefined }), quick), deps(second.client));
     expect(ok.status).toBe(200);
@@ -148,7 +148,7 @@ describe('handleChat', () => {
   });
 
   it('the astigmatism rule also applies when only the previous profile says yes', async () => {
-    const turnWithoutAstig = done({ ...FULL, astigmatism: undefined }, ['jj-biweekly-spherical', 'jj-daily-spherical']);
+    const turnWithoutAstig = done({ ...FULL, astigmatism: undefined }, ['acuvue-vita', 'acuvue-1-day-moist']);
     const { client } = fakeClient(message(JSON.stringify(turnWithoutAstig)), message(JSON.stringify(turnWithoutAstig)));
     const res = await handleChat('POST', body(midHistory({ ...FULL, astigmatism: 'yes', prescription: undefined }), quick), deps(client));
     expect(res.status).toBe(502);
@@ -178,7 +178,7 @@ describe('handleChat', () => {
   });
 
   it('a finished consultation answers with its closing turn without calling the model', async () => {
-    const closing = done(FULL, ['jj-biweekly-spherical', 'jj-daily-spherical']);
+    const closing = done(FULL, ['acuvue-vita', 'acuvue-1-day-moist']);
     const { client, create } = fakeClient();
     const res = await handleChat('POST', body([{ role: 'assistant', turn: closing }], { kind: 'text', text: 'gracias' }), deps(client));
     expect(res.status).toBe(200);
