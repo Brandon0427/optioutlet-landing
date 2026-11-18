@@ -15,7 +15,7 @@ export type BrandShapeProps = {
   title?: never; // always decorative
 };
 
-/** One of the three pattern strokes: U, loop (9-like) or dot with a bite. Always decorative. */
+/** One of the three official pattern pieces: U, loop (9-like) or dot with a bite. Always decorative. */
 export function BrandShape({ shape, className, style, framing = 'pattern', ref }: BrandShapeProps) {
   const viewBox = framing === 'tight' && shape === 'dot' ? DOT_TIGHT_VIEWBOX : SHAPE_VIEWBOX;
   return (
@@ -25,14 +25,10 @@ export function BrandShape({ shape, className, style, framing = 'pattern', ref }
   );
 }
 
-/** Raw geometry of a shape, colored with `currentColor`. Shared with PatternDefs. */
+const SHAPES = { u: U_SHAPE, loop: LOOP_SHAPE, dot: DOT_SHAPE } as const;
+
+/** Raw geometry of a piece, filled with `currentColor`. Shared with PatternDefs. */
 export function ShapeGeometry({ shape }: { shape: ShapeName }) {
-  switch (shape) {
-    case 'u':
-      return <path d={U_SHAPE.d} fill="none" stroke="currentColor" strokeWidth={U_SHAPE.strokeWidth} />;
-    case 'loop':
-      return <path d={LOOP_SHAPE.d} fill="none" stroke="currentColor" strokeWidth={LOOP_SHAPE.strokeWidth} />;
-    case 'dot':
-      return <path d={DOT_SHAPE.d} fill="currentColor" />;
-  }
+  const s = SHAPES[shape];
+  return <path d={s.d} transform={s.transform} fill="currentColor" />;
 }

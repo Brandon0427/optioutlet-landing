@@ -1,61 +1,70 @@
-// TODO(brand-svg): reemplazar por el vector oficial de la mascota.
-// Este archivo es una aproximación tomada del mockup. Al llegar el SVG oficial,
-// se reemplaza el contenido de este archivo y nada más (misma firma de props).
-
 import { landing } from '../../content/landing';
 import { BRAND_COLORS as C } from '../../styles/brandColors';
+import { OFFICIAL_OPTI as O } from './officialGeometry';
 
 type MascotProps = {
-  /** onNavy: teal strokes, navy pupils. onLight: navy strokes, teal pupils. */
+  /** onLight: official colors (navy body, teal pupils). onNavy: teal body, navy pupils. */
   variant: 'onLight' | 'onNavy';
   /** Rendered width and height in px. */
   size: number;
-  /** full: whole body. head: avatar crop without body and legs (chat headers). */
+  /** full: whole body. head: avatar crop without legs and feet (chat headers). */
   crop?: 'full' | 'head';
   /** Extra classes (e.g. a round background for avatars). */
   className?: string;
 };
 
 const PALETTE = {
-  onNavy: { stroke: C.teal, pupil: C.navy },
-  onLight: { stroke: C.navy, pupil: C.teal },
+  onLight: { body: C.navy, pupil: C.teal },
+  onNavy: { body: C.teal, pupil: C.navy },
 } as const;
 
-/** Opti, the mascot. Exposed to assistive tech as an image with a label. */
+/**
+ * Where the drawn mascot (before Session 8) sat inside its square box: painted center and the share
+ * of the box its LONGER side took. The official figure keeps that center and that longer side
+ * (uniform scale), so every consumer keeps the mascot's visual size and position.
+ * full: longer side = height (84.1 %). head: longer side = width (75.3 %).
+ */
+const FRAME = {
+  full: { fx: 0.4927, fy: 0.4958, longer: 0.8415 },
+  head: { fx: 0.492, fy: 0.392, longer: 0.7533 },
+} as const;
+
+const viewBoxFor = (crop: 'full' | 'head') => {
+  const b = O.bounds[crop];
+  const f = FRAME[crop];
+  const side = Math.max(b.w, b.h) / f.longer;
+  const r = (n: number) => Math.round(n * 100) / 100;
+  return `${r(b.x + b.w / 2 - f.fx * side)} ${r(b.y + b.h / 2 - f.fy * side)} ${r(side)} ${r(side)}`;
+};
+const VIEWBOX = { full: viewBoxFor('full'), head: viewBoxFor('head') } as const;
+
+/** Opti, the mascot (official docs/brand/svg/Opti.svg). Exposed to assistive tech as an image with a label. */
 export function Mascot({ variant, size, crop = 'full', className }: MascotProps) {
-  const { stroke, pupil } = PALETTE[variant];
+  const { body, pupil } = PALETTE[variant];
   const full = crop === 'full';
   return (
     <svg
-      viewBox="0 0 120 120"
+      viewBox={VIEWBOX[crop]}
       role="img"
       aria-label={landing.meta.mascotLabel}
       width={size}
       height={size}
       className={className}
     >
-      {/* arm + head + antenna */}
-      <path d="M58 46 L30 56 C14 62 16 80 32 80 L46 76" fill="none" stroke={stroke} strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M50 46 C44 30 48 14 60 14 C70 14 72 26 76 36 L84 56" fill="none" stroke={stroke} strokeWidth="10" strokeLinecap="round" />
-      <path d="M84 56 L100 28" fill="none" stroke={stroke} strokeWidth="10" strokeLinecap="round" />
-      {/* body */}
-      {full && <path d="M84 60 C92 72 86 86 72 86 L62 86 C52 86 48 80 46 74" fill="none" stroke={stroke} strokeWidth="10" strokeLinecap="round" />}
-      {/* eyes */}
-      <circle cx="48" cy="58" r="15" fill={C.white} stroke={stroke} strokeWidth="4" />
-      <circle cx="76" cy="58" r="15" fill={C.white} stroke={stroke} strokeWidth="4" />
-      <circle cx="50" cy="59" r="7" fill={pupil} />
-      <circle cx="78" cy="59" r="7" fill={pupil} />
-      <circle cx="53" cy="56" r="2.6" fill={C.white} />
-      <circle cx="81" cy="56" r="2.6" fill={C.white} />
-      {/* legs + feet */}
-      {full && (
-        <>
-          <path d="M56 90 L56 106" fill="none" stroke={stroke} strokeWidth="6" />
-          <path d="M70 90 L70 106" fill="none" stroke={stroke} strokeWidth="6" />
-          <path d="M47 110 A8 8 0 0 1 61 110 Z" fill={stroke} />
-          <path d="M65 110 A8 8 0 0 1 79 110 Z" fill={stroke} />
-        </>
-      )}
+      {O.parts.map((p, i) => {
+        switch (p.role) {
+          case 'body':
+            return <path key={i} d={p.d} fill={body} />;
+          case 'pupil':
+            return <path key={i} d={p.d} fill={pupil} />;
+          case 'eye':
+            return <circle key={i} cx={p.cx} cy={p.cy} r={p.r} fill={C.white} stroke={body} strokeWidth={O.strokeWidth} strokeMiterlimit={10} />;
+          case 'leg':
+            return full && <rect key={i} x={p.x} y={p.y} width={p.width} height={p.height} fill={body} />;
+          case 'foot':
+            return full && <path key={i} d={p.d} fill={C.white} stroke={body} strokeWidth={O.strokeWidth} strokeMiterlimit={10} />;
+        }
+      })}
     </svg>
   );
 }

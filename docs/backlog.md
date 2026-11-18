@@ -171,7 +171,9 @@ Lo que no se arregló aquí, por estar fuera de lo permitido en la sesión:
 
 ## Sesión 6 · Fase 2 — Íconos y metadatos (2026-11-09)
 
-### Íconos provisionales — `TODO(brand-svg)`
+### Íconos provisionales — `TODO(brand-svg)` — CERRADA (sesión 8, 2026-11-18)
+
+- **Cierre:** `scripts/generate-icons.ts` ahora toma el isotipo oficial (`docs/brand/svg/7.svg`) con el turquesa del token; los tres íconos se regeneraron con el mismo procedimiento.
 
 - **Razón:** los SVG oficiales de marca no han llegado. Los íconos actuales se
   derivan de `ISOTIPO_SHAPE` (`src/components/brand/geometry.ts`), la misma
@@ -280,3 +282,59 @@ Lo que no se arregló aquí, por estar fuera de lo permitido en la sesión:
 - **Catálogo multimarca y Supabase.**
 - **Seguimiento de clics a Mercado Libre:** los UTM no aplican ahí; hace falta
   otro mecanismo (por ejemplo, un evento propio antes de abrir la pestaña).
+
+## Sesión 8 — Activos oficiales de marca (2026-11-18)
+
+### Tipografía (brandbook p. 10, lámina confirmada por la diseñadora) — sin implementar
+
+- **Roles:** títulos en Nauryz Red Keds, con Unbounded Medium como alternativa;
+  texto en Mundo Sans Std, con Albert Sans Medium/Bold como alternativa.
+- **Hoy (medido el 2026-11-18 a 1440 px):**
+  - Texto corrido: Albert Sans **400** (unos 3,000 caracteres; 500/600/700
+    solo en etiquetas y botones).
+  - Títulos `h1`–`h3`: Unbounded **600 (SemiBold)**, no Medium 500.
+- **Ítems:**
+  - Evaluar pasar el texto corrido de Albert Sans 400 a 500 (Medium), según la
+    equivalencia de la diseñadora.
+  - Evaluar los títulos de Unbounded 600 a 500 (Medium).
+  - Ambos cambios llevan verificación Nivel 2 por el cambio de anchos (listón
+    y consulta, que ya tuvieron problemas de desbordamiento).
+- **Razón:** cambia lo que se ve. No entra en vísperas de la presentación.
+
+### Mundo Sans Std (Regular/Bold) — pendiente de licencia
+
+- Mundo Sans Std (Regular/Bold): pendiente confirmar licencia webfont con la
+  diseñadora; si se obtiene, integrar en woff2 con Albert Sans como respaldo y
+  revisar desbordes del listón y la consulta.
+- Los OTF no están en el repo; quedan solo en la carpeta de la diseñadora.
+
+### Nauryz Red Keds (licencia Befonts)
+
+- Revisar si la licencia de Befonts permite uso comercial y en la web antes de
+  considerarla para títulos.
+- No se copió al repo.
+
+### Brandbook fuera de git
+
+- **Razón:** el repositorio `optioutlet-landing` es **público**. La API de
+  GitHub responde 200 sin autenticación.
+- `docs/brand/Optioutlet_Brandbook.pdf` se copió como referencia local y está
+  en `.gitignore`. Cada desarrollador lo copia a mano.
+- **Ítem:** si el repo pasa a privado, se puede versionar.
+
+### FUTURO (documentado, no implementado)
+
+- **Logo blanco derivado:** falta que la diseñadora lo apruebe
+  (`docs/brand/derivados/logo-blanco.svg` y su lámina PNG). Si manda uno
+  oficial, se reemplaza `OFFICIAL_LOGO` en modo blanco dentro de
+  `Imagotipo.tsx`.
+  - Observación para la diseñadora: en blanco se nota más la separación entre
+    el trazo diagonal y la "O"/"P". Ya existe en el original; no es un defecto
+    del derivado.
+- **`patron.svg` completo o el trazo en S (`1.svg`/`2.svg`):** decidir si se
+  usan en lugares nuevos. Hoy el patrón es un mosaico generado desde
+  `PATTERN_LAYOUT` con las piezas oficiales.
+- **Display decorativa (Nauryz Red Keds):** en qué parte usarla, una vez
+  resuelta la licencia (arriba).
+- **Turquesa:** confirmar con la diseñadora que la página se queda en
+  `#67bbb5`, aunque sus SVG traigan otro turquesa.

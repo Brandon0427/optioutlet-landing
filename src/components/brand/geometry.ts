@@ -1,74 +1,46 @@
 /**
- * Brand geometry, ported from docs/mockup/optioutlet-mockup.dc.html.
- *
- * Correction vs. the mockup (per the brand manual): the bite of the isotipo
- * and of the pattern dot BREAKS the circle's edge. The mockup drew them as
- * interior holes (evenodd), which is wrong. Bites are drawn as a single
- * pre-cut path (circle minus bite circle), so no masks or unique ids are needed
- * and the shape looks the same on any background, including inside patterns.
+ * Brand geometry. Since Session 8 every shape is the designer's official outline
+ * (officialGeometry.ts, copied verbatim from docs/brand/svg/). Each pattern piece is placed in
+ * the shared frame with a UNIFORM transform (no X/Y distortion): rotated to the orientation the
+ * previous drawn shape had, centered on its painted center, and scaled so its longer side matches.
+ * That keeps the visual size, rotation and position of every instance and of the pattern tiles.
+ * Transforms computed by .cache/qa-s8/align.mjs (rotation by best IoU against the old shape).
  */
 
 import { BRAND_COLORS } from '../../styles/brandColors';
+import { OFFICIAL_DOT, OFFICIAL_LOOP, OFFICIAL_U } from './officialGeometry';
 
 export type ShapeName = 'u' | 'loop' | 'dot';
 
-type Circle = { cx: number; cy: number; r: number };
-
-const round = (n: number) => Math.round(n * 1000) / 1000;
-
-/**
- * Path of `base` with the `bite` circle removed, where the bite crosses the
- * edge. Uses the two intersection points of both circles:
- *   d = |bite − base|, a = (R² − r² + d²) / 2d, h = √(R² − a²)
- * then: long arc of the base circle (outside the bite) + concave arc of the bite.
- */
-export function bittenCirclePath(base: Circle, bite: Circle): string {
-  const dx = bite.cx - base.cx;
-  const dy = bite.cy - base.cy;
-  const d = Math.hypot(dx, dy);
-  if (d + bite.r <= base.r || d >= base.r + bite.r) {
-    throw new Error('bittenCirclePath: the bite must cross the edge of the base circle');
-  }
-  const a = (base.r ** 2 - bite.r ** 2 + d ** 2) / (2 * d);
-  const h = Math.sqrt(base.r ** 2 - a ** 2);
-  const ux = dx / d;
-  const uy = dy / d;
-  const px = base.cx + a * ux;
-  const py = base.cy + a * uy;
-  const x1 = round(px - h * uy);
-  const y1 = round(py + h * ux);
-  const x2 = round(px + h * uy);
-  const y2 = round(py - h * ux);
-  const largeBase = a > 0 ? 1 : 0; // base arc outside the bite is > 180° when the chord is past the base center
-  const largeBite = d < a ? 1 : 0; // bite arc inside the base is > 180° when the bite center is inside the chord
-  return `M${x1} ${y1} A${base.r} ${base.r} 0 ${largeBase} 1 ${x2} ${y2} A${bite.r} ${bite.r} 0 ${largeBite} 0 ${x1} ${y1} Z`;
-}
-
-/** viewBox shared by every pattern stroke (U, loop, dot). */
+/** viewBox shared by every pattern piece (U, loop, dot). */
 export const SHAPE_VIEWBOX = '-60 -60 120 140';
 /** Tight viewBox around the dot, for inline use (list bullets). */
 export const DOT_TIGHT_VIEWBOX = '-30 -30 60 60';
 
-export const U_SHAPE = { d: 'M-32 -40 V20 A32 32 0 0 0 32 20 V-40', strokeWidth: 22 } as const;
+/** 5.svg. Old painted box 86×103 → longer side 103; official rotated 45.7° so it opens upwards. */
+export const U_SHAPE = { d: OFFICIAL_U.d, transform: 'translate(-11.709 -62.029) scale(1.191) rotate(45.7)' } as const;
+/** 3.svg. Old painted box 80×113.2 → longer side 113.2; rotated −4.2° to match the old tail. */
+export const LOOP_SHAPE = { d: OFFICIAL_LOOP.d, transform: 'translate(-45.801 -37.328) scale(1.145) rotate(-4.2)' } as const;
+/** 7.svg, official orientation (bite top-right). Old painted box 44×44, centered on the origin. */
+export const DOT_SHAPE = { d: OFFICIAL_DOT.d, transform: 'translate(-22 -22) scale(1.245)' } as const;
 
-export const LOOP_SHAPE = {
-  d: 'M-30 0 A30 30 0 1 0 30 0 A30 30 0 1 0 -30 0 M30 0 L22 72',
-  strokeWidth: 20,
-} as const;
+/** Isotipo: the official bitten pupil, in its own viewBox (the bite breaks the edge). */
+export const ISOTIPO_SHAPE = { viewBox: OFFICIAL_DOT.viewBox, d: OFFICIAL_DOT.d } as const;
 
-/** Dot with a bite: circle r22 at the origin minus circle r9 at (10, −12). 15.6 + 9 > 22 → breaks the edge. */
-const DOT_BASE: Circle = { cx: 0, cy: 0, r: 22 };
-const DOT_BITE: Circle = { cx: 10, cy: -12, r: 9 };
-export const DOT_SHAPE = { ...DOT_BASE, bite: DOT_BITE, d: bittenCirclePath(DOT_BASE, DOT_BITE) } as const;
-
-/** Isotipo: circle r50 at (50, 50) minus circle r19 at (70, 24). 32.8 + 19 > 50 → breaks the edge. */
-const ISO_BASE: Circle = { cx: 50, cy: 50, r: 50 };
-const ISO_BITE: Circle = { cx: 70, cy: 24, r: 19 };
-export const ISOTIPO_SHAPE = {
-  viewBox: '0 0 100 100',
-  ...ISO_BASE,
-  bite: ISO_BITE,
-  d: bittenCirclePath(ISO_BASE, ISO_BITE),
+/**
+ * PupilReveal splits the isotipo in two so its timeline can fade the bite out (decision 5):
+ * - DISC: the official outline with the bite closed by an arc (r 17.72, fitted to the outline), navy.
+ * - BITE_LENS: the official bite contour (from A 32.05,7.32 to B 17.04,0) closed with the same arc,
+ *   painted in the stage color. BITE_EDGE is that arc alone, stroked 0.4 units in the stage color: it
+ *   hides the disc's antialiased edge under the bite (no navy hairline) without a visible overhang.
+ */
+const BITE_CONTOUR = '-.65,1.18-1.6,2.22-2.81,3-3.89,2.49-9.06,1.35-11.55-2.54-1.55-2.42-1.69-5.32-.65-7.78';
+if (!OFFICIAL_DOT.d.includes(BITE_CONTOUR)) throw new Error('geometry: official dot bite contour not found');
+export const ISOTIPO_SPLIT = {
+  viewBox: OFFICIAL_DOT.viewBox,
+  disc: OFFICIAL_DOT.d.replace(BITE_CONTOUR, 'A17.72 17.72 0 0 0 17.04 0c'),
+  biteLens: `M32.05,7.32c${BITE_CONTOUR}A17.72 17.72 0 0 1 32.05 7.32Z`,
+  biteEdge: { d: 'M17.04,0A17.72 17.72 0 0 1 32.05,7.32', strokeWidth: 0.4 },
 } as const;
 
 // ─── Pattern ──────────────────────────────────────────────────────────────

@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { landing } from '../content/landing';
+import { ISOTIPO_SPLIT } from '../components/brand/geometry';
 import { Mascot } from '../components/brand/Mascot';
 import { PatternFill } from '../components/brand/PatternFill';
 import { BRAND_COLORS as C } from '../styles/brandColors';
@@ -99,10 +100,18 @@ export function PupilReveal() {
       <div aria-hidden="true" className="stage-underlay" />
 
       <div ref={stage} className="relative box-border flex min-h-[680px] items-center justify-center overflow-hidden px-gutter py-24">
-        {/* Pupil (navy disc + bite). Hidden in the static version. */}
+        {/* Pupil: official isotipo split in two (navy disc + bite lens in the stage color), so the
+            timeline can fade the bite out. Hidden in the static version. */}
         <div ref={pupil} aria-hidden="true" className="absolute top-1/2 left-1/2 -mt-20 -ml-20 size-40 opacity-0 will-change-transform">
-          <div className="absolute inset-0 rounded-full bg-navy" />
-          <div ref={bite} className="absolute top-[3.75%] right-[13.75%] size-[37.5%] rounded-full bg-mist opacity-0" />
+          <svg viewBox={ISOTIPO_SPLIT.viewBox} focusable="false" className="absolute inset-0 size-full">
+            <path d={ISOTIPO_SPLIT.disc} fill={C.navy} />
+          </svg>
+          <div ref={bite} className="absolute inset-0 opacity-0">
+            <svg viewBox={ISOTIPO_SPLIT.viewBox} focusable="false" overflow="visible" className="size-full">
+              <path d={ISOTIPO_SPLIT.biteLens} fill={C.mist} />
+              <path d={ISOTIPO_SPLIT.biteEdge.d} fill="none" stroke={C.mist} strokeWidth={ISOTIPO_SPLIT.biteEdge.strokeWidth} />
+            </svg>
+          </div>
         </div>
 
         <PatternFill ref={pattern} variant="dark" style={{ opacity: 0.18 }} />

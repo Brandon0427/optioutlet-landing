@@ -42,3 +42,6 @@ graphify-out/cache/*
 !graphify-out/cache/semantic/
 graphify-out/cache/semantic/*
 !graphify-out/cache/semantic/*.json
+
+# Brand book: copia local de referencia. El repo es público; no se redistribuye.
+docs/brand/Optioutlet_Brandbook.pdf

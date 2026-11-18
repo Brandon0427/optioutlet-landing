@@ -5,7 +5,7 @@ type IsotipoProps = {
   className?: string;
 };
 
-/** Brand isotipo: a teal circle with a bite that breaks its top-right edge. Always decorative. */
+/** Brand isotipo (official 7.svg): a bitten pupil, the bite breaking its top-right edge. Always decorative. */
 export function Isotipo({ className = 'size-8 text-teal' }: IsotipoProps) {
   return (
     <svg viewBox={S.viewBox} aria-hidden="true" focusable="false" className={className}>

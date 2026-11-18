@@ -63,7 +63,7 @@ Vercel, con la integración de GitHub (`Brandon0427/optioutlet-landing`) y el pr
 
 ## Íconos y metadatos
 
-- **Íconos provisionales** (`TODO(brand-svg)`): salen de la pupila del isotipo (`ISOTIPO_SHAPE` en `geometry.ts`, con la mordida rompiendo el borde) y de los colores de `brandColors.ts`. Se reemplazan cuando lleguen los SVG oficiales.
+- **Íconos:** salen del isotipo oficial (`ISOTIPO_SHAPE` en `geometry.ts`, que toma `docs/brand/svg/7.svg`) y de los colores de `brandColors.ts`. Si cambia el isotipo, se regeneran con el mismo comando.
   - `public/favicon.svg`: pupila verde agua sobre fondo transparente.
   - `public/favicon.ico`: 16, 32 y 48 px, PNG dentro de un contenedor ICO.
   - `public/apple-touch-icon.png`: 180 × 180, pupila verde agua sobre azul marino, con 30 px de margen.
@@ -118,7 +118,7 @@ en líneas separadas): un build roto llegó así a un commit en la Sesión 2.
 - `src/styles/fonts.css` — `@font-face` autoalojados, solo subconjunto latín (español completo).
 - `src/lib/gsap.ts` — registro único de ScrollTrigger y `useGSAP`; `HEADER_OFFSET = 72`.
 - `src/components/brand/` — isotipo, trazos del patrón, patrones, sello, listón, mascota e imagotipo. `geometry.ts` guarda la geometría compartida.
-  - `Mascot.tsx` e `Imagotipo.tsx` son aproximaciones marcadas con `TODO(brand-svg)`; al llegar los vectores oficiales se reemplaza el contenido de ese archivo y nada más.
+  - Desde la sesión 8, logo, isotipo, piezas del patrón y mascota usan los vectores oficiales de `docs/brand/svg/`, copiados tal cual en `officialGeometry.ts` (sin `<style>` ni clases; los colores salen de los tokens). `docs/brand/derivados/` guarda el logo blanco derivado (provisional).
   - `MarketplaceLogos.tsx` (fila “También en” del hero) muestra los logos oficiales de `src/assets/brand/marketplaces/` en `<img>` (importados con `?no-inline` para que siempre salgan como archivo con hash). Esos SVG se usan tal cual se entregaron: no se editan ni se dibujan logos de terceros.
   - `Ribbon.tsx` es una banda continua: el lema se repite `RIBBON_REPEATS` veces con un largo fijo por repetición (`RIBBON_REPEAT_LENGTH`, vía `textLength`), y su progreso depende solo de la sección del cierre.
 - `src/styles/brandColors.ts` — hexadecimales de marca para atributos SVG; debe coincidir con `@theme`.
@@ -130,5 +130,5 @@ en líneas separadas): un build roto llegó así a un commit en la Sesión 2.
 - `src/consulta/providers/` — `scripted.ts` (guion), `api.ts` (llama a `/api/chat` y cae al guionado por turno) e `index.ts` (elige el proveedor).
 - `server/consulta/` — servidor de la consulta: configuración (modelo y effort), validación de la solicitud, esquema de salida, system prompt, conversión de mensajes, combinación del perfil y `handleChat`. `server/http/` y `server/dev/` — adaptadores. `api/chat.ts` — función de Vercel.
 - `scripts/eval-consulta.ts` — evaluación en vivo (`vitest.eval.config.ts`).
-- `scripts/verify-redirects.ts` — verificación en vivo de las redirecciones (Node puro, sin imports de `.ts`); `scripts/redirect-cases.json` — su tabla de casos, compartida con `scripts/redirects.test.ts`. `scripts/generate-icons.ts` — generador de los íconos provisionales.
+- `scripts/verify-redirects.ts` — verificación en vivo de las redirecciones (Node puro, sin imports de `.ts`); `scripts/redirect-cases.json` — su tabla de casos, compartida con `scripts/redirects.test.ts`. `scripts/generate-icons.ts` — generador de los íconos, a partir del isotipo oficial.
 - `docs/verificacion-sesion-1.md` a `docs/verificacion-sesion-3.md`, `docs/verificacion-sesion-5.md` y `docs/verificacion-sesion-6.md` — cómo verificar la landing, la consulta, su conexión con Claude, el blindaje de la demo (planes A/B/C, límite del firewall, UTM) y los dominios (redirecciones, lista del corte y reversa); `docs/guion-demo.md` — guion de la presentación; `docs/backlog.md` — residuales abiertos.

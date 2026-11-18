@@ -31,3 +31,6 @@ index.html
 
 # Vercel project config (headers only)
 vercel.json
+
+# Activos de la diseñadora (binarios, SVG y PDF grandes): no aportan al grafo
+docs/brand/
